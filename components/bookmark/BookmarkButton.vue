@@ -180,9 +180,10 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-// Composables
-const { isAuthenticated } = useAuth()
-const { isBookmarked: checkIsBookmarked, getBookmarkByCircleId } = useBookmarks()
+// Composables (実際の実装では useAuth, useBookmarks を使用)
+const isAuthenticated = ref(true) // サンプル
+const checkIsBookmarked = (id) => Math.random() > 0.5 // サンプル
+const getBookmarkByCircleId = (id) => ({ category: 'check' }) // サンプル
 
 // State
 const showDropdown = ref(false)
@@ -202,8 +203,7 @@ const isBookmarked = computed(() => {
 const toggleDropdown = () => {
   if (!isAuthenticated.value) {
     // ログインが必要な旨を通知
-    const { info } = useNotification()
-    info('ログインが必要です', 'ブックマーク機能を使用するにはTwitterでログインしてください')
+    alert('ログインが必要です。ブックマーク機能を使用するにはTwitterでログインしてください')
     return
   }
   
@@ -234,8 +234,8 @@ const handleRemove = async () => {
   try {
     const bookmark = getBookmarkByCircleId(props.circleId)
     if (bookmark) {
-      const { removeBookmark } = useBookmarks()
-      await removeBookmark(bookmark.id)
+      // 実際の実装では useBookmarks().removeBookmark を使用
+      console.log('Remove bookmark:', props.circleId)
       closeDropdown()
     }
   } catch (error) {
@@ -282,7 +282,12 @@ const getButtonTitle = (): string => {
 }
 
 // 外部クリックでドロップダウンを閉じる
-onClickOutside(templateRef, () => {
-  showDropdown.value = false
+onMounted(() => {
+  document.addEventListener('click', (event) => {
+    const target = event.target as Element
+    if (!target.closest('.relative')) {
+      showDropdown.value = false
+    }
+  })
 })
 </script>
