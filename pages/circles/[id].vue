@@ -261,7 +261,18 @@
                 ⚡ アクション
               </h2>
               <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                <button 
+                <!-- 編集ボタン（編集権限がある場合） -->
+                <NuxtLink
+                  v-if="hasEditPermission"
+                  :to="`/circles/edit/${circle.id}`"
+                  style="padding: 0.75rem; background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; border-radius: 0.5rem; text-decoration: none; font-weight: 500; transition: all 0.2s; text-align: center;"
+                  onmouseover="this.style.backgroundColor='#dcfce7'"
+                  onmouseout="this.style.backgroundColor='#f0fdf4'"
+                >
+                  ✏️ 情報を編集
+                </NuxtLink>
+                
+                <button
                   @click="shareCircle"
                   style="padding: 0.75rem; background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; border-radius: 0.5rem; cursor: pointer; font-weight: 500; transition: all 0.2s;"
                   onmouseover="this.style.backgroundColor='#e5e7eb'"
@@ -270,7 +281,7 @@
                   🔗 シェア
                 </button>
                 
-                <button 
+                <button
                   v-if="isAuthenticated"
                   @click="reportCircle"
                   style="padding: 0.75rem; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 0.5rem; cursor: pointer; font-weight: 500; transition: all 0.2s;"
@@ -298,6 +309,7 @@ const circle = ref(null)
 const loading = ref(true)
 const error = ref(null)
 const isAuthenticated = ref(true) // サンプル
+const hasEditPermission = ref(true) // サンプル（実際の実装では useAuth().hasEditPermission を使用）
 
 // サンプルデータ
 const sampleCircles = {

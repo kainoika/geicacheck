@@ -70,17 +70,22 @@
                                     <NuxtLink to="/profile"
                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         @click="showUserMenu = false">
-                                        プロフィール
+                                        👤 プロフィール
                                     </NuxtLink>
-                                    <NuxtLink to="/my-circles"
+                                    <NuxtLink to="/edit-permission/apply"
                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         @click="showUserMenu = false">
-                                        マイサークル
+                                        ✏️ 編集権限申請
                                     </NuxtLink>
-                                    <NuxtLink to="/settings"
+                                    <NuxtLink to="/admin/edit-requests"
                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         @click="showUserMenu = false">
-                                        設定
+                                        🛠️ 管理者ダッシュボード
+                                    </NuxtLink>
+                                    <NuxtLink to="/about"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        @click="showUserMenu = false">
+                                        ℹ️ アプリについて
                                     </NuxtLink>
                                     <hr class="my-1">
                                     <button @click="handleSignOut"
@@ -132,27 +137,73 @@
             leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 -translate-y-2">
             <div v-if="showMobileMenu" class="md:hidden border-t border-gray-200 bg-white">
                 <div class="px-2 pt-2 pb-3 space-y-1">
+                    <!-- 主要機能 -->
+                    <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        主要機能
+                    </div>
                     <NuxtLink to="/circles"
                         class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
                         :class="{ 'text-primary-600 bg-primary-50': $route.path === '/circles' }"
                         @click="showMobileMenu = false">
-                        サークル一覧
+                        📖 サークル一覧
                     </NuxtLink>
                     <NuxtLink to="/map"
                         class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
                         :class="{ 'text-primary-600 bg-primary-50': $route.path === '/map' }"
                         @click="showMobileMenu = false">
-                        マップ
+                        🗺️ マップ
                     </NuxtLink>
                     <NuxtLink to="/bookmarks"
                         class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
                         :class="{ 'text-primary-600 bg-primary-50': $route.path === '/bookmarks' }"
                         @click="showMobileMenu = false">
-                        ブックマーク
+                        ⭐ ブックマーク
                         <span v-if="bookmarkCount > 0" class="ml-2 badge badge-primary">
                             {{ bookmarkCount }}
                         </span>
                     </NuxtLink>
+                    
+                    <!-- ユーザー機能 -->
+                    <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-4">
+                        ユーザー機能
+                    </div>
+                    <NuxtLink v-if="!isAuthenticated" to="/auth/login"
+                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
+                        :class="{ 'text-primary-600 bg-primary-50': $route.path === '/auth/login' }"
+                        @click="showMobileMenu = false">
+                        🔐 ログイン
+                    </NuxtLink>
+                    <NuxtLink v-if="isAuthenticated" to="/profile"
+                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
+                        :class="{ 'text-primary-600 bg-primary-50': $route.path === '/profile' }"
+                        @click="showMobileMenu = false">
+                        👤 プロフィール
+                    </NuxtLink>
+                    <NuxtLink to="/edit-permission/apply"
+                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
+                        :class="{ 'text-primary-600 bg-primary-50': $route.path === '/edit-permission/apply' }"
+                        @click="showMobileMenu = false">
+                        ✏️ 編集権限申請
+                    </NuxtLink>
+                    
+                    <!-- その他 -->
+                    <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-4">
+                        その他
+                    </div>
+                    <NuxtLink to="/about"
+                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
+                        :class="{ 'text-primary-600 bg-primary-50': $route.path === '/about' }"
+                        @click="showMobileMenu = false">
+                        ℹ️ アプリについて
+                    </NuxtLink>
+                    
+                    <!-- ログアウト -->
+                    <div v-if="isAuthenticated" class="border-t border-gray-200 mt-4 pt-4">
+                        <button @click="handleSignOut"
+                            class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50">
+                            🚪 ログアウト
+                        </button>
+                    </div>
                 </div>
             </div>
         </Transition>

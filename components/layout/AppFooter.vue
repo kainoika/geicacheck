@@ -18,60 +18,70 @@
                     </p>
                 </div>
 
-                <!-- ナビゲーション -->
+                <!-- 主要機能 -->
                 <div>
-                    <h4 class="text-sm font-semibold text-gray-900 mb-4">ナビゲーション</h4>
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4">主要機能</h4>
                     <ul class="space-y-2">
                         <li>
                             <NuxtLink to="/" class="text-sm text-gray-600 hover:text-primary-600 transition-colors">
-                                サークル一覧
+                                📖 ホーム
+                            </NuxtLink>
+                        </li>
+                        <li>
+                            <NuxtLink to="/circles" class="text-sm text-gray-600 hover:text-primary-600 transition-colors">
+                                📖 サークル一覧
                             </NuxtLink>
                         </li>
                         <li>
                             <NuxtLink to="/map" class="text-sm text-gray-600 hover:text-primary-600 transition-colors">
-                                マップ
+                                🗺️ マップ
                             </NuxtLink>
                         </li>
                         <li>
                             <NuxtLink to="/bookmarks"
                                 class="text-sm text-gray-600 hover:text-primary-600 transition-colors">
-                                ブックマーク
-                            </NuxtLink>
-                        </li>
-                        <li>
-                            <NuxtLink to="/about"
-                                class="text-sm text-gray-600 hover:text-primary-600 transition-colors">
-                                このアプリについて
+                                ⭐ ブックマーク
                             </NuxtLink>
                         </li>
                     </ul>
                 </div>
 
-                <!-- サポート -->
+                <!-- ユーザー・その他 -->
                 <div>
-                    <h4 class="text-sm font-semibold text-gray-900 mb-4">サポート</h4>
+                    <h4 class="text-sm font-semibold text-gray-900 mb-4">ユーザー・その他</h4>
                     <ul class="space-y-2">
                         <li>
-                            <NuxtLink to="/help" class="text-sm text-gray-600 hover:text-primary-600 transition-colors">
-                                ヘルプ
+                            <NuxtLink to="/auth/login" class="text-sm text-gray-600 hover:text-primary-600 transition-colors">
+                                🔐 ログイン
                             </NuxtLink>
                         </li>
                         <li>
-                            <NuxtLink to="/privacy"
+                            <NuxtLink to="/profile" class="text-sm text-gray-600 hover:text-primary-600 transition-colors">
+                                👤 プロフィール
+                            </NuxtLink>
+                        </li>
+                        <li>
+                            <NuxtLink to="/edit-permission/apply"
                                 class="text-sm text-gray-600 hover:text-primary-600 transition-colors">
-                                プライバシーポリシー
+                                ✏️ 編集権限申請
                             </NuxtLink>
                         </li>
                         <li>
-                            <NuxtLink to="/terms"
+                            <NuxtLink to="/admin/edit-requests"
                                 class="text-sm text-gray-600 hover:text-primary-600 transition-colors">
-                                利用規約
+                                🛠️ 管理者ダッシュボード
                             </NuxtLink>
                         </li>
                         <li>
-                            <a href="https://github.com/your-repo/geika-check" target="_blank" rel="noopener noreferrer"
+                            <NuxtLink to="/about"
+                                class="text-sm text-gray-600 hover:text-primary-600 transition-colors">
+                                ℹ️ このアプリについて
+                            </NuxtLink>
+                        </li>
+                        <li>
+                            <a href="https://github.com/geika-check/geika-check" target="_blank" rel="noopener noreferrer"
                                 class="text-sm text-gray-600 hover:text-primary-600 transition-colors inline-flex items-center">
-                                GitHub
+                                💻 GitHub
                                 <svg class="w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
                                         d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-4a.75.75 0 011.5 0v4A2.25 2.25 0 0112.75 17h-8.5A2.25 2.25 0 012 14.75v-8.5A2.25 2.25 0 014.25 4h5a.75.75 0 010 1.5h-5z"
