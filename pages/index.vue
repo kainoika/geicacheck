@@ -10,12 +10,12 @@
             </p>
 
             <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                <button class="btn btn-primary" @click="showDemo">
+                <NuxtLink to="/circles" class="btn btn-primary">
+                    サークル一覧を見る
+                </NuxtLink>
+                <button class="btn btn-outline" @click="showDemo">
                     デモを見る
                 </button>
-                <a href="/about" class="btn btn-outline">
-                    アプリについて
-                </a>
             </div>
         </section>
 
@@ -196,8 +196,8 @@ const toggleBookmark = (circleId) => {
 }
 
 const startApp = () => {
-    // 実際のアプリ機能へのナビゲーション
-    alert('実際のアプリでは、ここからサークル一覧や検索機能にアクセスできます！')
+    // サークル一覧ページへナビゲーション
+    navigateTo('/circles')
 }
 
 // SEO
