@@ -14,9 +14,9 @@
 
                 <!-- デスクトップナビゲーション -->
                 <nav class="hidden md:flex items-center space-x-6">
-                    <NuxtLink to="/"
+                    <NuxtLink to="/circles"
                         class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                        :class="{ 'text-primary-600 bg-primary-50': $route.path === '/' }">
+                        :class="{ 'text-primary-600 bg-primary-50': $route.path === '/circles' }">
                         サークル一覧
                     </NuxtLink>
                     <NuxtLink to="/map"
@@ -132,9 +132,9 @@
             leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 -translate-y-2">
             <div v-if="showMobileMenu" class="md:hidden border-t border-gray-200 bg-white">
                 <div class="px-2 pt-2 pb-3 space-y-1">
-                    <NuxtLink to="/"
+                    <NuxtLink to="/circles"
                         class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
-                        :class="{ 'text-primary-600 bg-primary-50': $route.path === '/' }"
+                        :class="{ 'text-primary-600 bg-primary-50': $route.path === '/circles' }"
                         @click="showMobileMenu = false">
                         サークル一覧
                     </NuxtLink>
@@ -199,7 +199,7 @@ const toggleSearch = () => {
 
 const handleSignIn = async () => {
     try {
-        await navigateTo('/auth/signin')
+        await navigateTo('/auth/login')
     } catch (error) {
         console.error('Sign in navigation error:', error)
     }
