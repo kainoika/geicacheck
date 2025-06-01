@@ -199,8 +199,7 @@ const handleBookmark = () => {
 }
 
 const goToDetail = () => {
-  // 実際の実装では router.push を使用
-  console.log('Navigate to circle detail:', props.circle.id)
+  window.location.href = `/circles/${props.circle.id}`
 }
 
 // 初期化時にブックマーク状態をチェック
