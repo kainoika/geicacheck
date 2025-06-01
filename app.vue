@@ -1,24 +1,22 @@
 <template>
-  <div id="app">
-    <header style="background: linear-gradient(135deg, #ff69b4 0%, #87ceeb 50%, #ffd700 100%); color: white; padding: 2rem; text-align: center;">
-      <div style="font-size: 3rem; margin-bottom: 1rem;">✨</div>
-      <h1 style="font-size: 2.5rem; margin: 0; font-weight: bold;">geika check!</h1>
-      <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">アイカツ！同人イベントサークルチェックアプリ</p>
-    </header>
+  <div id="app" style="min-height: 100vh; display: flex; flex-direction: column;">
+    <!-- ヘッダー -->
+    <AppHeader />
     
-    <main style="padding: 2rem; max-width: 1200px; margin: 0 auto;">
+    <!-- メインコンテンツ -->
+    <main style="flex: 1;">
       <NuxtPage />
     </main>
     
-    <footer style="background: #f8f9fa; padding: 2rem; text-align: center; margin-top: 4rem; border-top: 1px solid #e9ecef;">
-      <p style="margin: 0; color: #6c757d; font-size: 0.9rem;">
-        © 2025 geika check! - アイカツ！同人イベントサークルチェックアプリ
-      </p>
-    </footer>
+    <!-- フッター -->
+    <AppFooter />
   </div>
 </template>
 
 <script setup>
+import AppHeader from '~/components/layout/AppHeader.vue'
+import AppFooter from '~/components/layout/AppFooter.vue'
+
 // メタ情報の設定
 useHead({
   title: 'geika check! - アイカツ！同人イベントサークルチェックアプリ',

@@ -10,13 +10,13 @@ export default defineNuxtConfig({
   },
 
   // モジュール
-  modules: [],
+  modules: ["@nuxtjs/tailwindcss"],
 
   // プラグイン
   plugins: ["~/plugins/firebase.client.ts"],
 
   // CSS設定
-  // css: ["~/assets/css/main.css"],
+  css: ["~/assets/css/main.css"],
 
   // アプリ設定
   app: {
@@ -46,6 +46,7 @@ export default defineNuxtConfig({
         },
       ],
     },
+  baseURL: '/'
   },
 
   // ランタイム設定

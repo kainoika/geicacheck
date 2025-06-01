@@ -6,7 +6,7 @@
                 <div class="flex items-center">
                     <NuxtLink to="/" class="flex items-center space-x-2">
                         <div class="text-2xl">✨</div>
-                        <h1 class="text-xl font-bold text-gradient-aikatsu">
+                        <h1 class="text-xl font-bold text-pink-500">
                             geika check!
                         </h1>
                     </NuxtLink>
@@ -15,20 +15,20 @@
                 <!-- デスクトップナビゲーション -->
                 <nav class="hidden md:flex items-center space-x-6">
                     <NuxtLink to="/circles"
-                        class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                        :class="{ 'text-primary-600 bg-primary-50': $route.path === '/circles' }">
+                        class="text-gray-700 hover:text-pink-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                        :class="{ 'text-pink-600 bg-pink-50': $route.path === '/circles' }">
                         サークル一覧
                     </NuxtLink>
                     <NuxtLink to="/map"
-                        class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                        :class="{ 'text-primary-600 bg-primary-50': $route.path === '/map' }">
+                        class="text-gray-700 hover:text-pink-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                        :class="{ 'text-pink-600 bg-pink-50': $route.path === '/map' }">
                         マップ
                     </NuxtLink>
                     <NuxtLink to="/bookmarks"
-                        class="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                        :class="{ 'text-primary-600 bg-primary-50': $route.path === '/bookmarks' }">
+                        class="text-gray-700 hover:text-pink-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                        :class="{ 'text-pink-600 bg-pink-50': $route.path === '/bookmarks' }">
                         ブックマーク
-                        <span v-if="bookmarkCount > 0" class="ml-1 badge badge-primary">
+                        <span v-if="bookmarkCount > 0" class="ml-1 bg-pink-500 text-white px-2 py-1 rounded-full text-xs">
                             {{ bookmarkCount }}
                         </span>
                     </NuxtLink>
@@ -48,7 +48,7 @@
                             class="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-100 transition-colors">
                             <img v-if="user?.photoURL" :src="user.photoURL" :alt="user.displayName"
                                 class="h-8 w-8 rounded-full">
-                            <div v-else class="h-8 w-8 bg-primary-500 rounded-full flex items-center justify-center">
+                            <div v-else class="h-8 w-8 bg-pink-500 rounded-full flex items-center justify-center">
                                 <span class="text-white text-sm font-medium">
                                     {{ user?.displayName?.charAt(0) || '?' }}
                                 </span>
@@ -98,7 +98,7 @@
                     </div>
 
                     <!-- ログインボタン -->
-                    <button v-else @click="handleSignIn" class="btn-primary">
+                    <button v-else @click="handleSignIn" class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-md font-medium transition-colors flex items-center">
                         <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
                             <path
                                 d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
@@ -122,7 +122,7 @@
                 leave-to-class="opacity-0 -translate-y-2">
                 <div v-if="showSearch" class="md:hidden pb-4">
                     <div class="relative">
-                        <input v-model="searchQuery" type="text" placeholder="サークル名、タグで検索..." class="input pl-10"
+                        <input v-model="searchQuery" type="text" placeholder="サークル名、タグで検索..." class="w-full px-3 py-2 border border-gray-300 rounded-md pl-10"
                             @keyup.enter="handleSearch">
                         <MagnifyingGlassIcon
                             class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -142,23 +142,23 @@
                         主要機能
                     </div>
                     <NuxtLink to="/circles"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
-                        :class="{ 'text-primary-600 bg-primary-50': $route.path === '/circles' }"
+                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
+                        :class="{ 'text-pink-600 bg-pink-50': $route.path === '/circles' }"
                         @click="showMobileMenu = false">
                         📖 サークル一覧
                     </NuxtLink>
                     <NuxtLink to="/map"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
-                        :class="{ 'text-primary-600 bg-primary-50': $route.path === '/map' }"
+                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
+                        :class="{ 'text-pink-600 bg-pink-50': $route.path === '/map' }"
                         @click="showMobileMenu = false">
                         🗺️ マップ
                     </NuxtLink>
                     <NuxtLink to="/bookmarks"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
-                        :class="{ 'text-primary-600 bg-primary-50': $route.path === '/bookmarks' }"
+                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
+                        :class="{ 'text-pink-600 bg-pink-50': $route.path === '/bookmarks' }"
                         @click="showMobileMenu = false">
                         ⭐ ブックマーク
-                        <span v-if="bookmarkCount > 0" class="ml-2 badge badge-primary">
+                        <span v-if="bookmarkCount > 0" class="ml-2 bg-pink-500 text-white px-2 py-1 rounded-full text-xs">
                             {{ bookmarkCount }}
                         </span>
                     </NuxtLink>
@@ -168,20 +168,20 @@
                         ユーザー機能
                     </div>
                     <NuxtLink v-if="!isAuthenticated" to="/auth/login"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
-                        :class="{ 'text-primary-600 bg-primary-50': $route.path === '/auth/login' }"
+                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
+                        :class="{ 'text-pink-600 bg-pink-50': $route.path === '/auth/login' }"
                         @click="showMobileMenu = false">
                         🔐 ログイン
                     </NuxtLink>
                     <NuxtLink v-if="isAuthenticated" to="/profile"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
-                        :class="{ 'text-primary-600 bg-primary-50': $route.path === '/profile' }"
+                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
+                        :class="{ 'text-pink-600 bg-pink-50': $route.path === '/profile' }"
                         @click="showMobileMenu = false">
                         👤 プロフィール
                     </NuxtLink>
                     <NuxtLink to="/edit-permission/apply"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
-                        :class="{ 'text-primary-600 bg-primary-50': $route.path === '/edit-permission/apply' }"
+                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
+                        :class="{ 'text-pink-600 bg-pink-50': $route.path === '/edit-permission/apply' }"
                         @click="showMobileMenu = false">
                         ✏️ 編集権限申請
                     </NuxtLink>
@@ -191,8 +191,8 @@
                         その他
                     </div>
                     <NuxtLink to="/about"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50"
-                        :class="{ 'text-primary-600 bg-primary-50': $route.path === '/about' }"
+                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
+                        :class="{ 'text-pink-600 bg-pink-50': $route.path === '/about' }"
                         @click="showMobileMenu = false">
                         ℹ️ アプリについて
                     </NuxtLink>
@@ -200,7 +200,7 @@
                     <!-- ログアウト -->
                     <div v-if="isAuthenticated" class="border-t border-gray-200 mt-4 pt-4">
                         <button @click="handleSignOut"
-                            class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50">
+                            class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50">
                             🚪 ログアウト
                         </button>
                     </div>
@@ -218,9 +218,11 @@ import {
     ChevronDownIcon
 } from '@heroicons/vue/24/outline'
 
-// Composables
-const { user, isAuthenticated, signOut } = useAuth()
-const { bookmarkCount } = useBookmarks()
+// Composables (サンプル実装)
+const user = ref({ displayName: 'サンプルユーザー', photoURL: null })
+const isAuthenticated = ref(true)
+const signOut = async () => { console.log('Sign out') }
+const bookmarkCount = ref(3)
 const router = useRouter()
 
 // State
