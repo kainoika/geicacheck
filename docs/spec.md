@@ -878,22 +878,20 @@ interface Circle {
   id: string;                    // Primary Key
   circleName: string;           // サークル名
   circleKana?: string;          // サークル名（カナ）
+  penName?: string;             // ペンネーム
+  penNameKana?: string;         // ペンネーム（カナ）
+  circleImageUrl?: string;      // サークルの画像URL
   genre: string[];              // ジャンル配列
-  placement: {                  // 配置情報
-    day: '1' | '2';            // 開催日
-    area: string;              // エリア
+  placement: {                  // 配置情報(例：ア52, カ12)
     block: string;             // ブロック
     number: string;            // 番号
-    position: 'a' | 'b';      // ab配置
   };
   description?: string;         // サークル説明
   contact: {                   // 連絡先情報
     twitter?: string;
     pixiv?: string;
-    website?: string;
     oshinaUrl?: string;
   };
-  tags: string[];              // タグ配列
   isAdult: boolean;            // 成人向けフラグ
   ownerId?: string;            // 所有者ID
   isPublic: boolean;           // 公開フラグ
@@ -959,27 +957,6 @@ interface CirclePermission {
 }
 
 ```
-
-### 5.4.3 インデックス設計
-
-**パフォーマンス向上のためのインデックス**:
-
-```jsx
-// circles コレクション
-circles.createIndex({ "genre": 1, "placement.day": 1 })
-circles.createIndex({ "placement.area": 1, "placement.block": 1 })
-circles.createIndex({ "tags": 1 })
-circles.createIndex({ "isPublic": 1, "eventId": 1 })
-circles.createIndex({ "ownerId": 1 })
-
-// bookmarks コレクション
-bookmarks.createIndex({ "userId": 1, "category": 1 })
-bookmarks.createIndex({ "userId": 1, "createdAt": -1 })
-bookmarks.createIndex({ "circleId": 1 })
-
-```
-
----
 
 ### 5.5 認証・認可設計（改良版）
 

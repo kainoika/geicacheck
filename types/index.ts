@@ -15,7 +15,6 @@ export interface User {
 export interface UserSettings {
   emailNotifications: boolean;
   adultContent: boolean;
-  theme: "light" | "dark" | "auto";
 }
 
 // サークル関連の型定義
@@ -23,11 +22,13 @@ export interface Circle {
   id: string;
   circleName: string;
   circleKana?: string;
-  genre: string[];
+  penName?: string;
+  penNameKana?: string;
+  circleImageUrl?: string; // サークルの画像URL
+  genre: string[]; // ジャンルの配列
   placement: PlacementInfo;
   description?: string;
   contact: ContactInfo;
-  tags: string[];
   isAdult: boolean;
   ownerId?: string;
   isPublic: boolean;
@@ -37,17 +38,13 @@ export interface Circle {
 }
 
 export interface PlacementInfo {
-  day: "1" | "2";
-  area: string;
   block: string;
   number: string;
-  position: "a" | "b";
 }
 
 export interface ContactInfo {
   twitter?: string;
   pixiv?: string;
-  website?: string;
   oshinaUrl?: string;
 }
 
