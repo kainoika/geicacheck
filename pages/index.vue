@@ -1,21 +1,22 @@
 <template>
     <div>
         <!-- ヒーローセクション -->
-        <section class="text-center mb-4">
-            <h2 style="font-size: 2rem; margin-bottom: 1rem; color: #ff69b4;">
+        <section class="text-center mt-4">
+            <div
+                style="background: linear-gradient(135deg, #ff69b4, #87ceeb); padding: 2rem; border-radius: 0.5rem; color: white;">
+
+            <h2 style="font-size: 2rem; margin-bottom: 1rem; color: #ffffff;">
                 ようこそ geika check! へ
             </h2>
-            <p style="font-size: 1.2rem; color: #6c757d; margin-bottom: 2rem;">
-                「芸能人はカードが命！（芸カ）」のサークル情報を効率的にチェック
+            <p style="font-size: 1.2rem; color: #ffffff; margin-bottom: 2rem;">
+                アイカツ！同人イベントをもっと楽しく、もっと効率的に
             </p>
 
             <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                <NuxtLink to="/circles" class="btn btn-primary">
-                    サークル一覧を見る
-                </NuxtLink>
-                <button class="btn btn-outline" @click="showDemo">
-                    デモを見る
+                <button class="btn" style="background: white; color: #ff69b4;" @click="startApp">
+                サークル一覧を見る
                 </button>
+            </div>
             </div>
         </section>
 
@@ -158,123 +159,27 @@
                 </NuxtLink>
             </div>
         </section>
-
-        <!-- サンプルサークル -->
-        <section v-if="showSampleCircles">
-            <h2 style="font-size: 1.8rem; margin-bottom: 1.5rem; color: #ff69b4; text-align: center;">
-                サンプルサークル
-            </h2>
-
-            <div class="grid grid-cols-1 grid-cols-md-2 grid-cols-lg-3">
-                <div v-for="circle in sampleCircles" :key="circle.id" class="card">
-                    <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 1rem;">
-                        <div style="flex: 1;">
-                            <h3 style="color: #212529; margin-bottom: 0.5rem; font-size: 1.2rem;">
-                                {{ circle.name }}
-                            </h3>
-                            <p style="color: #6c757d; font-size: 0.9rem;">{{ circle.kana }}</p>
-                        </div>
-                        <button class="btn"
-                            style="background: #ff69b4; color: white; padding: 0.5rem; font-size: 0.8rem;"
-                            @click="toggleBookmark(circle.id)">
-                            {{ bookmarkedCircles.includes(circle.id) ? '⭐' : '☆' }}
-                        </button>
-                    </div>
-
-                    <div style="margin-bottom: 1rem;">
-                        <span v-for="genre in circle.genres" :key="genre"
-                            style="display: inline-block; background: #e3f2fd; color: #1976d2; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.8rem; margin-right: 0.5rem; margin-bottom: 0.25rem;">
-                            {{ genre }}
-                        </span>
-                    </div>
-
-                    <div style="margin-bottom: 1rem;">
-                        <div style="display: flex; align-items: center; color: #6c757d; font-size: 0.9rem;">
-                            <span style="margin-right: 0.5rem;">📍</span>
-                            <span>{{ circle.placement }}</span>
-                        </div>
-                    </div>
-
-                    <div style="margin-bottom: 1rem;">
-                        <p style="color: #6c757d; font-size: 0.9rem; line-height: 1.4;">
-                            {{ circle.description }}
-                        </p>
-                    </div>
-
-                    <div style="display: flex; gap: 0.5rem;">
-                        <a v-if="circle.twitter" :href="`https://twitter.com/${circle.twitter}`" target="_blank"
-                            style="color: #1da1f2; text-decoration: none; font-size: 0.9rem;">
-                            🐦 Twitter
-                        </a>
-                        <a v-if="circle.pixiv" :href="circle.pixiv" target="_blank"
-                            style="color: #0096fa; text-decoration: none; font-size: 0.9rem;">
-                            🎨 Pixiv
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- アクションボタン -->
-        <section class="text-center mt-4">
-            <div
-                style="background: linear-gradient(135deg, #ff69b4, #87ceeb); padding: 2rem; border-radius: 0.5rem; color: white;">
-                <h2 style="margin-bottom: 1rem;">今すぐ始めよう！</h2>
-                <p style="margin-bottom: 1.5rem; opacity: 0.9;">
-                    アイカツ！同人イベントをもっと楽しく、もっと効率的に
-                </p>
-                <button class="btn" style="background: white; color: #ff69b4;" @click="startApp">
-                    アプリを始める
-                </button>
-            </div>
-        </section>
     </div>
 </template>
 
 <script setup>
+import {
+    StarIcon,
+    HomeIcon,
+    BookOpenIcon,
+    MapIcon,
+    LockClosedIcon,
+    UserIcon,
+    PencilIcon,
+    WrenchScrewdriverIcon,
+    InformationCircleIcon,
+    ComputerDesktopIcon
+} from '@heroicons/vue/24/outline'
+
 // State
-const showSampleCircles = ref(false)
 const bookmarkedCircles = ref([])
 
-// サンプルデータ
-const sampleCircles = ref([
-    {
-        id: '1',
-        name: '星宮製作所',
-        kana: 'ほしみやせいさくしょ',
-        genres: ['アイカツ！', 'いちご'],
-        placement: '東1-あ-01a',
-        description: '星宮いちごちゃんのイラスト本とグッズを頒布予定です。キラキラ可愛いいちごちゃんをお楽しみください！',
-        twitter: 'hoshimiya_circle',
-        pixiv: 'https://pixiv.net/users/12345'
-    },
-    {
-        id: '2',
-        name: 'あおい工房',
-        kana: 'あおいこうぼう',
-        genres: ['アイカツ！', 'あおい'],
-        placement: '東1-あ-02b',
-        description: '霧矢あおいちゃんのアクセサリーとステッカーを作りました。クールビューティーなあおいちゃんグッズです。',
-        twitter: 'aoi_koubou',
-        pixiv: null
-    },
-    {
-        id: '3',
-        name: 'らんらん堂',
-        kana: 'らんらんどう',
-        genres: ['アイカツ！', 'らん'],
-        placement: '東1-い-15a',
-        description: '紫吹蘭ちゃんの同人誌とポストカードセットを頒布します。大人っぽい蘭ちゃんの魅力をお届け！',
-        twitter: 'ranran_dou',
-        pixiv: 'https://pixiv.net/users/67890'
-    }
-])
-
 // Methods
-const showDemo = () => {
-    showSampleCircles.value = !showSampleCircles.value
-}
-
 const toggleBookmark = (circleId) => {
     const index = bookmarkedCircles.value.indexOf(circleId)
     if (index > -1) {
