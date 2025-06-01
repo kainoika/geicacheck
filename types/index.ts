@@ -144,10 +144,6 @@ export interface Event {
   venue: EventVenue;             // 会場情報
   description?: string;          // イベント説明
   status: EventStatus;           // イベント状態
-  registrationPeriod: {          // 申込期間
-    start: Date;
-    end: Date;
-  };
   isDefault: boolean;            // 現在のメインイベント
   mapImageUrl?: string;          // マップ画像URL（後方互換性）
   mapData?: string;              // SVGマップデータ
