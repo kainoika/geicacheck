@@ -14,6 +14,7 @@ import type { Circle, SearchParams, SearchResult } from "~/types";
 
 export const useCircles = () => {
   const { $firestore } = useNuxtApp() as any;
+  const { currentEvent } = useEvents();
 
   // State
   const circles = useState<Circle[]>("circles.list", () => []);
@@ -22,7 +23,8 @@ export const useCircles = () => {
 
   // サークル一覧を取得
   const fetchCircles = async (
-    params: SearchParams = {}
+    params: SearchParams = {},
+    eventId?: string
   ): Promise<SearchResult> => {
     loading.value = true;
     error.value = null;
@@ -30,6 +32,12 @@ export const useCircles = () => {
     try {
       const circlesRef = collection($firestore, "circles");
       let q = query(circlesRef, where("isPublic", "==", true));
+
+      // イベントフィルタリング
+      const targetEventId = eventId || currentEvent.value?.id;
+      if (targetEventId) {
+        q = query(q, where("eventId", "==", targetEventId));
+      }
 
       // フィルター条件を追加
       if (params.genres && params.genres.length > 0) {
@@ -202,10 +210,11 @@ export const useCircles = () => {
   // テキスト検索
   const searchCircles = async (
     searchQuery: string,
-    filters: SearchParams = {}
+    filters: SearchParams = {},
+    eventId?: string
   ): Promise<SearchResult> => {
     if (!searchQuery.trim()) {
-      return await fetchCircles(filters);
+      return await fetchCircles(filters, eventId);
     }
 
     loading.value = true;
@@ -215,6 +224,12 @@ export const useCircles = () => {
       // 簡易的な検索実装（実際の実装では全文検索サービスを使用することを推奨）
       const circlesRef = collection($firestore, "circles");
       let q = query(circlesRef, where("isPublic", "==", true));
+
+      // イベントフィルタリング
+      const targetEventId = eventId || currentEvent.value?.id;
+      if (targetEventId) {
+        q = query(q, where("eventId", "==", targetEventId));
+      }
 
       // 基本的なフィルターを適用
       if (filters.genres && filters.genres.length > 0) {
@@ -300,10 +315,17 @@ export const useCircles = () => {
   };
 
   // ジャンル一覧を取得
-  const getAvailableGenres = async (): Promise<string[]> => {
+  const getAvailableGenres = async (eventId?: string): Promise<string[]> => {
     try {
       const circlesRef = collection($firestore, "circles");
-      const q = query(circlesRef, where("isPublic", "==", true));
+      let q = query(circlesRef, where("isPublic", "==", true));
+      
+      // イベントフィルタリング
+      const targetEventId = eventId || currentEvent.value?.id;
+      if (targetEventId) {
+        q = query(q, where("eventId", "==", targetEventId));
+      }
+      
       const snapshot = await getDocs(q);
 
       const genreSet = new Set<string>();
@@ -322,10 +344,17 @@ export const useCircles = () => {
   };
 
   // エリア一覧を取得
-  const getAvailableAreas = async (): Promise<string[]> => {
+  const getAvailableAreas = async (eventId?: string): Promise<string[]> => {
     try {
       const circlesRef = collection($firestore, "circles");
-      const q = query(circlesRef, where("isPublic", "==", true));
+      let q = query(circlesRef, where("isPublic", "==", true));
+      
+      // イベントフィルタリング
+      const targetEventId = eventId || currentEvent.value?.id;
+      if (targetEventId) {
+        q = query(q, where("eventId", "==", targetEventId));
+      }
+      
       const snapshot = await getDocs(q);
 
       const areaSet = new Set<string>();

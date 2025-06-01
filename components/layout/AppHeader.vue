@@ -3,13 +3,85 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- ロゴ・タイトル -->
-                <div class="flex items-center">
+                <div class="flex items-center space-x-4">
                     <NuxtLink to="/" class="flex items-center space-x-2">
-                        <div class="text-2xl">✨</div>
+                        <StarIcon class="h-8 w-8 text-pink-500" />
                         <h1 class="text-xl font-bold text-pink-500">
                             geika check!
                         </h1>
                     </NuxtLink>
+                    
+                    <!-- イベント選択ドロップダウン -->
+                    <div class="relative hidden md:block">
+                        <button @click="toggleEventMenu"
+                            class="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors">
+                            <span>{{ currentEvent?.shortName || 'イベント選択' }}</span>
+                            <ChevronDownIcon class="h-4 w-4" />
+                        </button>
+                        
+                        <!-- イベントドロップダウンメニュー -->
+                        <Transition enter-active-class="transition ease-out duration-100"
+                            enter-from-class="transform opacity-0 scale-95"
+                            enter-to-class="transform opacity-100 scale-100"
+                            leave-active-class="transition ease-in duration-75"
+                            leave-from-class="transform opacity-100 scale-100"
+                            leave-to-class="transform opacity-0 scale-95">
+                            <div v-if="showEventMenu"
+                                class="absolute left-0 mt-2 w-64 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+                                @click.away="showEventMenu = false">
+                                <div class="py-1">
+                                    <!-- アクティブイベント -->
+                                    <div v-if="activeEvents.length > 0">
+                                        <div class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                            開催中
+                                        </div>
+                                        <button v-for="event in activeEvents" :key="event.id"
+                                            @click="selectEvent(event.id)"
+                                            class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                                            :class="{ 'bg-pink-50 text-pink-600': currentEvent?.id === event.id }">
+                                            <div class="font-medium">{{ event.shortName }}</div>
+                                            <div class="text-xs text-gray-500">{{ formatEventDate(event.eventDate) }}</div>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- 今後のイベント -->
+                                    <div v-if="upcomingEvents.length > 0">
+                                        <div class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-t border-gray-100 mt-1">
+                                            今後
+                                        </div>
+                                        <button v-for="event in upcomingEvents" :key="event.id"
+                                            @click="selectEvent(event.id)"
+                                            class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                                            :class="{ 'bg-pink-50 text-pink-600': currentEvent?.id === event.id }">
+                                            <div class="font-medium">{{ event.shortName }}</div>
+                                            <div class="text-xs text-gray-500">{{ formatEventDate(event.eventDate) }}</div>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- 過去のイベント -->
+                                    <div v-if="completedEvents.length > 0">
+                                        <div class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider border-t border-gray-100 mt-1">
+                                            過去
+                                        </div>
+                                        <button v-for="event in completedEvents.slice(0, 3)" :key="event.id"
+                                            @click="selectEvent(event.id)"
+                                            class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                                            :class="{ 'bg-pink-50 text-pink-600': currentEvent?.id === event.id }">
+                                            <div class="font-medium">{{ event.shortName }}</div>
+                                            <div class="text-xs text-gray-500">{{ formatEventDate(event.eventDate) }}</div>
+                                        </button>
+                                        
+                                        <!-- 全イベント一覧へのリンク -->
+                                        <NuxtLink to="/events"
+                                            class="block px-4 py-2 text-sm text-pink-600 hover:bg-gray-100"
+                                            @click="showEventMenu = false">
+                                            すべてのイベントを見る →
+                                        </NuxtLink>
+                                    </div>
+                                </div>
+                            </div>
+                        </Transition>
+                    </div>
                 </div>
 
                 <!-- デスクトップナビゲーション -->
@@ -68,28 +140,33 @@
                                 @click.away="showUserMenu = false">
                                 <div class="py-1">
                                     <NuxtLink to="/profile"
-                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         @click="showUserMenu = false">
-                                        👤 プロフィール
+                                        <UserIcon class="h-4 w-4 mr-2" />
+                                        プロフィール
                                     </NuxtLink>
                                     <NuxtLink to="/edit-permission/apply"
-                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         @click="showUserMenu = false">
-                                        ✏️ 編集権限申請
+                                        <PencilIcon class="h-4 w-4 mr-2" />
+                                        編集権限申請
                                     </NuxtLink>
                                     <NuxtLink to="/admin/edit-requests"
-                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         @click="showUserMenu = false">
-                                        🛠️ 管理者ダッシュボード
+                                        <WrenchScrewdriverIcon class="h-4 w-4 mr-2" />
+                                        管理者ダッシュボード
                                     </NuxtLink>
                                     <NuxtLink to="/about"
-                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                        class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         @click="showUserMenu = false">
-                                        ℹ️ アプリについて
+                                        <InformationCircleIcon class="h-4 w-4 mr-2" />
+                                        アプリについて
                                     </NuxtLink>
                                     <hr class="my-1">
                                     <button @click="handleSignOut"
-                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        class="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <ArrowRightOnRectangleIcon class="h-4 w-4 mr-2" />
                                         ログアウト
                                     </button>
                                 </div>
@@ -142,22 +219,25 @@
                         主要機能
                     </div>
                     <NuxtLink to="/circles"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
+                        class="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
                         :class="{ 'text-pink-600 bg-pink-50': $route.path === '/circles' }"
                         @click="showMobileMenu = false">
-                        📖 サークル一覧
+                        <BookOpenIcon class="h-5 w-5 mr-2" />
+                        サークル一覧
                     </NuxtLink>
                     <NuxtLink to="/map"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
+                        class="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
                         :class="{ 'text-pink-600 bg-pink-50': $route.path === '/map' }"
                         @click="showMobileMenu = false">
-                        🗺️ マップ
+                        <MapIcon class="h-5 w-5 mr-2" />
+                        マップ
                     </NuxtLink>
                     <NuxtLink to="/bookmarks"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
+                        class="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
                         :class="{ 'text-pink-600 bg-pink-50': $route.path === '/bookmarks' }"
                         @click="showMobileMenu = false">
-                        ⭐ ブックマーク
+                        <StarIcon class="h-5 w-5 mr-2" />
+                        ブックマーク
                         <span v-if="bookmarkCount > 0" class="ml-2 bg-pink-500 text-white px-2 py-1 rounded-full text-xs">
                             {{ bookmarkCount }}
                         </span>
@@ -168,22 +248,25 @@
                         ユーザー機能
                     </div>
                     <NuxtLink v-if="!isAuthenticated" to="/auth/login"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
+                        class="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
                         :class="{ 'text-pink-600 bg-pink-50': $route.path === '/auth/login' }"
                         @click="showMobileMenu = false">
-                        🔐 ログイン
+                        <LockClosedIcon class="h-5 w-5 mr-2" />
+                        ログイン
                     </NuxtLink>
                     <NuxtLink v-if="isAuthenticated" to="/profile"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
+                        class="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
                         :class="{ 'text-pink-600 bg-pink-50': $route.path === '/profile' }"
                         @click="showMobileMenu = false">
-                        👤 プロフィール
+                        <UserIcon class="h-5 w-5 mr-2" />
+                        プロフィール
                     </NuxtLink>
                     <NuxtLink to="/edit-permission/apply"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
+                        class="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
                         :class="{ 'text-pink-600 bg-pink-50': $route.path === '/edit-permission/apply' }"
                         @click="showMobileMenu = false">
-                        ✏️ 編集権限申請
+                        <PencilIcon class="h-5 w-5 mr-2" />
+                        編集権限申請
                     </NuxtLink>
                     
                     <!-- その他 -->
@@ -191,17 +274,19 @@
                         その他
                     </div>
                     <NuxtLink to="/about"
-                        class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
+                        class="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
                         :class="{ 'text-pink-600 bg-pink-50': $route.path === '/about' }"
                         @click="showMobileMenu = false">
-                        ℹ️ アプリについて
+                        <InformationCircleIcon class="h-5 w-5 mr-2" />
+                        アプリについて
                     </NuxtLink>
                     
                     <!-- ログアウト -->
                     <div v-if="isAuthenticated" class="border-t border-gray-200 mt-4 pt-4">
                         <button @click="handleSignOut"
-                            class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50">
-                            🚪 ログアウト
+                            class="flex items-center w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50">
+                            <ArrowRightOnRectangleIcon class="h-5 w-5 mr-2" />
+                            ログアウト
                         </button>
                     </div>
                 </div>
@@ -215,20 +300,41 @@ import {
     MagnifyingGlassIcon,
     Bars3Icon,
     XMarkIcon,
-    ChevronDownIcon
+    ChevronDownIcon,
+    StarIcon,
+    UserIcon,
+    PencilIcon,
+    WrenchScrewdriverIcon,
+    InformationCircleIcon,
+    ArrowRightOnRectangleIcon,
+    LockClosedIcon,
+    BookOpenIcon,
+    MapIcon,
+    HomeIcon
 } from '@heroicons/vue/24/outline'
 
-// Composables (サンプル実装)
+// Composables
 const user = ref({ displayName: 'サンプルユーザー', photoURL: null })
 const isAuthenticated = ref(true)
 const signOut = async () => { console.log('Sign out') }
 const bookmarkCount = ref(3)
 const router = useRouter()
 
+// イベント管理
+const {
+  currentEvent,
+  activeEvents,
+  completedEvents,
+  upcomingEvents,
+  setCurrentEvent,
+  fetchEvents
+} = useEvents()
+
 // State
 const showMobileMenu = ref(false)
 const showUserMenu = ref(false)
 const showSearch = ref(false)
+const showEventMenu = ref(false)
 const searchQuery = ref('')
 
 // Methods
@@ -278,19 +384,43 @@ const handleSearch = () => {
     }
 }
 
+// イベント関連メソッド
+const toggleEventMenu = () => {
+    showEventMenu.value = !showEventMenu.value
+}
+
+const selectEvent = (eventId: string) => {
+    setCurrentEvent(eventId)
+    showEventMenu.value = false
+}
+
+const formatEventDate = (date: Date) => {
+    return new Intl.DateTimeFormat('ja-JP', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    }).format(date)
+}
+
 // Close menus when route changes
 watch(() => router.currentRoute.value.path, () => {
     showMobileMenu.value = false
     showUserMenu.value = false
     showSearch.value = false
+    showEventMenu.value = false
 })
 
-// Close menus on outside click
-onMounted(() => {
+// 初期化とイベントリスナー
+onMounted(async () => {
+    // イベントデータを取得
+    await fetchEvents()
+    
+    // メニューを閉じるためのクリックイベント
     document.addEventListener('click', (event) => {
         const target = event.target as Element
         if (!target.closest('.relative')) {
             showUserMenu.value = false
+            showEventMenu.value = false
         }
     })
 })

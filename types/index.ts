@@ -56,6 +56,7 @@ export interface Bookmark {
   id: string;
   userId: string;
   circleId: string;
+  eventId: string;               // イベント別ブックマーク（新規追加）
   category: BookmarkCategory;
   memo?: string;
   createdAt: Date;
@@ -139,15 +140,54 @@ export interface CirclePermission {
 
 // イベント関連の型定義
 export interface Event {
-  id: string;
-  name: string;
-  eventDate: Date;
-  venue: string;
-  description?: string;
-  isActive: boolean;
-  mapImageUrl?: string;
+  id: string;                    // 'geika-1', 'geika-2', 'geika-3'
+  name: string;                  // '第1回 芸能人はカードが命！'
+  shortName: string;             // '芸カ1', '芸カ2'
+  eventDate: Date;               // イベント開催日
+  venue: EventVenue;             // 会場情報
+  description?: string;          // イベント説明
+  status: EventStatus;           // イベント状態
+  registrationPeriod: {          // 申込期間
+    start: Date;
+    end: Date;
+  };
+  isDefault: boolean;            // 現在のメインイベント
+  mapImageUrl?: string;          // マップ画像URL（後方互換性）
+  mapData?: string;              // SVGマップデータ
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface EventVenue {
+  name: string;                  // 会場名
+  address: string;               // 住所
+  mapData?: string;              // SVGマップデータ
+  accessInfo?: string;           // アクセス情報
+}
+
+export type EventStatus = 'upcoming' | 'active' | 'completed' | 'cancelled';
+
+// イベント統計情報
+export interface EventStats {
+  eventId: string;
+  totalCircles: number;
+  totalUsers: number;
+  totalBookmarks: number;
+  bookmarksByCategory: {
+    check: number;
+    interested: number;
+    priority: number;
+  };
+  updatedAt: Date;
+}
+
+// イベント履歴
+export interface EventHistory {
+  userId: string;
+  eventId: string;
+  participatedAt: Date;
+  bookmarkCount: number;
+  lastActivity: Date;
 }
 
 // API関連の型定義
