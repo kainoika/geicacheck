@@ -11,7 +11,13 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "vitest",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "test:firebase": "tsx scripts/testFirebaseConnection.ts",
+    "convert:circles": "tsx scripts/convertCircleData.ts",
+    "import:circles": "tsx scripts/importCircles.ts",
+    "import:converted-circles": "tsx scripts/importConvertedCircles.ts",
+    "seed:events": "tsx scripts/seedEvents.ts",
+    "migrate:multi-event": "tsx scripts/migrate-to-multi-event.ts"
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.23",
@@ -28,6 +34,7 @@
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@vue/test-utils": "^2.4.6",
     "autoprefixer": "^10.4.21",
+    "dotenv": "^16.5.0",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
@@ -35,6 +42,7 @@
     "postcss": "^8.5.4",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.19.4",
     "typescript": "^5.6.3",
     "vitest": "^2.1.8"
   }
