@@ -22,6 +22,7 @@ import type {
 export const useBookmarks = () => {
   const { user, isAuthenticated } = useAuth();
   const { $firestore } = useNuxtApp() as any;
+  const { currentEvent } = useEvents();
 
   // State
   const bookmarks = useState<Bookmark[]>("bookmarks.list", () => []);
@@ -52,7 +53,7 @@ export const useBookmarks = () => {
   let unsubscribe: Unsubscribe | null = null;
 
   // ブックマーク一覧を取得
-  const fetchBookmarks = async () => {
+  const fetchBookmarks = async (eventId?: string) => {
     if (!isAuthenticated.value || !user.value) {
       bookmarks.value = [];
       return;
@@ -63,11 +64,17 @@ export const useBookmarks = () => {
 
     try {
       const bookmarksRef = collection($firestore, "bookmarks");
-      const q = query(
+      let q = query(
         bookmarksRef,
         where("userId", "==", user.value.uid),
         orderBy("createdAt", "desc")
       );
+
+      // イベントフィルタリング
+      const targetEventId = eventId || currentEvent.value?.id;
+      if (targetEventId) {
+        q = query(q, where("eventId", "==", targetEventId));
+      }
 
       const snapshot = await getDocs(q);
       const bookmarkList: Bookmark[] = [];
@@ -78,6 +85,7 @@ export const useBookmarks = () => {
           id: doc.id,
           userId: data.userId,
           circleId: data.circleId,
+          eventId: data.eventId || targetEventId || '',
           category: data.category,
           memo: data.memo,
           createdAt: data.createdAt?.toDate() || new Date(),
@@ -95,17 +103,23 @@ export const useBookmarks = () => {
   };
 
   // リアルタイムでブックマークを監視
-  const subscribeToBookmarks = () => {
+  const subscribeToBookmarks = (eventId?: string) => {
     if (!isAuthenticated.value || !user.value) {
       return;
     }
 
     const bookmarksRef = collection($firestore, "bookmarks");
-    const q = query(
+    let q = query(
       bookmarksRef,
       where("userId", "==", user.value.uid),
       orderBy("createdAt", "desc")
     );
+
+    // イベントフィルタリング
+    const targetEventId = eventId || currentEvent.value?.id;
+    if (targetEventId) {
+      q = query(q, where("eventId", "==", targetEventId));
+    }
 
     unsubscribe = onSnapshot(
       q,
@@ -118,6 +132,7 @@ export const useBookmarks = () => {
             id: doc.id,
             userId: data.userId,
             circleId: data.circleId,
+            eventId: data.eventId || targetEventId || '',
             category: data.category,
             memo: data.memo,
             createdAt: data.createdAt?.toDate() || new Date(),
@@ -184,17 +199,24 @@ export const useBookmarks = () => {
   const addBookmark = async (
     circleId: string,
     category: BookmarkCategory,
-    memo?: string
+    memo?: string,
+    eventId?: string
   ) => {
     if (!isAuthenticated.value || !user.value) {
       throw new Error("ログインが必要です");
     }
 
     try {
+      const targetEventId = eventId || currentEvent.value?.id;
+      if (!targetEventId) {
+        throw new Error("イベントが選択されていません");
+      }
+
       const bookmarksRef = collection($firestore, "bookmarks");
       const bookmarkData = {
         userId: user.value.uid,
         circleId,
+        eventId: targetEventId,
         category,
         memo: memo || "",
         createdAt: serverTimestamp(),
@@ -208,6 +230,7 @@ export const useBookmarks = () => {
         id: docRef.id,
         userId: user.value.uid,
         circleId,
+        eventId: targetEventId,
         category,
         memo: memo || "",
         createdAt: new Date(),
@@ -323,16 +346,17 @@ export const useBookmarks = () => {
       );
     }
 
+    const { formatPlacement } = useCircles();
+    
     return targetBookmarks.map((bookmark) => ({
       サークル名: bookmark.circle.circleName,
       ジャンル: bookmark.circle.genre.join(", "),
-      配置: `${bookmark.circle.placement.area}-${bookmark.circle.placement.block}-${bookmark.circle.placement.number}${bookmark.circle.placement.position}`,
+      配置: formatPlacement(bookmark.circle.placement),
       カテゴリ: getCategoryLabel(bookmark.category),
       メモ: bookmark.memo || "",
-      Twitter: bookmark.circle.contact.twitter || "",
-      Pixiv: bookmark.circle.contact.pixiv || "",
-      お品書きURL: bookmark.circle.contact.oshinaUrl || "",
-      タグ: bookmark.circle.tags.join(", "),
+      Twitter: bookmark.circle.contact?.twitter || "",
+      Pixiv: bookmark.circle.contact?.pixiv || "",
+      お品書きURL: bookmark.circle.contact?.oshinaUrl || "",
     }));
   };
 

@@ -39,7 +39,8 @@ export interface Circle {
 
 export interface PlacementInfo {
   block: string;
-  number: string;
+  number1: string;
+  number2: string;
 }
 
 export interface ContactInfo {

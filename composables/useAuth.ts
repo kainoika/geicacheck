@@ -163,7 +163,6 @@ export const useAuth = () => {
         settings: userData.settings || {
           emailNotifications: true,
           adultContent: false,
-          theme: "auto",
         },
         createdAt: userData.createdAt?.toDate() || new Date(),
         updatedAt: userData.updatedAt?.toDate() || new Date(),
@@ -179,7 +178,6 @@ export const useAuth = () => {
         settings: {
           emailNotifications: true,
           adultContent: false,
-          theme: "auto",
         },
         createdAt: new Date(),
         updatedAt: new Date(),

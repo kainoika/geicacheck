@@ -270,12 +270,13 @@ const sampleCircles = ref([
     description: '藤堂ユリカ様とおとめちゃんの百合本を頒布します。',
     contact: { twitter: 'otome_ya', website: 'https://otome-ya.example.com' },
     tags: ['おとめ', 'ユリカ', '百合', '同人誌'],
-    isAdult: true,
+    isAdult: false,
     isPublic: true,
     eventId: 'geika2025',
     createdAt: new Date(),
     updatedAt: new Date()
-  }
+  },
+  
 ])
 
 // State
