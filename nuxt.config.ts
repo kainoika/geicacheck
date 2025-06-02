@@ -60,4 +60,7 @@ export default defineNuxtConfig({
       firebaseAppId: process.env.FIREBASE_APP_ID,
     },
   },
+
+  // ビルド設定
+  ssr : false, // SPAモード
 });
