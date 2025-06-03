@@ -274,25 +274,32 @@
 </template>
 
 <script setup>
-// State
-const user = ref({
-  uid: 'sample-uid',
-  displayName: 'サンプルユーザー',
-  email: 'sample@example.com',
-  photoURL: null,
-  twitterHandle: 'sample_user'
-}) // 実際の実装では useAuth から取得
+// Composables
+const { user, isAuthenticated } = useAuth()
+const { bookmarks } = useBookmarks()
 
 const showDeleteConfirm = ref(false)
 
-// サンプルデータ
-const userStats = ref({
-  totalBookmarks: 15,
-  checkCount: 8,
-  interestedCount: 5,
-  priorityCount: 2
+// 統計情報の計算
+const userStats = computed(() => {
+  if (!bookmarks.value) {
+    return {
+      totalBookmarks: 0,
+      checkCount: 0,
+      interestedCount: 0,
+      priorityCount: 0
+    }
+  }
+  
+  return {
+    totalBookmarks: bookmarks.value.length,
+    checkCount: bookmarks.value.filter(b => b.category === 'check').length,
+    interestedCount: bookmarks.value.filter(b => b.category === 'interested').length,
+    priorityCount: bookmarks.value.filter(b => b.category === 'priority').length
+  }
 })
 
+// 編集権限の状態（実装は後で必要に応じて追加）
 const editPermission = ref({
   hasPermission: false,
   isPending: false

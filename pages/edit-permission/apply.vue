@@ -207,49 +207,45 @@
 
 <script setup>
 // State
-const isAuthenticated = ref(true) // サンプル
+// Composables
+const { user, isAuthenticated } = useAuth()
+const { bookmarks } = useBookmarks()
+
 const submitting = ref(false)
-const existingApplication = ref(null) // サンプル: null, pending, approved, rejected
+const existingApplication = ref(null) // TODO: 実装時に編集権限申請の状態を取得
 
 const form = ref({
   reason: '',
   agreeToTerms: false
 })
 
-// サンプルユーザーデータ
-const user = ref({
-  uid: 'sample-user',
-  displayName: 'サンプルユーザー',
-  email: 'sample@example.com',
-  createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10), // 10日前
-  twitterHandle: 'sample_user',
-  bookmarkCount: 8,
-  lastActivity: new Date(Date.now() - 1000 * 60 * 60 * 2) // 2時間前
-})
-
 // 申請条件
-const requirements = computed(() => [
-  {
-    name: 'アカウント作成から7日以上経過',
-    description: '信頼性確保のため、一定期間の利用実績が必要です',
-    met: user.value && (Date.now() - user.value.createdAt.getTime()) > (7 * 24 * 60 * 60 * 1000)
-  },
-  {
-    name: 'Twitterアカウント連携済み',
-    description: '本人確認のため、Twitterアカウントの連携が必要です',
-    met: user.value && user.value.twitterHandle
-  },
-  {
-    name: 'ブックマーク数5件以上',
-    description: 'アプリの利用実績として、ブックマーク機能の使用が必要です',
-    met: user.value && user.value.bookmarkCount >= 5
-  },
-  {
-    name: '最近のアクティビティあり',
-    description: '直近7日以内にアプリを利用していることが必要です',
-    met: user.value && user.value.lastActivity && (Date.now() - user.value.lastActivity.getTime()) < (7 * 24 * 60 * 60 * 1000)
-  }
-])
+const requirements = computed(() => {
+  if (!user.value) return []
+  
+  return [
+    {
+      name: 'アカウント作成から7日以上経過',
+      description: '信頼性確保のため、一定期間の利用実績が必要です',
+      met: user.value && (Date.now() - user.value.createdAt.getTime()) > (7 * 24 * 60 * 60 * 1000)
+    },
+    {
+      name: 'Twitterアカウント連携済み',
+      description: '本人確認のため、Twitterアカウントの連携が必要です',
+      met: user.value && (user.value.twitterId || user.value.twitterUsername)
+    },
+    {
+      name: 'ブックマーク数5件以上',
+      description: 'アプリの利用実績として、ブックマーク機能の使用が必要です',
+      met: bookmarks.value && bookmarks.value.length >= 5
+    },
+    {
+      name: '最近のアクティビティあり',
+      description: '直近7日以内にアプリを利用していることが必要です',
+      met: user.value && user.value.updatedAt && (Date.now() - user.value.updatedAt.getTime()) < (7 * 24 * 60 * 60 * 1000)
+    }
+  ]
+})
 
 const allRequirementsMet = computed(() => 
   requirements.value.every(req => req.met)

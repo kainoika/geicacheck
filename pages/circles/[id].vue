@@ -308,8 +308,16 @@ const circleId = route.params.id
 const circle = ref(null)
 const loading = ref(true)
 const error = ref(null)
-const isAuthenticated = ref(true) // サンプル
-const hasEditPermission = ref(true) // サンプル（実際の実装では useAuth().hasEditPermission を使用）
+
+// Composables
+const { isAuthenticated, user } = useAuth()
+const { circles } = useCircles()
+
+// 編集権限（実装は後で必要に応じて追加）
+const hasEditPermission = computed(() => {
+  // 実際の実装では、サークルの編集権限をチェック
+  return false
+})
 
 // サンプルデータ
 const sampleCircles = {
@@ -406,15 +414,19 @@ const fetchCircle = async () => {
   error.value = null
   
   try {
-    // 実際の実装では API からデータを取得
-    await new Promise(resolve => setTimeout(resolve, 500)) // シミュレーション
+    // useCircles から該当するサークルを取得
+    const circleData = circles.value.find(c => c.id === circleId)
     
-    const circleData = sampleCircles[circleId]
     if (!circleData) {
-      throw new Error('指定されたサークルが見つかりません')
+      // サンプルデータからの取得をフォールバックとして残す
+      const sampleData = sampleCircles[circleId]
+      if (!sampleData) {
+        throw new Error('指定されたサークルが見つかりません')
+      }
+      circle.value = sampleData
+    } else {
+      circle.value = circleData
     }
-    
-    circle.value = circleData
   } catch (err) {
     error.value = err.message
   } finally {
