@@ -180,10 +180,9 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
-// Composables (実際の実装では useAuth, useBookmarks を使用)
-const isAuthenticated = ref(true) // サンプル
-const checkIsBookmarked = (id) => Math.random() > 0.5 // サンプル
-const getBookmarkByCircleId = (id) => ({ category: 'check' }) // サンプル
+// Composables
+const { isAuthenticated } = useAuth()
+const { isBookmarked: checkIsBookmarked, getBookmarkByCircleId } = useBookmarks()
 
 // State
 const showDropdown = ref(false)

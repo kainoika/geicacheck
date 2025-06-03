@@ -140,75 +140,30 @@
 
 <script setup>
 // Composables
-// const { user, signInWithTwitter, signOut } = useAuth()
-
-// State
-const user = ref(null) // 実際の実装では useAuth から取得
-const loading = ref(false)
-const error = ref(null)
+const { user, loading, error, signInWithTwitter, signOut } = useAuth()
 
 // Methods
 const handleTwitterSignIn = async () => {
-  loading.value = true
-  error.value = null
-  
   try {
-    // 実際の実装では useAuth().signInWithTwitter() を使用
-    await new Promise(resolve => setTimeout(resolve, 2000)) // シミュレーション
-    
-    // サンプルユーザーデータ
-    user.value = {
-      uid: 'sample-uid',
-      displayName: 'サンプルユーザー',
-      email: 'sample@example.com',
-      photoURL: null,
-      twitterHandle: 'sample_user'
-    }
-    
+    await signInWithTwitter()
     // ログイン成功後、サークル一覧へリダイレクト
     await navigateTo('/circles')
   } catch (err) {
-    error.value = 'ログインに失敗しました。もう一度お試しください。'
     console.error('Twitter sign in error:', err)
-  } finally {
-    loading.value = false
+    // エラーは useAuth composable で処理される
   }
 }
 
 const handleSignOut = async () => {
-  loading.value = true
-  error.value = null
-  
   try {
-    // 実際の実装では useAuth().signOut() を使用
-    await new Promise(resolve => setTimeout(resolve, 1000)) // シミュレーション
-    
-    user.value = null
-    
+    await signOut()
     // ログアウト成功後、トップページへリダイレクト
     await navigateTo('/')
   } catch (err) {
-    error.value = 'ログアウトに失敗しました。'
     console.error('Sign out error:', err)
-  } finally {
-    loading.value = false
+    // エラーは useAuth composable で処理される
   }
 }
-
-// 初期化時に認証状態をチェック
-onMounted(() => {
-  // 実際の実装では useAuth().checkAuthState() を使用
-  // サンプルとして、ランダムにログイン状態を設定
-  if (Math.random() > 0.7) {
-    user.value = {
-      uid: 'sample-uid',
-      displayName: 'サンプルユーザー',
-      email: 'sample@example.com',
-      photoURL: null,
-      twitterHandle: 'sample_user'
-    }
-  }
-})
 
 // SEO
 useHead({

@@ -231,71 +231,13 @@
 
 <script setup>
 // Composables
-// const { user, isAuthenticated } = useAuth()
-// const { bookmarks, removeBookmark, exportToCSV } = useBookmarks()
+const { user, isAuthenticated } = useAuth()
+const { bookmarks, removeBookmark, exportToCSV } = useBookmarks()
 
 // State
-const isAuthenticated = ref(true) // サンプル
 const activeCategory = ref('all')
 const viewMode = ref('grid')
 
-// サンプルデータ
-const bookmarks = ref([
-  {
-    id: '1',
-    circleId: '1',
-    userId: 'sample-user',
-    category: 'check',
-    createdAt: new Date(),
-    circle: {
-      id: '1',
-      circleName: '星宮製作所',
-      circleKana: 'ほしみやせいさくしょ',
-      genre: ['アイカツ！', 'いちご'],
-      placement: { day: '1', area: '東1', block: 'あ', number: '01', position: 'a' },
-      description: '星宮いちごちゃんのイラスト本とグッズを頒布予定です。',
-      contact: { twitter: 'hoshimiya_circle' },
-      tags: ['いちご', 'イラスト'],
-      isAdult: false
-    }
-  },
-  {
-    id: '2',
-    circleId: '2',
-    userId: 'sample-user',
-    category: 'interested',
-    createdAt: new Date(),
-    circle: {
-      id: '2',
-      circleName: 'あおい工房',
-      circleKana: 'あおいこうぼう',
-      genre: ['アイカツ！', 'あおい'],
-      placement: { day: '1', area: '東1', block: 'あ', number: '02', position: 'b' },
-      description: '霧矢あおいちゃんのアクセサリーとステッカーを作りました。',
-      contact: { twitter: 'aoi_koubou' },
-      tags: ['あおい', 'アクセサリー'],
-      isAdult: false
-    }
-  },
-  {
-    id: '3',
-    circleId: '3',
-    userId: 'sample-user',
-    category: 'priority',
-    createdAt: new Date(),
-    circle: {
-      id: '3',
-      circleName: 'らんらん堂',
-      circleKana: 'らんらんどう',
-      genre: ['アイカツ！', 'らん'],
-      placement: { day: '1', area: '東1', block: 'い', number: '15', position: 'a' },
-      description: '紫吹蘭ちゃんの同人誌とポストカードセットを頒布します。',
-      contact: { twitter: 'ranran_dou' },
-      tags: ['らん', '同人誌'],
-      isAdult: false
-    }
-  }
-])
 
 // カテゴリ定義
 const categories = ref([
