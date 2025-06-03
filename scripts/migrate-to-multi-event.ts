@@ -17,7 +17,13 @@ import {
 
 // Firebase設定（実際の設定値に置き換える）
 const firebaseConfig = {
-  // プロジェクトの設定値
+  apiKey: "AIzaSyDZiCCEOS59FBQ0XNbbHo6R27997JAA7gU",
+  authDomain: "geikacheck.firebaseapp.com",
+  projectId: "geikacheck",
+  storageBucket: "geikacheck.firebasestorage.app",
+  messagingSenderId: "77951626051",
+  appId: "1:77951626051:web:cf4bfab4f52a244e385df6",
+  measurementId: "G-CRR7WHLJBH"
 }
 
 // Firebase初期化
@@ -26,24 +32,20 @@ const db = getFirestore(app)
 
 // 第1回芸カのイベントデータ
 const GEIKA_1_EVENT = {
-  id: 'geika-1',
-  name: '第1回 芸能人はカードが命！',
-  shortName: '芸カ1',
-  eventDate: new Date('2025-06-15'),
+  id: 'geika-32',
+  name: '芸能人はカードが命！32',
+  shortName: '芸カ32',
+  eventDate: new Date('2025-03-23'),
   venue: {
-    name: '東京ビッグサイト',
-    address: '東京都江東区有明3-11-1',
-    accessInfo: 'ゆりかもめ「国際展示場正門駅」徒歩3分'
+    name: '大田区産業プラザPiO',
+    address: '東京都大田区南蒲田1丁目20−20',
+    accessInfo: '京浜急行「京急蒲田」駅より徒歩約3分'
   },
-  description: 'アイカツ！シリーズオンリー同人イベント第1回',
+  description: 'アイカツ！シリーズオンリー同人イベント第32回',
   status: 'completed',
-  registrationPeriod: {
-    start: new Date('2025-04-01'),
-    end: new Date('2025-05-15')
-  },
-  isDefault: false, // 第2回が開催中の場合
+  isDefault: true,
   mapData: '', // 既存のマップデータがあれば設定
-  createdAt: new Date('2025-03-01'),
+  createdAt: new Date('2025-06-02'),
   updatedAt: new Date()
 }
 
@@ -275,16 +277,16 @@ async function main() {
     await createGeika1Event()
     
     // 2. サークルデータを移行
-    await migrateCircles()
+    //await migrateCircles()
     
     // 3. ブックマークデータを移行
-    await migrateBookmarks()
+    //await migrateBookmarks()
     
     // 4. 編集権限申請データを移行（オプション）
-    await migrateEditPermissions()
+    //await migrateEditPermissions()
     
     // 5. 統計情報を生成
-    await generateEventStats()
+    //await generateEventStats()
     
     console.log('🎉 移行が完了しました！')
     console.log('📋 次のステップ:')
@@ -299,21 +301,6 @@ async function main() {
 }
 
 // 実行確認
-if (require.main === module) {
-  console.log('このスクリプトを実行しますか？ (y/N)')
-  process.stdin.setEncoding('utf8')
-  process.stdin.on('readable', () => {
-    const chunk = process.stdin.read()
-    if (chunk !== null) {
-      const input = chunk.trim().toLowerCase()
-      if (input === 'y' || input === 'yes') {
-        main()
-      } else {
-        console.log('移行をキャンセルしました。')
-        process.exit(0)
-      }
-    }
-  })
-}
+main()
 
 export { main as migrateToMultiEvent }
