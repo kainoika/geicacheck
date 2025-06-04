@@ -60,7 +60,6 @@
               <span style="font-size: 1.25rem;">📍</span>
               <div>
                 <div style="font-weight: 600; color: #111827;">{{ formatPlacement(circle.placement) }}</div>
-                <div style="font-size: 0.875rem; color: #6b7280;">{{ circle.placement.day }}日目</div>
               </div>
             </div>
 
@@ -113,43 +112,6 @@
               </p>
             </div>
 
-            <!-- タグ -->
-            <div v-if="circle.tags && circle.tags.length > 0" style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
-              <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
-                🏷️ タグ
-              </h2>
-              <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                <span 
-                  v-for="tag in circle.tags" 
-                  :key="tag"
-                  style="background: #f3f4f6; color: #374151; padding: 0.25rem 0.75rem; border-radius: 0.375rem; font-size: 0.875rem;"
-                >
-                  #{{ tag }}
-                </span>
-              </div>
-            </div>
-
-            <!-- 頒布物情報 -->
-            <div v-if="circle.items && circle.items.length > 0" style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
-              <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
-                📦 頒布物
-              </h2>
-              <div style="display: flex; flex-direction: column; gap: 1rem;">
-                <div 
-                  v-for="item in circle.items" 
-                  :key="item.id"
-                  style="padding: 1rem; background: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;"
-                >
-                  <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
-                    <h3 style="font-weight: 600; color: #111827; margin: 0;">{{ item.name }}</h3>
-                    <span style="font-weight: 600; color: #ff69b4;">{{ item.price }}円</span>
-                  </div>
-                  <p v-if="item.description" style="color: #6b7280; margin: 0; font-size: 0.875rem;">
-                    {{ item.description }}
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
 
           <!-- 右カラム：サイドバー -->
@@ -163,7 +125,7 @@
                 <!-- Twitter -->
                 <a 
                   v-if="circle.contact.twitter"
-                  :href="getTwitterUrl(circle.contact.twitter)"
+                  :href="circle.contact.twitter"
                   target="_blank"
                   rel="noopener noreferrer"
                   style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #f0f9ff; border-radius: 0.5rem; text-decoration: none; color: #1da1f2; transition: all 0.2s;"
@@ -173,7 +135,8 @@
                   <span style="font-size: 1.25rem;">🐦</span>
                   <div>
                     <div style="font-weight: 600;">Twitter</div>
-                    <div style="font-size: 0.875rem; opacity: 0.8;">@{{ circle.contact.twitter }}</div>
+                    <!-- TwitterのURLからユーザーネームだけを表示 -->
+                    <div style="font-size: 0.875rem; opacity: 0.8;">@{{ getTwitterUsername(circle.contact.twitter) }}</div>
                   </div>
                 </a>
 
@@ -194,22 +157,6 @@
                   </div>
                 </a>
 
-                <!-- Website -->
-                <a 
-                  v-if="circle.contact.website"
-                  :href="circle.contact.website"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #f0fdf4; border-radius: 0.5rem; text-decoration: none; color: #16a34a; transition: all 0.2s;"
-                  onmouseover="this.style.backgroundColor='#dcfce7'"
-                  onmouseout="this.style.backgroundColor='#f0fdf4'"
-                >
-                  <span style="font-size: 1.25rem;">🌐</span>
-                  <div>
-                    <div style="font-weight: 600;">Website</div>
-                    <div style="font-size: 0.875rem; opacity: 0.8;">公式サイト</div>
-                  </div>
-                </a>
 
                 <!-- お品書き -->
                 <a 
@@ -237,20 +184,12 @@
               </h2>
               <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                 <div style="display: flex; justify-content: space-between;">
-                  <span style="color: #6b7280;">開催日</span>
-                  <span style="font-weight: 600; color: #111827;">{{ circle.placement.day }}日目</span>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
-                  <span style="color: #6b7280;">エリア</span>
-                  <span style="font-weight: 600; color: #111827;">{{ circle.placement.area }}</span>
-                </div>
-                <div style="display: flex; justify-content: space-between;">
                   <span style="color: #6b7280;">ブロック</span>
                   <span style="font-weight: 600; color: #111827;">{{ circle.placement.block }}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between;">
                   <span style="color: #6b7280;">番号</span>
-                  <span style="font-weight: 600; color: #111827;">{{ circle.placement.number }}{{ circle.placement.position }}</span>
+                  <span style="font-weight: 600; color: #111827;">{{ circle.placement.number1 }}-{{ circle.placement.number2 }}</span>
                 </div>
               </div>
             </div>
@@ -313,9 +252,9 @@ const error = ref<string | null>(null)
 
 // Composables
 const { isAuthenticated, user } = useAuth()
-const { fetchCircleById } = useCircles()
+const { fetchCircleById, formatPlacement } = useCircles()
 const { currentEvent } = useEvents()
-const { addBookmark, removeBookmark, getBookmarkByCircleId } = useBookmarks()
+const { addBookmark, toggleBookmark, getBookmarkByCircleId } = useBookmarks()
 
 // 編集権限（実装は後で必要に応じて追加）
 const hasEditPermission = computed(() => {
@@ -327,71 +266,20 @@ const hasEditPermission = computed(() => {
 const bookmark = computed(() => getBookmarkByCircleId(circleId))
 const isBookmarked = computed(() => !!bookmark.value)
 
-// サンプルデータ
-const sampleCircles = {
-  '1': {
-    id: '1',
-    circleName: '星宮製作所',
-    circleKana: 'ほしみやせいさくしょ',
-    genre: ['アイカツ！', 'いちご'],
-    placement: { day: '1', area: '東1', block: 'あ', number: '01', position: 'a' },
-    description: '星宮いちごちゃんのイラスト本とグッズを頒布予定です。キラキラ可愛いいちごちゃんをお楽しみください！今回は新刊として「いちごちゃんの日常」をテーマにした4コマ漫画本と、アクリルキーホルダー、缶バッジセットをご用意しています。',
-    contact: { 
-      twitter: 'hoshimiya_circle', 
-      pixiv: 'https://pixiv.net/users/12345',
-      website: 'https://hoshimiya-circle.example.com',
-      oshinaUrl: 'https://oshina.example.com/hoshimiya'
-    },
-    tags: ['いちご', 'イラスト', 'グッズ', 'キラキラ', '4コマ', 'アクリルキーホルダー'],
-    isAdult: false,
-    items: [
-      {
-        id: '1',
-        name: 'いちごちゃんの日常 4コマ本',
-        price: 500,
-        description: 'B5サイズ、28ページのフルカラー4コマ漫画本です。'
-      },
-      {
-        id: '2',
-        name: 'いちごちゃんアクリルキーホルダー',
-        price: 800,
-        description: '約6cmのアクリルキーホルダー。両面印刷です。'
-      },
-      {
-        id: '3',
-        name: '缶バッジセット（3個入り）',
-        price: 600,
-        description: '直径5.7cmの缶バッジ3個セットです。'
-      }
-    ]
-  },
-  '2': {
-    id: '2',
-    circleName: 'あおい工房',
-    circleKana: 'あおいこうぼう',
-    genre: ['アイカツ！', 'あおい'],
-    placement: { day: '1', area: '東1', block: 'あ', number: '02', position: 'b' },
-    description: '霧矢あおいちゃんのアクセサリーとステッカーを作りました。クールビューティーなあおいちゃんグッズです。',
-    contact: { twitter: 'aoi_koubou' },
-    tags: ['あおい', 'アクセサリー', 'ステッカー', 'クール'],
-    isAdult: false,
-    items: []
-  }
-}
-
 // Methods
-const formatPlacement = (placement) => {
-  return `${placement.area}-${placement.block}-${placement.number}${placement.position}`
+const getTwitterUsername = (twitterUrl: string) => {
+  if (!twitterUrl) return ''
+  // 末尾のスラッシュを除去し、URLの最後の部分を取得
+  return twitterUrl.replace(/\/+$/, '').split('/').pop() || ''
 }
 
-const getTwitterUrl = (twitterId) => {
-  const cleanId = twitterId.replace('@', '')
-  return `https://twitter.com/${cleanId}`
-}
-
-const handleBookmark = (category) => {
-  console.log('Bookmark:', circleId, category)
-  // 実際の実装では useBookmarks().toggleBookmark を使用
+const handleBookmark = async (category) => {
+  try {
+    if (!currentEvent.value) return
+    await toggleBookmark(circleId, category)
+  } catch (error) {
+    console.error('Bookmark error:', error)
+  }
 }
 
 const shareCircle = async () => {
@@ -422,29 +310,47 @@ const fetchCircle = async () => {
   error.value = null
   
   try {
-    // useCircles から該当するサークルを取得
-    const circleData = circles.value.find(c => c.id === circleId)
+    if (!currentEvent.value) {
+      throw new Error('イベント情報が見つかりません')
+    }
+
+    // fetchCircleById を使用してサークル詳細を取得
+    const circleData = await fetchCircleById(circleId, currentEvent.value.id)
     
     if (!circleData) {
-      // サンプルデータからの取得をフォールバックとして残す
-      const sampleData = sampleCircles[circleId]
-      if (!sampleData) {
-        throw new Error('指定されたサークルが見つかりません')
-      }
-      circle.value = sampleData
-    } else {
-      circle.value = circleData
+      throw new Error('指定されたサークルが見つかりません')
     }
+    
+    circle.value = circleData
   } catch (err) {
-    error.value = err.message
+    console.error('Fetch circle error:', err)
+    error.value = err.message || 'サークル情報の取得に失敗しました'
   } finally {
     loading.value = false
   }
 }
 
 // 初期化
-onMounted(() => {
-  fetchCircle()
+onMounted(async () => {
+  // プラグインでイベントが初期化されていない場合の待機
+  if (!currentEvent.value) {
+    let attempts = 0
+    const maxAttempts = 50 // 5秒間
+    
+    while (!currentEvent.value && attempts < maxAttempts) {
+      await new Promise(resolve => setTimeout(resolve, 100))
+      attempts++
+    }
+  }
+  
+  await fetchCircle()
+})
+
+// イベント変更時にデータを再読み込み
+watch(currentEvent, async () => {
+  if (currentEvent.value) {
+    await fetchCircle()
+  }
 })
 
 // SEO
