@@ -46,6 +46,13 @@
 
       <!-- ログイン済み状態 -->
       <div v-else>
+        <!-- ローディング状態 -->
+        <div v-if="loading" style="display: flex; justify-content: center; align-items: center; min-height: 400px;">
+          <div style="animation: spin 1s linear infinite; width: 2rem; height: 2rem; border: 2px solid #ff69b4; border-top: 2px solid transparent; border-radius: 50%;"></div>
+        </div>
+
+        <!-- データ読み込み完了後 -->
+        <div v-else>
         <!-- カテゴリタブ -->
         <div style="margin-bottom: 2rem;">
           <div style="display: flex; gap: 0.5rem; background: white; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
@@ -181,7 +188,7 @@
         </div>
 
         <!-- 統計情報 -->
-        <div v-if="bookmarks.length > 0" style="margin-top: 3rem; background: white; border-radius: 0.5rem; padding: 2rem; border: 1px solid #e5e7eb;">
+        <div v-if="bookmarksWithCircles.length > 0" style="margin-top: 3rem; background: white; border-radius: 0.5rem; padding: 2rem; border: 1px solid #e5e7eb;">
           <h3 style="font-size: 1.125rem; font-weight: 600; color: #111827; margin: 0 0 1.5rem 0;">
             📊 ブックマーク統計
           </h3>
@@ -189,7 +196,7 @@
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
             <div style="text-align: center; padding: 1rem; background: #fef3f2; border-radius: 0.5rem;">
               <div style="font-size: 1.5rem; font-weight: 700; color: #ff69b4; margin-bottom: 0.25rem;">
-                {{ bookmarks.length }}
+                {{ bookmarksWithCircles.length }}
               </div>
               <div style="font-size: 0.875rem; color: #6b7280;">
                 総ブックマーク数
@@ -224,6 +231,7 @@
             </div>
           </div>
         </div>
+        </div>
       </div>
     </div>
   </div>
@@ -232,7 +240,7 @@
 <script setup>
 // Composables
 const { user, isAuthenticated } = useAuth()
-const { bookmarks, removeBookmark, exportToCSV } = useBookmarks()
+const { bookmarks, bookmarksWithCircles, loading, fetchBookmarksWithCircles, toggleBookmark, generateExportData } = useBookmarks()
 
 // State
 const activeCategory = ref('all')
@@ -250,17 +258,17 @@ const categories = ref([
 // Computed
 const filteredBookmarks = computed(() => {
   if (activeCategory.value === 'all') {
-    return bookmarks.value
+    return bookmarksWithCircles.value
   }
-  return bookmarks.value.filter(bookmark => bookmark.category === activeCategory.value)
+  return bookmarksWithCircles.value.filter(bookmark => bookmark.category === activeCategory.value)
 })
 
 // Methods
 const getBookmarkCount = (category) => {
   if (category === 'all') {
-    return bookmarks.value.length
+    return bookmarksWithCircles.value.length
   }
-  return bookmarks.value.filter(bookmark => bookmark.category === category).length
+  return bookmarksWithCircles.value.filter(bookmark => bookmark.category === category).length
 }
 
 const getCurrentCategoryLabel = () => {
@@ -273,22 +281,60 @@ const getCurrentCategoryIcon = () => {
   return category?.icon || '📚'
 }
 
-const handleBookmark = (circleId, category) => {
-  // 実際の実装では useBookmarks().toggleBookmark を使用
-  console.log('Toggle bookmark:', circleId, category)
+const handleBookmark = async (circleId, category) => {
+  try {
+    await toggleBookmark(circleId, category)
+  } catch (error) {
+    console.error('Bookmark error:', error)
+  }
 }
 
 const exportBookmarks = () => {
-  // 実際の実装では useBookmarks().exportToCSV を使用
-  console.log('Exporting bookmarks...')
-  alert('ブックマークをCSVファイルとしてダウンロードしました')
+  try {
+    const data = generateExportData()
+    const csv = convertToCSV(data)
+    downloadCSV(csv, 'bookmarks.csv')
+  } catch (error) {
+    console.error('Export error:', error)
+    alert('エクスポートに失敗しました')
+  }
+}
+
+const convertToCSV = (data) => {
+  if (data.length === 0) return ''
+  
+  const headers = Object.keys(data[0])
+  const csvContent = [
+    headers.join(','),
+    ...data.map(row => headers.map(header => `"${row[header] || ''}"`).join(','))
+  ].join('\n')
+  
+  return csvContent
+}
+
+const downloadCSV = (csvContent, filename) => {
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+  const link = document.createElement('a')
+  const url = URL.createObjectURL(blob)
+  link.setAttribute('href', url)
+  link.setAttribute('download', filename)
+  link.style.visibility = 'hidden'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }
 
 // 初期化
-onMounted(() => {
-  // 実際の実装では認証状態をチェック
+onMounted(async () => {
   if (!isAuthenticated.value) {
-    navigateTo('/auth/login')
+    await navigateTo('/auth/login')
+    return
+  }
+  
+  try {
+    await fetchBookmarksWithCircles()
+  } catch (error) {
+    console.error('Failed to fetch bookmarks:', error)
   }
 })
 
@@ -300,3 +346,14 @@ useHead({
   ]
 })
 </script>
+
+<style scoped>
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>
