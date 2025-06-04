@@ -17,7 +17,7 @@
     "import:circles": "tsx scripts/importCircles.ts",
     "import:converted-circles": "tsx scripts/importConvertedCircles.ts",
     "seed:events": "tsx scripts/seedEvents.ts",
-    "migrate:multi-event": "tsx scripts/migrate-to-multi-event.ts"
+    "import:event": "tsx scripts/importEvent.ts"
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.23",
