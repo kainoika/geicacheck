@@ -10,7 +10,7 @@ import {
   startAfter,
   type DocumentSnapshot,
 } from "firebase/firestore";
-import type { Circle, SearchParams, SearchResult } from "~/types";
+import type { Circle, SearchParams, SearchResult, PlacementInfo } from "~/types";
 
 export const useCircles = () => {
   const { $firestore } = useNuxtApp() as any;
@@ -26,18 +26,26 @@ export const useCircles = () => {
     params: SearchParams = {},
     eventId?: string
   ): Promise<SearchResult> => {
+    console.log('🔄 useCircles.fetchCircles called with:', { params, eventId });
+    console.log('🔄 currentEvent.value:', currentEvent.value);
+    
     loading.value = true;
     error.value = null;
 
     try {
-      const circlesRef = collection($firestore, "circles");
-      let q = query(circlesRef, where("isPublic", "==", true));
-
-      // イベントフィルタリング
+      // イベントIDを取得
       const targetEventId = eventId || currentEvent.value?.id;
-      if (targetEventId) {
-        q = query(q, where("eventId", "==", targetEventId));
+      if (!targetEventId) {
+        throw new Error("イベントIDが指定されていません");
       }
+
+      console.log('📍 Target event ID:', targetEventId);
+
+      // サブコレクション構造: events/{eventId}/circles
+      const circlesRef = collection($firestore, "events", targetEventId, "circles");
+      let q = query(circlesRef, where("isPublic", "==", true));
+      
+      console.log('🔍 Query path:', `events/${targetEventId}/circles`);
 
       // フィルター条件を追加
       if (params.genres && params.genres.length > 0) {
@@ -83,23 +91,29 @@ export const useCircles = () => {
       q = query(q, limit(pageLimit));
 
       const snapshot = await getDocs(q);
+      console.log('📄 Snapshot size:', snapshot.size);
+      console.log('📄 Snapshot empty:', snapshot.empty);
+      
       const circleList: Circle[] = [];
 
       snapshot.forEach((doc) => {
         const data = doc.data();
+        console.log('📄 Document:', doc.id, data);
         circleList.push({
           id: doc.id,
           circleName: data.circleName,
           circleKana: data.circleKana,
+          penName: data.penName,
+          penNameKana: data.penNameKana,
+          circleImageUrl: data.circleImageUrl,
           genre: data.genre || [],
           placement: data.placement,
           description: data.description,
           contact: data.contact || {},
-          tags: data.tags || [],
           isAdult: data.isAdult || false,
           ownerId: data.ownerId,
           isPublic: data.isPublic,
-          eventId: data.eventId,
+          eventId: targetEventId,
           createdAt: data.createdAt?.toDate() || new Date(),
           updatedAt: data.updatedAt?.toDate() || new Date(),
         });
@@ -113,9 +127,13 @@ export const useCircles = () => {
         hasMore: circleList.length === pageLimit,
       };
 
+      console.log('📊 Final result:', result);
+      console.log('📊 Circle list length:', circleList.length);
+
       // 最初のページの場合はstateを更新
       if (!params.page || params.page === 1) {
         circles.value = circleList;
+        console.log('✅ State updated, circles.value.length:', circles.value.length);
       }
 
       return result;
@@ -129,9 +147,16 @@ export const useCircles = () => {
   };
 
   // サークル詳細を取得
-  const fetchCircleById = async (circleId: string): Promise<Circle | null> => {
+  const fetchCircleById = async (circleId: string, eventId?: string): Promise<Circle | null> => {
     try {
-      const circleRef = doc($firestore, "circles", circleId);
+      // イベントIDを取得
+      const targetEventId = eventId || currentEvent.value?.id;
+      if (!targetEventId) {
+        throw new Error("イベントIDが指定されていません");
+      }
+
+      // サブコレクション構造: events/{eventId}/circles/{circleId}
+      const circleRef = doc($firestore, "events", targetEventId, "circles", circleId);
       const circleDoc = await getDoc(circleRef);
 
       if (circleDoc.exists()) {
@@ -140,15 +165,17 @@ export const useCircles = () => {
           id: circleDoc.id,
           circleName: data.circleName,
           circleKana: data.circleKana,
+          penName: data.penName,
+          penNameKana: data.penNameKana,
+          circleImageUrl: data.circleImageUrl,
           genre: data.genre || [],
           placement: data.placement,
           description: data.description,
           contact: data.contact || {},
-          tags: data.tags || [],
           isAdult: data.isAdult || false,
           ownerId: data.ownerId,
           isPublic: data.isPublic,
-          eventId: data.eventId,
+          eventId: targetEventId,
           createdAt: data.createdAt?.toDate() || new Date(),
           updatedAt: data.updatedAt?.toDate() || new Date(),
         };
@@ -162,42 +189,44 @@ export const useCircles = () => {
   };
 
   // 複数のサークルIDでサークル情報を取得
-  const fetchCirclesByIds = async (circleIds: string[]): Promise<Circle[]> => {
+  const fetchCirclesByIds = async (circleIds: string[], eventId?: string): Promise<Circle[]> => {
     if (circleIds.length === 0) return [];
 
     try {
-      const circlesRef = collection($firestore, "circles");
-      // Firestoreの制限により、一度に10個までしかin演算子で検索できない
-      const chunks = [];
-      for (let i = 0; i < circleIds.length; i += 10) {
-        chunks.push(circleIds.slice(i, i + 10));
+      // イベントIDを取得
+      const targetEventId = eventId || currentEvent.value?.id;
+      if (!targetEventId) {
+        throw new Error("イベントIDが指定されていません");
       }
 
       const allCircles: Circle[] = [];
 
-      for (const chunk of chunks) {
-        const q = query(circlesRef, where("__name__", "in", chunk));
-        const snapshot = await getDocs(q);
-
-        snapshot.forEach((doc) => {
-          const data = doc.data();
+      // サブコレクション構造ではdocumentReferenceを直接使用
+      for (const circleId of circleIds) {
+        const circleRef = doc($firestore, "events", targetEventId, "circles", circleId);
+        const circleDoc = await getDoc(circleRef);
+        
+        if (circleDoc.exists()) {
+          const data = circleDoc.data();
           allCircles.push({
-            id: doc.id,
+            id: circleDoc.id,
             circleName: data.circleName,
             circleKana: data.circleKana,
+            penName: data.penName,
+            penNameKana: data.penNameKana,
+            circleImageUrl: data.circleImageUrl,
             genre: data.genre || [],
             placement: data.placement,
             description: data.description,
             contact: data.contact || {},
-            tags: data.tags || [],
             isAdult: data.isAdult || false,
             ownerId: data.ownerId,
             isPublic: data.isPublic,
-            eventId: data.eventId,
+            eventId: targetEventId,
             createdAt: data.createdAt?.toDate() || new Date(),
             updatedAt: data.updatedAt?.toDate() || new Date(),
           });
-        });
+        }
       }
 
       return allCircles;
@@ -221,15 +250,15 @@ export const useCircles = () => {
     error.value = null;
 
     try {
-      // 簡易的な検索実装（実際の実装では全文検索サービスを使用することを推奨）
-      const circlesRef = collection($firestore, "circles");
-      let q = query(circlesRef, where("isPublic", "==", true));
-
-      // イベントフィルタリング
+      // イベントIDを取得
       const targetEventId = eventId || currentEvent.value?.id;
-      if (targetEventId) {
-        q = query(q, where("eventId", "==", targetEventId));
+      if (!targetEventId) {
+        throw new Error("イベントIDが指定されていません");
       }
+
+      // 簡易的な検索実装（実際の実装では全文検索サービスを使用することを推奨）
+      const circlesRef = collection($firestore, "events", targetEventId, "circles");
+      let q = query(circlesRef, where("isPublic", "==", true));
 
       // 基本的なフィルターを適用
       if (filters.genres && filters.genres.length > 0) {
@@ -249,15 +278,17 @@ export const useCircles = () => {
           id: doc.id,
           circleName: data.circleName,
           circleKana: data.circleKana,
+          penName: data.penName,
+          penNameKana: data.penNameKana,
+          circleImageUrl: data.circleImageUrl,
           genre: data.genre || [],
           placement: data.placement,
           description: data.description,
           contact: data.contact || {},
-          tags: data.tags || [],
           isAdult: data.isAdult || false,
           ownerId: data.ownerId,
           isPublic: data.isPublic,
-          eventId: data.eventId,
+          eventId: targetEventId,
           createdAt: data.createdAt?.toDate() || new Date(),
           updatedAt: data.updatedAt?.toDate() || new Date(),
         });
@@ -309,22 +340,22 @@ export const useCircles = () => {
   };
 
   // 配置情報をフォーマット
-  const formatPlacement = (placement: any): string => {
+  const formatPlacement = (placement: PlacementInfo): string => {
     if (!placement) return "";
-    return `${placement.area}-${placement.block}-${placement.number}${placement.position}`;
+    return `${placement.block}-${placement.number1}-${placement.number2}`;
   };
 
   // ジャンル一覧を取得
   const getAvailableGenres = async (eventId?: string): Promise<string[]> => {
     try {
-      const circlesRef = collection($firestore, "circles");
-      let q = query(circlesRef, where("isPublic", "==", true));
-      
-      // イベントフィルタリング
+      // イベントIDを取得
       const targetEventId = eventId || currentEvent.value?.id;
-      if (targetEventId) {
-        q = query(q, where("eventId", "==", targetEventId));
+      if (!targetEventId) {
+        return [];
       }
+      
+      const circlesRef = collection($firestore, "events", targetEventId, "circles");
+      let q = query(circlesRef, where("isPublic", "==", true));
       
       const snapshot = await getDocs(q);
 
@@ -346,14 +377,14 @@ export const useCircles = () => {
   // エリア一覧を取得
   const getAvailableAreas = async (eventId?: string): Promise<string[]> => {
     try {
-      const circlesRef = collection($firestore, "circles");
-      let q = query(circlesRef, where("isPublic", "==", true));
-      
-      // イベントフィルタリング
+      // イベントIDを取得
       const targetEventId = eventId || currentEvent.value?.id;
-      if (targetEventId) {
-        q = query(q, where("eventId", "==", targetEventId));
+      if (!targetEventId) {
+        return [];
       }
+      
+      const circlesRef = collection($firestore, "events", targetEventId, "circles");
+      let q = query(circlesRef, where("isPublic", "==", true));
       
       const snapshot = await getDocs(q);
 

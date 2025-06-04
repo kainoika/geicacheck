@@ -13,9 +13,17 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AppHeader from '~/components/layout/AppHeader.vue'
 import AppFooter from '~/components/layout/AppFooter.vue'
+
+// TODO: イベントデータの初期化は各ページで行う
+// const { fetchEvents, currentEvent, loading } = useEvents()
+
+// アプリ起動時の設定
+onMounted(() => {
+  console.log('🚀 App mounted')
+})
 
 // メタ情報の設定
 useHead({

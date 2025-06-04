@@ -135,17 +135,26 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type { SearchFilters } from '~/types'
+
 // Props
-const props = defineProps({
-  modelValue: {
-    type: Object,
-    default: () => ({})
-  }
-})
+interface Props {
+  modelValue: SearchFilters
+}
 
 // Emits
-const emit = defineEmits(['update:modelValue', 'apply', 'reset'])
+interface Emits {
+  (e: 'update:modelValue', value: SearchFilters): void
+  (e: 'apply', value: SearchFilters): void
+  (e: 'reset', value: SearchFilters): void
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: () => ({})
+})
+
+const emit = defineEmits<Emits>()
 
 // State
 const selectedGenres = ref(props.modelValue.genres || [])

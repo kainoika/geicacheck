@@ -31,9 +31,6 @@
                 <div class="flex items-center text-sm text-gray-600">
                     <MapPinIcon class="h-4 w-4 mr-1" />
                     <span class="font-medium">{{ formatPlacement(circle.placement) }}</span>
-                    <span class="ml-2 text-xs text-gray-500">
-                        {{ circle.placement.day }}日目
-                    </span>
                 </div>
             </div>
 
@@ -91,13 +88,6 @@
                         </svg>
                     </a>
 
-                    <!-- Website -->
-                    <a v-if="circle.contact.website" :href="circle.contact.website" target="_blank"
-                        rel="noopener noreferrer"
-                        class="p-2 text-gray-400 hover:text-green-600 transition-colors rounded-md hover:bg-gray-100"
-                        title="Website">
-                        <GlobeAltIcon class="h-4 w-4" />
-                    </a>
 
                     <!-- お品書き -->
                     <a v-if="circle.contact.oshinaUrl" :href="circle.contact.oshinaUrl" target="_blank"

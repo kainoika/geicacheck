@@ -17,14 +17,15 @@ import type { Event, EventStats, EventHistory } from '~/types'
 export const useEvents = () => {
   const { $firestore } = useNuxtApp() as any
 
-  // State
-  const events = ref<Event[]>([])
-  const currentEvent = ref<Event | null>(null)
-  const loading = ref(false)
-  const error = ref<string | null>(null)
+  // State - useState を使用してグローバル状態にする
+  const events = useState<Event[]>('events.list', () => [])
+  const currentEvent = useState<Event | null>('events.current', () => null)
+  const loading = useState<boolean>('events.loading', () => false)
+  const error = useState<string | null>('events.error', () => null)
 
   // Methods
   const fetchEvents = async () => {
+    console.log('🔄 useEvents.fetchEvents called')
     loading.value = true
     error.value = null
     
@@ -32,6 +33,8 @@ export const useEvents = () => {
       const eventsRef = collection($firestore, 'events')
       const q = query(eventsRef, orderBy('eventDate', 'desc'))
       const snapshot = await getDocs(q)
+      
+      console.log('📄 Events snapshot size:', snapshot.size)
       
       const eventList: Event[] = []
       snapshot.forEach((doc) => {
@@ -44,10 +47,6 @@ export const useEvents = () => {
           venue: data.venue || {},
           description: data.description,
           status: data.status || 'upcoming',
-          registrationPeriod: {
-            start: data.registrationPeriod?.start?.toDate() || new Date(),
-            end: data.registrationPeriod?.end?.toDate() || new Date()
-          },
           isDefault: data.isDefault || false,
           mapData: data.mapData,
           createdAt: data.createdAt?.toDate() || new Date(),
@@ -56,13 +55,39 @@ export const useEvents = () => {
       })
       
       events.value = eventList
+      console.log('📊 Events loaded:', eventList.length)
       
       // デフォルトイベントを設定
       const defaultEvent = events.value.find(event => event.isDefault)
       if (defaultEvent) {
         currentEvent.value = defaultEvent
+        console.log('✅ Default event set:', defaultEvent.id, defaultEvent)
       } else if (events.value.length > 0) {
         currentEvent.value = events.value[0]
+        console.log('✅ First event set as current:', events.value[0].id, events.value[0])
+      } else {
+        console.log('❌ No events found')
+        // フォールバック: ハードコードされたイベントデータを使用
+        const fallbackEvent: Event = {
+          id: 'geika-32',
+          name: '芸能人はカードが命！32',
+          shortName: '芸カ32',
+          eventDate: new Date('2025-03-23'),
+          venue: {
+            name: '大田区産業プラザPiO',
+            address: '東京都大田区南蒲田1丁目20−20',
+            accessInfo: '京浜急行「京急蒲田」駅より徒歩約3分'
+          },
+          description: 'アイカツ！シリーズオンリー同人イベント第32回',
+          status: 'completed',
+          isDefault: true,
+          mapData: '',
+          createdAt: new Date('2025-06-02'),
+          updatedAt: new Date()
+        }
+        events.value = [fallbackEvent]
+        currentEvent.value = fallbackEvent
+        console.log('⚠️ Using fallback event data:', fallbackEvent.id)
       }
     } catch (err) {
       error.value = 'イベント情報の取得に失敗しました'
@@ -116,7 +141,6 @@ export const useEvents = () => {
         venue: eventData.venue,
         description: eventData.description,
         status: eventData.status,
-        registrationPeriod: eventData.registrationPeriod,
         isDefault: eventData.isDefault,
         mapData: eventData.mapData,
         createdAt: serverTimestamp(),
@@ -161,7 +185,6 @@ export const useEvents = () => {
       if (updates.venue !== undefined) firestoreUpdates.venue = updates.venue
       if (updates.description !== undefined) firestoreUpdates.description = updates.description
       if (updates.status !== undefined) firestoreUpdates.status = updates.status
-      if (updates.registrationPeriod !== undefined) firestoreUpdates.registrationPeriod = updates.registrationPeriod
       if (updates.isDefault !== undefined) firestoreUpdates.isDefault = updates.isDefault
       if (updates.mapData !== undefined) firestoreUpdates.mapData = updates.mapData
       
@@ -354,7 +377,7 @@ export const useEvents = () => {
   return {
     // State
     events: readonly(events),
-    currentEvent: readonly(currentEvent),
+    currentEvent, // readonlyを外す（setCurrentEventで変更する必要があるため）
     loading: readonly(loading),
     error: readonly(error),
 

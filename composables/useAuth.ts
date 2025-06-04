@@ -203,16 +203,25 @@ export const useAuth = () => {
     const userRef = doc($firestore, "users", firebaseUser.uid);
 
     // Twitter情報を取得
-    const twitterId = credential.accessToken
-      ? await getTwitterId(credential.accessToken)
-      : undefined;
+    const twitterProvider = firebaseUser.providerData.find(
+      provider => provider.providerId === 'twitter.com'
+    );
+
+    let twitterId: string | undefined;
+    let twitterUsername: string | undefined;
+
+    if (twitterProvider) {
+      twitterId = twitterProvider.uid;
+      // displayNameからTwitter usernameを抽出（@を除去）
+      twitterUsername = twitterProvider.displayName || firebaseUser.displayName;
+    }
 
     const userData = {
       email: firebaseUser.email,
       displayName: firebaseUser.displayName,
       photoURL: firebaseUser.photoURL,
       twitterId,
-      twitterUsername: firebaseUser.displayName,
+      twitterUsername,
       updatedAt: serverTimestamp(),
     };
 
@@ -225,8 +234,21 @@ export const useAuth = () => {
     accessToken: string
   ): Promise<string | undefined> => {
     try {
-      // 実際の実装では Twitter API v2 を使用
-      // ここでは簡易的な実装
+      // Firebase Auth Twitter providerからTwitter ID情報を取得
+      const currentUser = $auth.currentUser;
+      if (!currentUser) return undefined;
+
+      // Twitter providerからのユーザー情報を確認
+      const twitterProvider = currentUser.providerData.find(
+        provider => provider.providerId === 'twitter.com'
+      );
+
+      if (twitterProvider) {
+        // プロバイダーIDからTwitter IDを抽出
+        const twitterUid = twitterProvider.uid;
+        return twitterUid;
+      }
+
       return undefined;
     } catch (err) {
       console.error("Failed to get Twitter ID:", err);

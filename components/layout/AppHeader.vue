@@ -317,7 +317,7 @@ import {
 const user = ref({ displayName: 'サンプルユーザー', photoURL: null })
 const isAuthenticated = ref(true)
 const signOut = async () => { console.log('Sign out') }
-const bookmarkCount = ref(3)
+const bookmarkCount = ref(0)
 const router = useRouter()
 
 // イベント管理

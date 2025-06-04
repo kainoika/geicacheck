@@ -49,7 +49,7 @@
 
           <!-- フィルターパネル -->
           <div v-if="showFilters" style="animation: slideDown 0.2s ease-out;">
-            <FilterPanel 
+            <FilterPanel
               v-model="filters"
               @apply="applyFilters"
               @reset="resetFilters"
@@ -58,10 +58,40 @@
 
           <!-- ソートパネル -->
           <div v-if="showSort" style="animation: slideDown 0.2s ease-out;">
-            <SortPanel 
+            <SortPanel
               v-model="sortOptions"
               @apply="applySorting"
             />
+          </div>
+
+          <!-- 表示モード切り替え -->
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="color: #6b7280;">
+              {{ loading ? '読み込み中...' : `${circles.length}件のサークル` }}
+            </div>
+            
+            <div style="display: flex; border: 1px solid #d1d5db; border-radius: 0.375rem; overflow: hidden;">
+              <button 
+                @click="viewMode = 'grid'"
+                style="padding: 0.5rem 1rem; border: none; cursor: pointer; transition: all 0.2s;"
+                :style="{ 
+                  backgroundColor: viewMode === 'grid' ? '#ff69b4' : 'white',
+                  color: viewMode === 'grid' ? 'white' : '#374151'
+                }"
+              >
+                🔲 グリッド
+              </button>
+              <button 
+                @click="viewMode = 'list'"
+                style="padding: 0.5rem 1rem; border: none; border-left: 1px solid #d1d5db; cursor: pointer; transition: all 0.2s;"
+                :style="{ 
+                  backgroundColor: viewMode === 'list' ? '#ff69b4' : 'white',
+                  color: viewMode === 'list' ? 'white' : '#374151'
+                }"
+              >
+                📋 リスト
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -69,83 +99,20 @@
 
     <!-- メインコンテンツ -->
     <div style="max-width: 1280px; margin: 0 auto; padding: 2rem 1rem;">
-      <!-- 結果ヘッダー -->
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <div>
-          <h1 style="font-size: 1.875rem; font-weight: 700; color: #111827; margin: 0 0 0.5rem 0;">
-            {{ searchQuery ? '検索結果' : 'サークル一覧' }}
-          </h1>
-          <p style="color: #6b7280; margin: 0;">
-            {{ searchQuery ? `"${searchQuery}" の検索結果` : 'イベント参加サークル' }}
-            <span style="font-weight: 600; color: #374151;">（{{ filteredCircles.length }}件）</span>
-          </p>
-        </div>
-
-        <!-- 表示切り替え -->
-        <div style="display: flex; align-items: center; gap: 0.5rem; background: white; border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.25rem;">
-          <button
-            @click="viewMode = 'grid'"
-            :style="{
-              padding: '0.5rem',
-              border: 'none',
-              borderRadius: '0.25rem',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              backgroundColor: viewMode === 'grid' ? '#ff69b4' : 'transparent',
-              color: viewMode === 'grid' ? 'white' : '#6b7280'
-            }"
-            title="グリッド表示"
-          >
-            ⊞
-          </button>
-          <button
-            @click="viewMode = 'list'"
-            :style="{
-              padding: '0.5rem',
-              border: 'none',
-              borderRadius: '0.25rem',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              backgroundColor: viewMode === 'list' ? '#ff69b4' : 'transparent',
-              color: viewMode === 'list' ? 'white' : '#6b7280'
-            }"
-            title="リスト表示"
-          >
-            ☰
-          </button>
-        </div>
+      <!-- エラー表示 -->
+      <div v-if="error" style="background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+        {{ error }}
       </div>
 
-      <!-- ローディング状態 -->
-      <div v-if="loading" style="display: flex; justify-content: center; align-items: center; padding: 4rem;">
-        <div style="display: flex; align-items: center; gap: 0.5rem; color: #6b7280;">
-          <div style="width: 1rem; height: 1rem; border: 2px solid #ff69b4; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-          読み込み中...
-        </div>
-      </div>
-
-      <!-- エラー状態 -->
-      <div v-else-if="error" style="text-align: center; padding: 4rem;">
-        <div style="color: #ef4444; font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
-        <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 0.5rem 0;">
-          エラーが発生しました
-        </h3>
-        <p style="color: #6b7280; margin: 0 0 1.5rem 0;">{{ error }}</p>
-        <button 
-          @click="fetchData"
-          style="padding: 0.75rem 1.5rem; background: #ff69b4; color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 500;"
-        >
-          再試行
-        </button>
+      <!-- ローディング -->
+      <div v-if="loading" style="display: flex; justify-content: center; align-items: center; min-height: 400px;">
+        <div style="animation: spin 1s linear infinite; width: 2rem; height: 2rem; border: 2px solid #ff69b4; border-top: 2px solid transparent; border-radius: 50%;"></div>
       </div>
 
       <!-- サークル一覧 -->
-      <div v-else-if="filteredCircles.length > 0">
+      <div v-else-if="paginatedCircles.length > 0">
         <!-- グリッド表示 -->
-        <div 
-          v-if="viewMode === 'grid'"
-          style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;"
-        >
+        <div v-if="viewMode === 'grid'" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
           <CircleCard
             v-for="circle in paginatedCircles"
             :key="circle.id"
@@ -199,12 +166,14 @@
           {{ searchQuery ? '検索結果が見つかりません' : 'サークルが見つかりません' }}
         </h3>
         <p style="color: #6b7280; margin: 0 0 1.5rem 0;">
-          {{ searchQuery ? '別のキーワードで検索してみてください' : 'サークル情報が登録されていません' }}
+          {{ searchQuery ? '検索条件を変更してお試しください' : 'サークル情報が登録されていません' }}
         </p>
         <button 
-          v-if="searchQuery" 
+          v-if="searchQuery"
           @click="clearSearch"
-          style="padding: 0.75rem 1.5rem; border: 1px solid #ff69b4; background: white; color: #ff69b4; border-radius: 0.5rem; cursor: pointer; font-weight: 500;"
+          style="background: #ff69b4; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; cursor: pointer; font-weight: 500; transition: all 0.2s;"
+          onmouseover="this.style.backgroundColor='#e91e63'"
+          onmouseout="this.style.backgroundColor='#ff69b4'"
         >
           検索をクリア
         </button>
@@ -213,83 +182,23 @@
   </div>
 </template>
 
-<script setup>
-// サンプルデータ
-const sampleCircles = ref([
-  {
-    id: '1',
-    circleName: '星宮製作所',
-    circleKana: 'ほしみやせいさくしょ',
-    genre: ['アイカツ！', 'いちご'],
-    placement: { day: '1', area: '東1', block: 'あ', number: '01', position: 'a' },
-    description: '星宮いちごちゃんのイラスト本とグッズを頒布予定です。キラキラ可愛いいちごちゃんをお楽しみください！',
-    contact: { twitter: 'hoshimiya_circle', pixiv: 'https://pixiv.net/users/12345' },
-    tags: ['いちご', 'イラスト', 'グッズ', 'キラキラ'],
-    isAdult: false,
-    isPublic: true,
-    eventId: 'geika2025',
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: '2',
-    circleName: 'あおい工房',
-    circleKana: 'あおいこうぼう',
-    genre: ['アイカツ！', 'あおい'],
-    placement: { day: '1', area: '東1', block: 'あ', number: '02', position: 'b' },
-    description: '霧矢あおいちゃんのアクセサリーとステッカーを作りました。クールビューティーなあおいちゃんグッズです。',
-    contact: { twitter: 'aoi_koubou' },
-    tags: ['あおい', 'アクセサリー', 'ステッカー', 'クール'],
-    isAdult: false,
-    isPublic: true,
-    eventId: 'geika2025',
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: '3',
-    circleName: 'らんらん堂',
-    circleKana: 'らんらんどう',
-    genre: ['アイカツ！', 'らん'],
-    placement: { day: '1', area: '東1', block: 'い', number: '15', position: 'a' },
-    description: '紫吹蘭ちゃんの同人誌とポストカードセットを頒布します。大人っぽい蘭ちゃんの魅力をお届け！',
-    contact: { twitter: 'ranran_dou', pixiv: 'https://pixiv.net/users/67890', oshinaUrl: 'https://oshina.example.com/ranran' },
-    tags: ['らん', '同人誌', 'ポストカード', '大人っぽい'],
-    isAdult: false,
-    isPublic: true,
-    eventId: 'geika2025',
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    id: '4',
-    circleName: 'おとめ屋',
-    circleKana: 'おとめや',
-    genre: ['アイカツ！', 'おとめ'],
-    placement: { day: '2', area: '東2', block: 'か', number: '23', position: 'b' },
-    description: '藤堂ユリカ様とおとめちゃんの百合本を頒布します。',
-    contact: { twitter: 'otome_ya', website: 'https://otome-ya.example.com' },
-    tags: ['おとめ', 'ユリカ', '百合', '同人誌'],
-    isAdult: false,
-    isPublic: true,
-    eventId: 'geika2025',
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  
-])
+<script setup lang="ts">
+import type { Circle, BookmarkCategory, SearchParams } from '~/types'
+
+// Composables
+const { circles, loading, error, fetchCircles, searchCircles } = useCircles()
+const { addBookmark, removeBookmark } = useBookmarks()
+const { currentEvent, fetchEvents } = useEvents()
 
 // State
 const searchQuery = ref('')
 const showFilters = ref(false)
 const showSort = ref(false)
 const viewMode = ref('grid')
-const loading = ref(false)
-const error = ref(null)
 const currentPage = ref(1)
 const itemsPerPage = ref(12)
 
-const filters = ref({
+const filters = ref<SearchParams>({
   genres: [],
   days: [],
   areas: [],
@@ -300,8 +209,8 @@ const filters = ref({
 })
 
 const sortOptions = ref({
-  sortBy: 'placement',
-  sortOrder: 'asc'
+  sortBy: 'placement' as const,
+  sortOrder: 'asc' as const
 })
 
 // Computed
@@ -316,89 +225,14 @@ const activeFiltersCount = computed(() => {
   return count
 })
 
-const filteredCircles = computed(() => {
-  let result = [...sampleCircles.value]
-
-  // テキスト検索
-  if (searchQuery.value.trim()) {
-    const query = searchQuery.value.toLowerCase()
-    result = result.filter(circle => 
-      circle.circleName.toLowerCase().includes(query) ||
-      circle.circleKana?.toLowerCase().includes(query) ||
-      circle.description?.toLowerCase().includes(query) ||
-      circle.tags.some(tag => tag.toLowerCase().includes(query)) ||
-      circle.genre.some(genre => genre.toLowerCase().includes(query))
-    )
-  }
-
-  // フィルター適用
-  if (filters.value.genres?.length) {
-    result = result.filter(circle => 
-      circle.genre.some(genre => filters.value.genres.includes(genre))
-    )
-  }
-
-  if (filters.value.days?.length) {
-    result = result.filter(circle => 
-      filters.value.days.includes(circle.placement.day)
-    )
-  }
-
-  if (filters.value.areas?.length) {
-    result = result.filter(circle => 
-      filters.value.areas.includes(circle.placement.area)
-    )
-  }
-
-  if (filters.value.hasTwitter) {
-    result = result.filter(circle => circle.contact?.twitter)
-  }
-
-  if (filters.value.hasPixiv) {
-    result = result.filter(circle => circle.contact?.pixiv)
-  }
-
-  if (filters.value.hasOshina) {
-    result = result.filter(circle => circle.contact?.oshinaUrl)
-  }
-
-  if (!filters.value.isAdult) {
-    result = result.filter(circle => !circle.isAdult)
-  }
-
-  // ソート適用
-  result.sort((a, b) => {
-    let comparison = 0
-    
-    switch (sortOptions.value.sortBy) {
-      case 'circleName':
-        comparison = a.circleName.localeCompare(b.circleName, 'ja')
-        break
-      case 'updatedAt':
-        comparison = new Date(a.updatedAt) - new Date(b.updatedAt)
-        break
-      case 'placement':
-      default:
-        const aPlacement = `${a.placement.area}-${a.placement.block}-${a.placement.number}${a.placement.position}`
-        const bPlacement = `${b.placement.area}-${b.placement.block}-${b.placement.number}${b.placement.position}`
-        comparison = aPlacement.localeCompare(bPlacement)
-        break
-    }
-    
-    return sortOptions.value.sortOrder === 'desc' ? -comparison : comparison
-  })
-
-  return result
-})
-
 const totalPages = computed(() => 
-  Math.ceil(filteredCircles.value.length / itemsPerPage.value)
+  Math.ceil(circles.value.length / itemsPerPage.value)
 )
 
 const paginatedCircles = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value
   const end = start + itemsPerPage.value
-  return filteredCircles.value.slice(start, end)
+  return circles.value.slice(start, end)
 })
 
 // Methods
@@ -416,16 +250,28 @@ const toggleSort = () => {
   }
 }
 
-const handleSearch = () => {
+const handleSearch = async () => {
   currentPage.value = 1
+  if (searchQuery.value.trim()) {
+    await searchCircles(searchQuery.value.trim(), {
+      ...filters.value,
+      sortBy: sortOptions.value.sortBy,
+      sortOrder: sortOptions.value.sortOrder,
+      page: currentPage.value,
+      limit: itemsPerPage.value
+    })
+  } else {
+    await fetchData()
+  }
 }
 
-const applyFilters = () => {
+const applyFilters = async () => {
   showFilters.value = false
   currentPage.value = 1
+  await fetchData()
 }
 
-const resetFilters = () => {
+const resetFilters = async () => {
   filters.value = {
     genres: [],
     days: [],
@@ -436,27 +282,109 @@ const resetFilters = () => {
     isAdult: false
   }
   currentPage.value = 1
+  await fetchData()
 }
 
-const applySorting = () => {
+const applySorting = async () => {
   showSort.value = false
   currentPage.value = 1
+  await fetchData()
 }
 
-const clearSearch = () => {
+const clearSearch = async () => {
   searchQuery.value = ''
   currentPage.value = 1
+  await fetchData()
 }
 
-const handleBookmark = (circleId, category) => {
-  console.log('Bookmark:', circleId, category)
-  // 実際の実装では useBookmarks().toggleBookmark を使用
+const handleBookmark = async (circleId: string, category: BookmarkCategory) => {
+  try {
+    if (!currentEvent.value) return
+    
+    await addBookmark({
+      circleId,
+      category,
+      eventId: currentEvent.value.id
+    })
+  } catch (err) {
+    console.error('Bookmark error:', err)
+  }
 }
 
-const fetchData = () => {
-  // 実際の実装では API からデータを取得
-  console.log('Fetching data...')
+const fetchData = async () => {
+  console.log('🔍 fetchData called')
+  console.log('📅 currentEvent.value:', currentEvent.value)
+  
+  if (!currentEvent.value) {
+    console.log('❌ No current event, skipping fetch')
+    return
+  }
+  
+  try {
+    console.log('🔄 Fetching circles for event:', currentEvent.value.id)
+    const result = await fetchCircles({
+      ...filters.value,
+      sortBy: sortOptions.value.sortBy,
+      sortOrder: sortOptions.value.sortOrder,
+      page: currentPage.value,
+      limit: itemsPerPage.value
+    }, currentEvent.value.id)
+    
+    console.log('✅ Circles fetched successfully')
+    console.log('📊 Result:', result)
+    console.log('📋 circles.value.length:', circles.value.length)
+    console.log('📋 circles.value:', circles.value)
+  } catch (err) {
+    console.error('❌ Fetch data error:', err)
+  }
 }
+
+// 初期データ読み込み
+onMounted(async () => {
+  console.log('🚀 Circles page mounted')
+  console.log('📅 currentEvent:', currentEvent.value)
+  
+  // プラグインでイベントが初期化されていない場合のフォールバック
+  if (!currentEvent.value) {
+    console.log('⏳ Waiting for events to be initialized...')
+    
+    let attempts = 0
+    const maxAttempts = 50 // 5秒間
+    
+    while (!currentEvent.value && attempts < maxAttempts) {
+      await new Promise(resolve => setTimeout(resolve, 100))
+      attempts++
+      
+      if (attempts === 10) {
+        // 1秒後にfetchEventsを試す
+        console.log('🔄 Attempting to fetch events...')
+        try {
+          await fetchEvents()
+        } catch (error) {
+          console.error('❌ Failed to fetch events:', error)
+        }
+      }
+      
+      if (attempts % 10 === 0) {
+        console.log(`⏳ Still waiting... (${attempts * 100}ms)`)
+      }
+    }
+  }
+  
+  if (currentEvent.value) {
+    console.log('✅ currentEvent available:', currentEvent.value.id)
+    await fetchData()
+  } else {
+    console.error('❌ No currentEvent available after waiting')
+  }
+})
+
+// イベント変更時にデータを再読み込み
+watch(currentEvent, async () => {
+  if (currentEvent.value) {
+    await fetchData()
+  }
+})
 
 // SEO
 useHead({

@@ -182,7 +182,7 @@ const emit = defineEmits<Emits>()
 
 // Composables
 const { isAuthenticated } = useAuth()
-const { isBookmarked: checkIsBookmarked, getBookmarkByCircleId } = useBookmarks()
+const { isBookmarked: checkIsBookmarked, getBookmarkByCircleId, removeBookmark } = useBookmarks()
 
 // State
 const showDropdown = ref(false)
@@ -233,8 +233,7 @@ const handleRemove = async () => {
   try {
     const bookmark = getBookmarkByCircleId(props.circleId)
     if (bookmark) {
-      // 実際の実装では useBookmarks().removeBookmark を使用
-      console.log('Remove bookmark:', props.circleId)
+      await removeBookmark(bookmark.id)
       closeDropdown()
     }
   } catch (error) {

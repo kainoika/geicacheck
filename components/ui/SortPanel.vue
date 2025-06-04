@@ -102,20 +102,34 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type { SortOption } from '~/types'
+
+// Types
+interface SortValue {
+  sortBy: SortOption
+  sortOrder: 'asc' | 'desc'
+}
+
 // Props
-const props = defineProps({
-  modelValue: {
-    type: Object,
-    default: () => ({
-      sortBy: 'placement',
-      sortOrder: 'asc'
-    })
-  }
-})
+interface Props {
+  modelValue: SortValue
+}
 
 // Emits
-const emit = defineEmits(['update:modelValue', 'apply'])
+interface Emits {
+  (e: 'update:modelValue', value: SortValue): void
+  (e: 'apply'): void
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: () => ({
+    sortBy: 'placement' as SortOption,
+    sortOrder: 'asc' as const
+  })
+})
+
+const emit = defineEmits<Emits>()
 
 // State
 const selectedSortBy = ref(props.modelValue.sortBy || 'placement')

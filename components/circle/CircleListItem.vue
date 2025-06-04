@@ -42,7 +42,6 @@
           <div style="display: flex; align-items: center; gap: 0.25rem;">
             <span>📍</span>
             <span style="font-weight: 500;">{{ formatPlacement(circle.placement) }}</span>
-            <span style="color: #9ca3af;">{{ circle.placement.day }}日目</span>
           </div>
           
           <!-- 成人向けマーク -->
@@ -167,46 +166,46 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { computed } from 'vue'
+import type { Circle, BookmarkCategory } from '~/types'
+
 // Props
-const props = defineProps({
-  circle: {
-    type: Object,
-    required: true
-  }
-})
-
-// Emits
-const emit = defineEmits(['bookmark'])
-
-// State
-const isBookmarked = ref(false) // 実際の実装では useBookmarks から取得
-
-// Methods
-const formatPlacement = (placement) => {
-  if (!placement) return ''
-  return `${placement.area}-${placement.block}-${placement.number}${placement.position}`
+interface Props {
+  circle: Circle
 }
 
-const getTwitterUrl = (twitterId) => {
+// Emits
+interface Emits {
+  (e: 'bookmark', circleId: string, category: BookmarkCategory): void
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
+
+// Composables
+const { getBookmarkByCircleId } = useBookmarks()
+const { formatPlacement } = useCircles()
+const router = useRouter()
+
+// Computed
+const bookmark = computed(() => getBookmarkByCircleId(props.circle.id))
+const isBookmarked = computed(() => !!bookmark.value)
+
+// Methods
+const getTwitterUrl = (twitterId: string): string => {
   const cleanId = twitterId.replace('@', '')
   return `https://twitter.com/${cleanId}`
 }
 
 const handleBookmark = () => {
-  isBookmarked.value = !isBookmarked.value
-  emit('bookmark', props.circle.id, 'check') // デフォルトカテゴリ
+  const category: BookmarkCategory = bookmark.value?.category || 'check'
+  emit('bookmark', props.circle.id, category)
 }
 
 const goToDetail = () => {
-  window.location.href = `/circles/${props.circle.id}`
+  router.push(`/circles/${props.circle.id}`)
 }
-
-// 初期化時にブックマーク状態をチェック
-onMounted(() => {
-  // 実際の実装では useBookmarks().isBookmarked(props.circle.id) を使用
-  isBookmarked.value = Math.random() > 0.7 // サンプル
-})
 </script>
 
 <style scoped>

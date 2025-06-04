@@ -299,25 +299,33 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type { Circle, BookmarkCategory } from '~/types'
+
 // Route params
 const route = useRoute()
-const circleId = route.params.id
+const circleId = route.params.id as string
 
 // State
-const circle = ref(null)
+const circle = ref<Circle | null>(null)
 const loading = ref(true)
-const error = ref(null)
+const error = ref<string | null>(null)
 
 // Composables
 const { isAuthenticated, user } = useAuth()
-const { circles } = useCircles()
+const { fetchCircleById } = useCircles()
+const { currentEvent } = useEvents()
+const { addBookmark, removeBookmark, getBookmarkByCircleId } = useBookmarks()
 
 // 編集権限（実装は後で必要に応じて追加）
 const hasEditPermission = computed(() => {
   // 実際の実装では、サークルの編集権限をチェック
   return false
 })
+
+// ブックマーク状態
+const bookmark = computed(() => getBookmarkByCircleId(circleId))
+const isBookmarked = computed(() => !!bookmark.value)
 
 // サンプルデータ
 const sampleCircles = {

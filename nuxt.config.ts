@@ -13,7 +13,10 @@ export default defineNuxtConfig({
   modules: ["@nuxtjs/tailwindcss"],
 
   // プラグイン
-  plugins: ["~/plugins/firebase.client.ts"],
+  plugins: [
+    "~/plugins/firebase.client.ts",
+    "~/plugins/events.client.ts"
+  ],
 
   // CSS設定
   css: ["~/assets/css/main.css"],
