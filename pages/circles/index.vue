@@ -200,8 +200,6 @@ const itemsPerPage = ref(12)
 
 const filters = ref<SearchParams>({
   genres: [],
-  days: [],
-  areas: [],
   hasTwitter: false,
   hasPixiv: false,
   hasOshina: false,
@@ -217,8 +215,6 @@ const sortOptions = ref({
 const activeFiltersCount = computed(() => {
   let count = 0
   if (filters.value.genres?.length) count++
-  if (filters.value.days?.length) count++
-  if (filters.value.areas?.length) count++
   if (filters.value.hasTwitter) count++
   if (filters.value.hasPixiv) count++
   if (filters.value.hasOshina) count++
@@ -274,8 +270,6 @@ const applyFilters = async () => {
 const resetFilters = async () => {
   filters.value = {
     genres: [],
-    days: [],
-    areas: [],
     hasTwitter: false,
     hasPixiv: false,
     hasOshina: false,

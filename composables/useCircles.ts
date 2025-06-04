@@ -48,18 +48,6 @@ export const useCircles = () => {
       console.log('🔍 Query path:', `events/${targetEventId}/circles`);
 
       // フィルター条件を追加
-      if (params.genres && params.genres.length > 0) {
-        q = query(q, where("genre", "array-contains-any", params.genres));
-      }
-
-      if (params.days && params.days.length > 0) {
-        q = query(q, where("placement.day", "in", params.days));
-      }
-
-      if (params.areas && params.areas.length > 0) {
-        q = query(q, where("placement.area", "in", params.areas));
-      }
-
       if (params.isAdult !== undefined) {
         q = query(q, where("isAdult", "==", params.isAdult));
       }
@@ -77,12 +65,6 @@ export const useCircles = () => {
           break;
         case "placement":
         default:
-          q = query(
-            q,
-            orderBy("placement.area", sortOrder),
-            orderBy("placement.block", sortOrder),
-            orderBy("placement.number", sortOrder)
-          );
           break;
       }
 
@@ -301,7 +283,6 @@ export const useCircles = () => {
           circle.circleName,
           circle.circleKana,
           circle.description,
-          ...circle.tags,
           ...circle.genre,
         ]
           .join(" ")
