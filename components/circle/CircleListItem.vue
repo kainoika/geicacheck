@@ -71,24 +71,6 @@
           </p>
         </div>
 
-        <!-- タグ -->
-        <div v-if="circle.tags && circle.tags.length > 0" style="margin-bottom: 0.75rem;">
-          <div style="display: flex; flex-wrap: wrap; gap: 0.375rem;">
-            <span 
-              v-for="tag in circle.tags.slice(0, 5)" 
-              :key="tag"
-              style="display: inline-block; background: #f3f4f6; color: #374151; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.75rem;"
-            >
-              #{{ tag }}
-            </span>
-            <span 
-              v-if="circle.tags.length > 5"
-              style="display: inline-block; background: #f3f4f6; color: #6b7280; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.75rem;"
-            >
-              +{{ circle.tags.length - 5 }}
-            </span>
-          </div>
-        </div>
       </div>
 
       <!-- 右側：アクション -->

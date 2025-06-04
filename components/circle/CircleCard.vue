@@ -41,19 +41,6 @@
                 </p>
             </div>
 
-            <!-- タグ -->
-            <div v-if="circle.tags.length > 0" class="mb-4">
-                <div class="flex flex-wrap gap-1">
-                    <span v-for="tag in circle.tags.slice(0, 3)" :key="tag"
-                        class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-700">
-                        #{{ tag }}
-                    </span>
-                    <span v-if="circle.tags.length > 3"
-                        class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-500">
-                        +{{ circle.tags.length - 3 }}
-                    </span>
-                </div>
-            </div>
 
             <!-- 成人向けマーク -->
             <div v-if="circle.isAdult" class="mb-4">
