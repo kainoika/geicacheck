@@ -1,7 +1,7 @@
 import {
   collection,
   doc,
-  addDoc,
+  setDoc,
   updateDoc,
   deleteDoc,
   query,
@@ -63,18 +63,19 @@ export const useBookmarks = () => {
     error.value = null;
 
     try {
-      const bookmarksRef = collection($firestore, "bookmarks");
+      const targetEventId = eventId || currentEvent.value?.id;
+      if (!targetEventId) {
+        bookmarks.value = [];
+        return;
+      }
+
+      // users/{userId}/bookmarks サブコレクションから取得
+      const bookmarksRef = collection($firestore, "users", user.value.uid, "bookmarks");
       let q = query(
         bookmarksRef,
-        where("userId", "==", user.value.uid),
+        where("eventId", "==", targetEventId),
         orderBy("createdAt", "desc")
       );
-
-      // イベントフィルタリング
-      const targetEventId = eventId || currentEvent.value?.id;
-      if (targetEventId) {
-        q = query(q, where("eventId", "==", targetEventId));
-      }
 
       const snapshot = await getDocs(q);
       const bookmarkList: Bookmark[] = [];
@@ -83,9 +84,9 @@ export const useBookmarks = () => {
         const data = doc.data();
         bookmarkList.push({
           id: doc.id,
-          userId: data.userId,
-          circleId: data.circleId,
-          eventId: data.eventId || targetEventId || '',
+          userId: user.value.uid,
+          circleId: doc.id, // ドキュメントIDがcircleId
+          eventId: data.eventId || targetEventId,
           category: data.category,
           memo: data.memo,
           createdAt: data.createdAt?.toDate() || new Date(),
@@ -108,18 +109,18 @@ export const useBookmarks = () => {
       return;
     }
 
-    const bookmarksRef = collection($firestore, "bookmarks");
+    const targetEventId = eventId || currentEvent.value?.id;
+    if (!targetEventId) {
+      return;
+    }
+
+    // users/{userId}/bookmarks サブコレクションを監視
+    const bookmarksRef = collection($firestore, "users", user.value.uid, "bookmarks");
     let q = query(
       bookmarksRef,
-      where("userId", "==", user.value.uid),
+      where("eventId", "==", targetEventId),
       orderBy("createdAt", "desc")
     );
-
-    // イベントフィルタリング
-    const targetEventId = eventId || currentEvent.value?.id;
-    if (targetEventId) {
-      q = query(q, where("eventId", "==", targetEventId));
-    }
 
     unsubscribe = onSnapshot(
       q,
@@ -130,9 +131,9 @@ export const useBookmarks = () => {
           const data = doc.data();
           bookmarkList.push({
             id: doc.id,
-            userId: data.userId,
-            circleId: data.circleId,
-            eventId: data.eventId || targetEventId || '',
+            userId: user.value.uid,
+            circleId: doc.id, // ドキュメントIDがcircleId
+            eventId: data.eventId || targetEventId,
             category: data.category,
             memo: data.memo,
             createdAt: data.createdAt?.toDate() || new Date(),
@@ -212,10 +213,9 @@ export const useBookmarks = () => {
         throw new Error("イベントが選択されていません");
       }
 
-      const bookmarksRef = collection($firestore, "bookmarks");
+      // users/{userId}/bookmarks/{circleId} の構造で保存
+      const bookmarkRef = doc($firestore, "users", user.value.uid, "bookmarks", circleId);
       const bookmarkData = {
-        userId: user.value.uid,
-        circleId,
         eventId: targetEventId,
         category,
         memo: memo || "",
@@ -223,11 +223,11 @@ export const useBookmarks = () => {
         updatedAt: serverTimestamp(),
       };
 
-      const docRef = await addDoc(bookmarksRef, bookmarkData);
+      await setDoc(bookmarkRef, bookmarkData);
 
       // ローカル状態を更新
       const newBookmark: Bookmark = {
-        id: docRef.id,
+        id: circleId,
         userId: user.value.uid,
         circleId,
         eventId: targetEventId,
@@ -237,7 +237,13 @@ export const useBookmarks = () => {
         updatedAt: new Date(),
       };
 
-      bookmarks.value.unshift(newBookmark);
+      // 既存のブックマークを更新または追加
+      const existingIndex = bookmarks.value.findIndex(b => b.circleId === circleId);
+      if (existingIndex !== -1) {
+        bookmarks.value[existingIndex] = newBookmark;
+      } else {
+        bookmarks.value.unshift(newBookmark);
+      }
 
       return newBookmark;
     } catch (err) {
@@ -248,15 +254,15 @@ export const useBookmarks = () => {
 
   // ブックマークを更新
   const updateBookmark = async (
-    bookmarkId: string,
+    circleId: string,
     updates: { category?: BookmarkCategory; memo?: string }
   ) => {
-    if (!isAuthenticated.value) {
+    if (!isAuthenticated.value || !user.value) {
       throw new Error("ログインが必要です");
     }
 
     try {
-      const bookmarkRef = doc($firestore, "bookmarks", bookmarkId);
+      const bookmarkRef = doc($firestore, "users", user.value.uid, "bookmarks", circleId);
       const updateData = {
         ...updates,
         updatedAt: serverTimestamp(),
@@ -265,7 +271,7 @@ export const useBookmarks = () => {
       await updateDoc(bookmarkRef, updateData);
 
       // ローカル状態を更新
-      const index = bookmarks.value.findIndex((b) => b.id === bookmarkId);
+      const index = bookmarks.value.findIndex((b) => b.circleId === circleId);
       if (index !== -1) {
         bookmarks.value[index] = {
           ...bookmarks.value[index],
@@ -280,29 +286,26 @@ export const useBookmarks = () => {
   };
 
   // ブックマークを削除
-  const removeBookmark = async (bookmarkId: string) => {
-    if (!isAuthenticated.value) {
+  const removeBookmark = async (circleId: string) => {
+    if (!isAuthenticated.value || !user.value) {
       throw new Error("ログインが必要です");
     }
 
     try {
-      const bookmarkRef = doc($firestore, "bookmarks", bookmarkId);
+      const bookmarkRef = doc($firestore, "users", user.value.uid, "bookmarks", circleId);
       await deleteDoc(bookmarkRef);
 
       // ローカル状態を更新
-      bookmarks.value = bookmarks.value.filter((b) => b.id !== bookmarkId);
+      bookmarks.value = bookmarks.value.filter((b) => b.circleId !== circleId);
     } catch (err) {
       console.error("Remove bookmark error:", err);
       throw new Error("ブックマークの削除に失敗しました");
     }
   };
 
-  // サークルIDでブックマークを削除
+  // サークルIDでブックマークを削除（エイリアス）
   const removeBookmarkByCircleId = async (circleId: string) => {
-    const bookmark = bookmarks.value.find((b) => b.circleId === circleId);
-    if (bookmark) {
-      await removeBookmark(bookmark.id);
-    }
+    await removeBookmark(circleId);
   };
 
   // サークルがブックマークされているかチェック
@@ -325,10 +328,10 @@ export const useBookmarks = () => {
     if (existingBookmark) {
       if (existingBookmark.category === category) {
         // 同じカテゴリの場合は削除
-        await removeBookmark(existingBookmark.id);
+        await removeBookmark(circleId);
       } else {
         // 異なるカテゴリの場合は更新
-        await updateBookmark(existingBookmark.id, { category });
+        await updateBookmark(circleId, { category });
       }
     } else {
       // 新規追加

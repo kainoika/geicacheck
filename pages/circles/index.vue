@@ -295,11 +295,7 @@ const handleBookmark = async (circleId: string, category: BookmarkCategory) => {
   try {
     if (!currentEvent.value) return
     
-    await addBookmark({
-      circleId,
-      category,
-      eventId: currentEvent.value.id
-    })
+    await addBookmark(circleId, category, undefined, currentEvent.value.id)
   } catch (err) {
     console.error('Bookmark error:', err)
   }

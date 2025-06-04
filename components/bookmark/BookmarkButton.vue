@@ -231,9 +231,8 @@ const handleBookmark = async (category: BookmarkCategory) => {
 
 const handleRemove = async () => {
   try {
-    const bookmark = getBookmarkByCircleId(props.circleId)
-    if (bookmark) {
-      await removeBookmark(bookmark.id)
+    if (isBookmarked.value) {
+      await removeBookmark(props.circleId)
       closeDropdown()
     }
   } catch (error) {
