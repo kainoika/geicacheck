@@ -205,36 +205,6 @@
             </ul>
           </div>
         </div>
-
-        <!-- 最近のアクティビティ -->
-        <div style="background: white; border-radius: 0.5rem; padding: 2rem; border: 1px solid #e5e7eb;">
-          <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
-            📈 最近のアクティビティ
-          </h2>
-          
-          <div v-if="recentActivities.length > 0" style="display: flex; flex-direction: column; gap: 1rem;">
-            <div 
-              v-for="activity in recentActivities" 
-              :key="activity.id"
-              style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #f9fafb; border-radius: 0.5rem;"
-            >
-              <div style="font-size: 1.25rem;">{{ activity.icon }}</div>
-              <div style="flex: 1;">
-                <p style="margin: 0 0 0.25rem 0; font-weight: 500; color: #111827;">
-                  {{ activity.description }}
-                </p>
-                <p style="margin: 0; font-size: 0.875rem; color: #6b7280;">
-                  {{ formatDate(activity.createdAt) }}
-                </p>
-              </div>
-            </div>
-          </div>
-          
-          <div v-else style="text-align: center; padding: 2rem; color: #9ca3af;">
-            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📭</div>
-            <p style="margin: 0;">まだアクティビティがありません</p>
-          </div>
-        </div>
       </div>
     </div>
 
