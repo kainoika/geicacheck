@@ -20,6 +20,36 @@ export const useCircles = () => {
   const circles = useState<Circle[]>("circles.list", () => []);
   const loading = useState<boolean>("circles.loading", () => false);
   const error = useState<string | null>("circles.error", () => null);
+  
+  // キャッシュ用ステート
+  const circlesCache = useState<Record<string, { data: Circle[], timestamp: number }>>("circles.cache", () => ({}));
+  const CACHE_DURATION = 5 * 60 * 1000; // 5分間キャッシュ
+
+  // キャッシュチェック関数
+  const isCacheValid = (eventId: string): boolean => {
+    const cached = circlesCache.value[eventId];
+    if (!cached) return false;
+    
+    const now = Date.now();
+    return (now - cached.timestamp) < CACHE_DURATION;
+  };
+
+  // キャッシュからデータ取得
+  const getCachedCircles = (eventId: string): Circle[] | null => {
+    if (isCacheValid(eventId)) {
+      console.log('📋 Using cached data for event:', eventId);
+      return circlesCache.value[eventId].data;
+    }
+    return null;
+  };
+
+  // キャッシュにデータ保存
+  const setCachedCircles = (eventId: string, data: Circle[]) => {
+    circlesCache.value[eventId] = {
+      data,
+      timestamp: Date.now()
+    };
+  };
 
   // サークル一覧を取得
   const fetchCircles = async (
@@ -40,6 +70,24 @@ export const useCircles = () => {
       }
 
       console.log('📍 Target event ID:', targetEventId);
+      
+      // キャッシュチェック
+      const cachedData = getCachedCircles(targetEventId);
+      if (cachedData) {
+        const filteredList = applyClientSideFilters(cachedData, params);
+        
+        const result: SearchResult = {
+          circles: filteredList,
+          total: filteredList.length,
+          page: params.page || 1,
+          limit: params.limit || 12,
+          hasMore: false,
+        };
+        
+        circles.value = filteredList;
+        loading.value = false;
+        return result;
+      }
 
       // サブコレクション構造: events/{eventId}/circles
       const circlesRef = collection($firestore, "events", targetEventId, "circles");
@@ -52,28 +100,15 @@ export const useCircles = () => {
         q = query(q, where("isAdult", "==", params.isAdult));
       }
 
-      // ソート条件を追加
-      const sortBy = params.sortBy || "placement";
-      const sortOrder = params.sortOrder || "asc";
-
-      switch (sortBy) {
-        case "circleName":
-          q = query(q, orderBy("circleName", sortOrder));
-          break;
-        case "updatedAt":
-          q = query(q, orderBy("updatedAt", sortOrder));
-          break;
-        case "placement":
-        default:
-          break;
-      }
+      // 全データを取得してクライアントサイドでフィルタリング
+      // Firestoreの制限を回避
 
       // 全データを取得（ページネーションはクライアントサイドで処理）
       const snapshot = await getDocs(q);
       console.log('📄 Snapshot size:', snapshot.size);
       console.log('📄 Snapshot empty:', snapshot.empty);
       
-      const circleList: Circle[] = [];
+      let circleList: Circle[] = [];
 
       snapshot.forEach((doc) => {
         const data = doc.data();
@@ -98,6 +133,9 @@ export const useCircles = () => {
         });
       });
 
+      // クライアントサイドでフィルタリング
+      circleList = applyClientSideFilters(circleList, params);
+
       const result: SearchResult = {
         circles: circleList,
         total: circleList.length,
@@ -108,6 +146,31 @@ export const useCircles = () => {
 
       console.log('📊 Final result:', result);
       console.log('📊 Circle list length:', circleList.length);
+
+      // キャッシュに保存（フィルター適用前の全データ）
+      const unfilteredList: Circle[] = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        unfilteredList.push({
+          id: doc.id,
+          circleName: data.circleName,
+          circleKana: data.circleKana,
+          penName: data.penName,
+          penNameKana: data.penNameKana,
+          circleImageUrl: data.circleImageUrl,
+          genre: data.genre || [],
+          placement: data.placement,
+          description: data.description,
+          contact: data.contact || {},
+          isAdult: data.isAdult || false,
+          ownerId: data.ownerId,
+          isPublic: data.isPublic,
+          eventId: targetEventId,
+          createdAt: data.createdAt?.toDate() || new Date(),
+          updatedAt: data.updatedAt?.toDate() || new Date(),
+        });
+      });
+      setCachedCircles(targetEventId, unfilteredList);
 
       // 全データをstateに設定
       circles.value = circleList;
@@ -238,16 +301,15 @@ export const useCircles = () => {
       let q = query(circlesRef, where("isPublic", "==", true));
 
       // 基本的なフィルターを適用
-      if (filters.genres && filters.genres.length > 0) {
-        q = query(q, where("genre", "array-contains-any", filters.genres));
-      }
-
       if (filters.isAdult !== undefined) {
         q = query(q, where("isAdult", "==", filters.isAdult));
       }
 
+      // 全データを取得してクライアントサイドでフィルタリング
+      // Firestoreの制限を回避
+
       const snapshot = await getDocs(q);
-      const allCircles: Circle[] = [];
+      let allCircles: Circle[] = [];
 
       snapshot.forEach((doc) => {
         const data = doc.data();
@@ -271,15 +333,19 @@ export const useCircles = () => {
         });
       });
 
-      // クライアントサイドでテキスト検索
+      // クライアントサイドでフィルタリング適用
+      allCircles = applyClientSideFilters(allCircles, filters);
+
+      // クライアントサイドでテキスト検索（サークル名、ペンネームのみ）
       const searchTerms = searchQuery.toLowerCase().split(/\s+/);
       const filteredCircles = allCircles.filter((circle) => {
         const searchText = [
           circle.circleName,
           circle.circleKana,
-          circle.description,
-          ...circle.genre,
+          circle.penName,
+          circle.penNameKana,
         ]
+          .filter(Boolean) // undefined/nullを除外
           .join(" ")
           .toLowerCase();
 
@@ -316,8 +382,16 @@ export const useCircles = () => {
   };
 
   // 配置情報をフォーマット
+  // 例: { block: "A", number1: "01", number2: "02" } -> "A-01-02"
+  //     { block: "A", number1: "01", number2: null } -> "A-01"
   const formatPlacement = (placement: PlacementInfo): string => {
     if (!placement) return "";
+    const number2 = placement.number2 ? placement.number2 : "";
+
+    if (number2 === "") {
+      return `${placement.block}-${placement.number1}`;
+    }
+
     return `${placement.block}-${placement.number1}-${placement.number2}`;
   };
 
@@ -379,6 +453,48 @@ export const useCircles = () => {
     }
   };
 
+  // クライアントサイドフィルタリング共通関数
+  const applyClientSideFilters = (circleList: Circle[], filters: SearchParams): Circle[] => {
+    let filteredList = [...circleList];
+
+    // 成人向けフィルター
+    if (filters.isAdult !== undefined) {
+      filteredList = filteredList.filter(circle => circle.isAdult === filters.isAdult);
+    }
+
+    // ジャンルフィルター (AND/OR切り替え可能)
+    if (filters.genres && filters.genres.length > 0) {
+      const mode = filters.genreFilterMode || 'OR';
+      filteredList = filteredList.filter(circle => {
+        if (mode === 'AND') {
+          // AND検索 - すべてのジャンルを含む
+          return filters.genres!.every(genre => circle.genre.includes(genre));
+        } else {
+          // OR検索 - いずれかのジャンルを含む
+          return filters.genres!.some(genre => circle.genre.includes(genre));
+        }
+      });
+    }
+
+    // 配置（ブロック）フィルター
+    if (filters.blocks && filters.blocks.length > 0) {
+      filteredList = filteredList.filter(circle => {
+        return filters.blocks!.includes(circle.placement.block);
+      });
+    }
+
+    return filteredList;
+  };
+
+  // 統合検索・フィルター関数
+  const performSearch = async (searchQuery?: string, filters: SearchParams = {}, eventId?: string): Promise<SearchResult> => {
+    if (searchQuery && searchQuery.trim()) {
+      return await searchCircles(searchQuery.trim(), filters, eventId);
+    } else {
+      return await fetchCircles(filters, eventId);
+    }
+  };
+
   return {
     circles: readonly(circles),
     loading: readonly(loading),
@@ -387,6 +503,7 @@ export const useCircles = () => {
     fetchCircleById,
     fetchCirclesByIds,
     searchCircles,
+    performSearch,
     formatPlacement,
     getAvailableGenres,
     getAvailableAreas,

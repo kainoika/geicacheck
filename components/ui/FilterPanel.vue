@@ -3,7 +3,29 @@
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
       <!-- ジャンルフィルター -->
       <div class="filter-group">
-        <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #374151;">ジャンル</h4>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <h4 style="font-weight: 600; color: #374151; margin: 0;">ジャンル</h4>
+          <div style="display: flex; gap: 0.5rem;">
+            <label style="display: flex; align-items: center; cursor: pointer; font-size: 0.75rem;">
+              <input
+                type="radio"
+                value="OR"
+                v-model="genreFilterMode"
+                style="margin-right: 0.25rem;"
+              >
+              <span>OR</span>
+            </label>
+            <label style="display: flex; align-items: center; cursor: pointer; font-size: 0.75rem;">
+              <input
+                type="radio"
+                value="AND"
+                v-model="genreFilterMode"
+                style="margin-right: 0.25rem;"
+              >
+              <span>AND</span>
+            </label>
+          </div>
+        </div>
         <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
           <label 
             v-for="genre in availableGenres" 
@@ -25,86 +47,48 @@
         </div>
       </div>
 
-      <!-- 開催日フィルター -->
+      <!-- 配置フィルター（ブロック） -->
       <div class="filter-group">
-        <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #374151;">開催日</h4>
-        <div style="display: flex; gap: 0.5rem;">
-          <label 
-            v-for="day in availableDays" 
-            :key="day"
-            style="display: flex; align-items: center; cursor: pointer; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; transition: all 0.2s;"
-            :style="{ 
-              backgroundColor: selectedDays.includes(day) ? '#fef3f2' : 'white',
-              borderColor: selectedDays.includes(day) ? '#ff69b4' : '#d1d5db'
-            }"
-          >
-            <input
-              type="checkbox"
-              :value="day"
-              v-model="selectedDays"
-              style="margin-right: 0.5rem;"
-            >
-            <span style="font-size: 0.875rem;">{{ day }}日目</span>
-          </label>
-        </div>
-      </div>
-
-      <!-- エリアフィルター -->
-      <div class="filter-group">
-        <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #374151;">エリア</h4>
+        <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #374151;">配置（ブロック）</h4>
         <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
           <label 
-            v-for="area in availableAreas" 
-            :key="area"
+            v-for="block in availableBlocks" 
+            :key="block"
             style="display: flex; align-items: center; cursor: pointer; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; transition: all 0.2s;"
             :style="{ 
-              backgroundColor: selectedAreas.includes(area) ? '#fef3f2' : 'white',
-              borderColor: selectedAreas.includes(area) ? '#ff69b4' : '#d1d5db'
+              backgroundColor: selectedBlocks.includes(block) ? '#fef3f2' : 'white',
+              borderColor: selectedBlocks.includes(block) ? '#ff69b4' : '#d1d5db'
             }"
           >
             <input
               type="checkbox"
-              :value="area"
-              v-model="selectedAreas"
+              :value="block"
+              v-model="selectedBlocks"
               style="margin-right: 0.5rem;"
             >
-            <span style="font-size: 0.875rem;">{{ area }}</span>
+            <span style="font-size: 0.875rem;">{{ block }}ブロック</span>
           </label>
         </div>
       </div>
 
-      <!-- その他のフィルター -->
+      <!-- 成人向けフィルター -->
       <div class="filter-group">
-        <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #374151;">その他</h4>
+        <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #374151;">成人向けフィルター</h4>
         <div style="display: flex; flex-direction: column; gap: 0.5rem;">
           <label style="display: flex; align-items: center; cursor: pointer;">
             <input
-              type="checkbox"
-              v-model="hasTwitter"
+              type="radio"
+              :value="false"
+              v-model="adultFilter"
               style="margin-right: 0.5rem;"
             >
-            <span style="font-size: 0.875rem;">Twitterアカウントあり</span>
+            <span style="font-size: 0.875rem;">全年齢のみ</span>
           </label>
           <label style="display: flex; align-items: center; cursor: pointer;">
             <input
-              type="checkbox"
-              v-model="hasPixiv"
-              style="margin-right: 0.5rem;"
-            >
-            <span style="font-size: 0.875rem;">Pixivアカウントあり</span>
-          </label>
-          <label style="display: flex; align-items: center; cursor: pointer;">
-            <input
-              type="checkbox"
-              v-model="hasOshina"
-              style="margin-right: 0.5rem;"
-            >
-            <span style="font-size: 0.875rem;">お品書きあり</span>
-          </label>
-          <label style="display: flex; align-items: center; cursor: pointer;">
-            <input
-              type="checkbox"
-              v-model="includeAdult"
+              type="radio"
+              :value="true"
+              v-model="adultFilter"
               style="margin-right: 0.5rem;"
             >
             <span style="font-size: 0.875rem;">成人向けを含む</span>
@@ -136,18 +120,18 @@
 </template>
 
 <script setup lang="ts">
-import type { SearchFilters } from '~/types'
+import type { SearchParams } from '~/types'
 
 // Props
 interface Props {
-  modelValue: SearchFilters
+  modelValue: SearchParams
 }
 
 // Emits
 interface Emits {
-  (e: 'update:modelValue', value: SearchFilters): void
-  (e: 'apply', value: SearchFilters): void
-  (e: 'reset', value: SearchFilters): void
+  (e: 'update:modelValue', value: SearchParams): void
+  (e: 'apply', value: SearchParams): void
+  (e: 'reset', value: SearchParams): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -156,56 +140,31 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<Emits>()
 
+// Composables
+const { getAvailableGenres } = useCircles()
+const { currentEvent } = useEvents()
+
 // State
 const selectedGenres = ref(props.modelValue.genres || [])
-const selectedDays = ref(props.modelValue.days || [])
-const selectedAreas = ref(props.modelValue.areas || [])
-const hasTwitter = ref(props.modelValue.hasTwitter || false)
-const hasPixiv = ref(props.modelValue.hasPixiv || false)
-const hasOshina = ref(props.modelValue.hasOshina || false)
-const includeAdult = ref(props.modelValue.isAdult || false)
+const selectedBlocks = ref(props.modelValue.blocks || [])
+const adultFilter = ref(props.modelValue.isAdult !== undefined ? props.modelValue.isAdult : false)
+const genreFilterMode = ref(props.modelValue.genreFilterMode || 'OR')
 
-// Available options (サンプルデータ)
-const availableGenres = ref([
-  'アイカツ！',
-  'アイカツスターズ！',
-  'アイカツフレンズ！',
-  'アイカツオンパレード！',
-  'アイカツプラネット！',
-  'いちご',
-  'あおい',
-  'らん',
-  'おとめ',
-  'ユリカ',
-  'あかり',
-  'スミレ',
-  'ひなき',
-  'ジュリ'
-])
-
-const availableDays = ref(['1', '2'])
-
-const availableAreas = ref([
-  '東1',
-  '東2',
-  '東3',
-  '東4',
-  '東5',
-  '東6',
-  '西1',
-  '西2'
+// Available options
+const availableGenres = ref<string[]>([])
+const availableBlocks = ref([
+  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+  'U', 'V', 'W', 'X', 'Y', 'Z'
 ])
 
 // Methods
 const applyFilters = () => {
   const filters = {
     genres: selectedGenres.value,
-    days: selectedDays.value,
-    areas: selectedAreas.value,
-    hasTwitter: hasTwitter.value,
-    hasPixiv: hasPixiv.value,
-    hasOshina: hasOshina.value,
-    isAdult: includeAdult.value
+    blocks: selectedBlocks.value,
+    isAdult: adultFilter.value,
+    genreFilterMode: genreFilterMode.value
   }
   
   emit('update:modelValue', filters)
@@ -214,37 +173,54 @@ const applyFilters = () => {
 
 const resetFilters = () => {
   selectedGenres.value = []
-  selectedDays.value = []
-  selectedAreas.value = []
-  hasTwitter.value = false
-  hasPixiv.value = false
-  hasOshina.value = false
-  includeAdult.value = false
+  selectedBlocks.value = []
+  adultFilter.value = false
+  genreFilterMode.value = 'OR'
   
   const filters = {
     genres: [],
-    days: [],
-    areas: [],
-    hasTwitter: false,
-    hasPixiv: false,
-    hasOshina: false,
-    isAdult: false
+    blocks: [],
+    isAdult: false,
+    genreFilterMode: 'OR' as const
   }
   
   emit('update:modelValue', filters)
   emit('reset', filters)
 }
 
+// Initialize available genres
+const initializeGenres = async () => {
+  try {
+    if (currentEvent.value) {
+      const genres = await getAvailableGenres(currentEvent.value.id)
+      availableGenres.value = genres
+    }
+  } catch (error) {
+    console.error('Failed to fetch available genres:', error)
+  }
+}
+
 // Watch for prop changes
 watch(() => props.modelValue, (newValue) => {
   selectedGenres.value = newValue.genres || []
-  selectedDays.value = newValue.days || []
-  selectedAreas.value = newValue.areas || []
-  hasTwitter.value = newValue.hasTwitter || false
-  hasPixiv.value = newValue.hasPixiv || false
-  hasOshina.value = newValue.hasOshina || false
-  includeAdult.value = newValue.isAdult || false
+  selectedBlocks.value = newValue.blocks || []
+  adultFilter.value = newValue.isAdult !== undefined ? newValue.isAdult : false
+  genreFilterMode.value = newValue.genreFilterMode || 'OR'
 }, { deep: true })
+
+// Watch for event changes
+watch(currentEvent, () => {
+  if (currentEvent.value) {
+    initializeGenres()
+  }
+})
+
+// Initialize on mount
+onMounted(() => {
+  if (currentEvent.value) {
+    initializeGenres()
+  }
+})
 </script>
 
 <style scoped>

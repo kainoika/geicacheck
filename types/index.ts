@@ -71,28 +71,15 @@ export interface BookmarkWithCircle extends Bookmark {
 export interface SearchFilters {
   query?: string;
   genres?: string[];
-  days?: string[];
-  areas?: string[];
   blocks?: string[];
   isAdult?: boolean;
-  hasTwitter?: boolean;
-  hasPixiv?: boolean;
-  hasOshina?: boolean;
-  tags?: string[];
+  genreFilterMode?: 'AND' | 'OR'; // ジャンルフィルターのモード
 }
 
 export interface SearchParams extends SearchFilters {
   page?: number;
   limit?: number;
-  sortBy?: SortOption;
-  sortOrder?: "asc" | "desc";
 }
-
-export type SortOption =
-  | "placement"
-  | "circleName"
-  | "updatedAt"
-  | "bookmarkCount";
 
 export interface SearchResult {
   circles: Circle[];
