@@ -68,10 +68,7 @@ export const useCircles = () => {
           break;
       }
 
-      // ページネーション
-      const pageLimit = params.limit || 20;
-      q = query(q, limit(pageLimit));
-
+      // 全データを取得（ページネーションはクライアントサイドで処理）
       const snapshot = await getDocs(q);
       console.log('📄 Snapshot size:', snapshot.size);
       console.log('📄 Snapshot empty:', snapshot.empty);
@@ -103,20 +100,18 @@ export const useCircles = () => {
 
       const result: SearchResult = {
         circles: circleList,
-        total: circleList.length, // 実際の実装では別途カウントクエリが必要
+        total: circleList.length,
         page: params.page || 1,
-        limit: pageLimit,
-        hasMore: circleList.length === pageLimit,
+        limit: params.limit || 12,
+        hasMore: false,
       };
 
       console.log('📊 Final result:', result);
       console.log('📊 Circle list length:', circleList.length);
 
-      // 最初のページの場合はstateを更新
-      if (!params.page || params.page === 1) {
-        circles.value = circleList;
-        console.log('✅ State updated, circles.value.length:', circles.value.length);
-      }
+      // 全データをstateに設定
+      circles.value = circleList;
+      console.log('✅ State updated, circles.value.length:', circles.value.length);
 
       return result;
     } catch (err) {
