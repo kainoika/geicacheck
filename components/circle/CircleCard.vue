@@ -54,7 +54,7 @@
             <div class="flex items-center justify-between">
                 <div class="flex space-x-2">
                     <!-- Twitter -->
-                    <a v-if="circle.contact.twitter" :href="getTwitterUrl(circle.contact.twitter)" target="_blank"
+                    <a v-if="circle.contact.twitter" :href="circle.contact.twitter" target="_blank"
                         rel="noopener noreferrer"
                         class="p-2 text-gray-400 hover:text-blue-500 transition-colors rounded-md hover:bg-gray-100"
                         :title="`@${circle.contact.twitter}`">
@@ -130,10 +130,6 @@ const handleBookmark = (category: BookmarkCategory) => {
     emit('bookmark', props.circle.id, category)
 }
 
-const getTwitterUrl = (twitterId: string): string => {
-    const cleanId = twitterId.replace('@', '')
-    return `https://twitter.com/${cleanId}`
-}
 </script>
 
 <style scoped>

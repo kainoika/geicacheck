@@ -80,7 +80,7 @@
           <!-- Twitter -->
           <a 
             v-if="circle.contact && circle.contact.twitter"
-            :href="getTwitterUrl(circle.contact.twitter)"
+            :href="circle.contact.twitter"
             target="_blank"
             rel="noopener noreferrer"
             style="display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; background: #f0f9ff; color: #0284c7; border-radius: 0.375rem; text-decoration: none; transition: all 0.2s;"
@@ -103,20 +103,6 @@
             onmouseout="this.style.backgroundColor='#f0f9ff'"
           >
             🎨
-          </a>
-
-          <!-- Website -->
-          <a 
-            v-if="circle.contact && circle.contact.website"
-            :href="circle.contact.website"
-            target="_blank"
-            rel="noopener noreferrer"
-            style="display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; background: #f0fdf4; color: #16a34a; border-radius: 0.375rem; text-decoration: none; transition: all 0.2s;"
-            title="Website"
-            onmouseover="this.style.backgroundColor='#dcfce7'"
-            onmouseout="this.style.backgroundColor='#f0fdf4'"
-          >
-            🌐
           </a>
 
           <!-- お品書き -->
@@ -175,11 +161,6 @@ const bookmark = computed(() => getBookmarkByCircleId(props.circle.id))
 const isBookmarked = computed(() => !!bookmark.value)
 
 // Methods
-const getTwitterUrl = (twitterId: string): string => {
-  const cleanId = twitterId.replace('@', '')
-  return `https://twitter.com/${cleanId}`
-}
-
 const handleBookmark = () => {
   const category: BookmarkCategory = bookmark.value?.category || 'check'
   emit('bookmark', props.circle.id, category)
