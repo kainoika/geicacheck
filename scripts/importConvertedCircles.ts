@@ -9,12 +9,12 @@ config()
 
 // Firebase設定（環境変数から取得）
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID,
+  apiKey: process.env.NUXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NUXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NUXT_PUBLIC_FIREBASE_APP_ID,
 }
 
 // Firebase初期化
@@ -22,6 +22,7 @@ const app = initializeApp(firebaseConfig)
 const db = getFirestore(app)
 
 interface CircleData {
+  id: string
   circleName: string
   circleKana: string
   penName: string
@@ -48,6 +49,7 @@ interface CircleData {
 // JSONデータをFirestore形式に変換
 function convertToFirestoreFormat(circleData: CircleData, index: number) {
   return {
+    id: circleData.id,
     circleName: circleData.circleName,
     circleKana: circleData.circleKana,
     penName: circleData.penName,
@@ -92,7 +94,7 @@ async function importConvertedCircles() {
       
       try {
         // Firestoreドキュメント作成（インデックスベースのID）
-        const circleRef = doc(collection(db, 'circles'), `geika32-${String(i + 1).padStart(3, '0')}`)
+        const circleRef = doc(db, 'events', "geika-32", 'circles', `geika32-${String(i + 1).padStart(3, '0')}`)
         const firestoreData = convertToFirestoreFormat(circle, i + 1)
         
         console.log(firestoreData)
