@@ -12,6 +12,7 @@
                 type="text"
                 placeholder="サークル名、タグで検索..."
                 style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem;"
+                @input="handleRealtimeSearch"
                 @keyup.enter="handleSearch"
               >
               <div style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #9ca3af;">
@@ -34,17 +35,6 @@
               </span>
             </button>
             
-            <button 
-              @click="toggleSort"
-              style="padding: 0.75rem 1rem; border: 1px solid #d1d5db; background: white; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem;"
-              :style="{ 
-                backgroundColor: showSort ? '#fef3f2' : 'white',
-                borderColor: showSort ? '#ff69b4' : '#d1d5db',
-                color: showSort ? '#ff69b4' : '#374151'
-              }"
-            >
-              📊 並び替え
-            </button>
           </div>
 
           <!-- フィルターパネル -->
@@ -56,13 +46,6 @@
             />
           </div>
 
-          <!-- ソートパネル -->
-          <div v-if="showSort" style="animation: slideDown 0.2s ease-out;">
-            <SortPanel
-              v-model="sortOptions"
-              @apply="applySorting"
-            />
-          </div>
 
           <!-- 表示モード切り替え -->
           <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -186,38 +169,31 @@
 import type { Circle, BookmarkCategory, SearchParams } from '~/types'
 
 // Composables
-const { circles, loading, error, fetchCircles, searchCircles } = useCircles()
+const { circles, loading, error, fetchCircles, searchCircles, performSearch } = useCircles()
 const { addBookmark, removeBookmark } = useBookmarks()
 const { currentEvent, fetchEvents } = useEvents()
 
 // State
 const searchQuery = ref('')
 const showFilters = ref(false)
-const showSort = ref(false)
 const viewMode = ref('grid')
 const currentPage = ref(1)
 const itemsPerPage = ref(12)
+const searchTimeoutId = ref<NodeJS.Timeout | null>(null)
 
 const filters = ref<SearchParams>({
   genres: [],
-  hasTwitter: false,
-  hasPixiv: false,
-  hasOshina: false,
-  isAdult: false
-})
-
-const sortOptions = ref({
-  sortBy: 'placement' as const,
-  sortOrder: 'asc' as const
+  blocks: [],
+  isAdult: false,
+  genreFilterMode: 'OR'
 })
 
 // Computed
 const activeFiltersCount = computed(() => {
   let count = 0
   if (filters.value.genres?.length) count++
-  if (filters.value.hasTwitter) count++
-  if (filters.value.hasPixiv) count++
-  if (filters.value.hasOshina) count++
+  if (filters.value.blocks?.length) count++
+  if (filters.value.isAdult === true) count++ // 成人向けを含む場合のみカウント
   return count
 })
 
@@ -234,54 +210,56 @@ const paginatedCircles = computed(() => {
 // Methods
 const toggleFilters = () => {
   showFilters.value = !showFilters.value
-  if (showFilters.value) {
-    showSort.value = false
-  }
-}
-
-const toggleSort = () => {
-  showSort.value = !showSort.value
-  if (showSort.value) {
-    showFilters.value = false
-  }
 }
 
 const handleSearch = async () => {
   currentPage.value = 1
-  if (searchQuery.value.trim()) {
-    await searchCircles(searchQuery.value.trim(), {
+  await performSearch(searchQuery.value, {
+    ...filters.value,
+    page: currentPage.value,
+    limit: itemsPerPage.value
+  }, currentEvent.value?.id)
+}
+
+// リアルタイム検索処理
+const handleRealtimeSearch = () => {
+  // 既存のタイマーをクリア
+  if (searchTimeoutId.value) {
+    clearTimeout(searchTimeoutId.value)
+  }
+  
+  // 300msのデバウンスで検索実行
+  searchTimeoutId.value = setTimeout(async () => {
+    currentPage.value = 1
+    await performSearch(searchQuery.value, {
       ...filters.value,
-      sortBy: sortOptions.value.sortBy,
-      sortOrder: sortOptions.value.sortOrder,
       page: currentPage.value,
       limit: itemsPerPage.value
-    })
-  } else {
-    await fetchData()
-  }
+    }, currentEvent.value?.id)
+  }, 300)
 }
 
 const applyFilters = async () => {
   showFilters.value = false
   currentPage.value = 1
-  await fetchData()
+  
+  await performSearch(searchQuery.value, {
+    ...filters.value,
+    page: currentPage.value,
+    limit: itemsPerPage.value
+  }, currentEvent.value?.id)
 }
 
 const resetFilters = async () => {
   filters.value = {
     genres: [],
-    hasTwitter: false,
-    hasPixiv: false,
-    hasOshina: false,
-    isAdult: false
+    blocks: [],
+    isAdult: false,
+    genreFilterMode: 'OR'
   }
+  searchQuery.value = ''
   currentPage.value = 1
-  await fetchData()
-}
-
-const applySorting = async () => {
-  showSort.value = false
-  currentPage.value = 1
+  showFilters.value = false
   await fetchData()
 }
 
@@ -314,8 +292,6 @@ const fetchData = async () => {
     console.log('🔄 Fetching circles for event:', currentEvent.value.id)
     const result = await fetchCircles({
       ...filters.value,
-      sortBy: sortOptions.value.sortBy,
-      sortOrder: sortOptions.value.sortOrder,
       page: currentPage.value,
       limit: itemsPerPage.value
     }, currentEvent.value.id)
@@ -373,6 +349,13 @@ onMounted(async () => {
 watch(currentEvent, async () => {
   if (currentEvent.value) {
     await fetchData()
+  }
+})
+
+// コンポーネントアンマウント時にタイマーをクリア
+onUnmounted(() => {
+  if (searchTimeoutId.value) {
+    clearTimeout(searchTimeoutId.value)
   }
 })
 
