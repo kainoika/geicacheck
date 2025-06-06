@@ -242,37 +242,16 @@
                 アクション
               </h2>
               <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                <!-- 編集ボタン（編集権限がある場合） -->
-                <NuxtLink
-                  v-if="hasEditPermission"
-                  :to="`/circles/edit/${circle.id}`"
-                  style="padding: 0.75rem; background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; border-radius: 0.5rem; text-decoration: none; font-weight: 500; transition: all 0.2s; text-align: center;"
-                  onmouseover="this.style.backgroundColor='#dcfce7'"
-                  onmouseout="this.style.backgroundColor='#f0fdf4'"
-                >
-                  <PencilIcon class="h-4 w-4 inline mr-1" />
-                  情報を編集
-                </NuxtLink>
-                
                 <button
-                  @click="shareCircle"
-                  style="padding: 0.75rem; background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; border-radius: 0.5rem; cursor: pointer; font-weight: 500; transition: all 0.2s;"
-                  onmouseover="this.style.backgroundColor='#e5e7eb'"
-                  onmouseout="this.style.backgroundColor='#f3f4f6'"
+                  @click="shareToTwitter"
+                  style="padding: 0.75rem; background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; border-radius: 0.5rem; cursor: pointer; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;"
+                  onmouseover="this.style.backgroundColor='#bfdbfe'"
+                  onmouseout="this.style.backgroundColor='#dbeafe'"
                 >
-                  <LinkIcon class="h-4 w-4 inline mr-1" />
-                  シェア
-                </button>
-                
-                <button
-                  v-if="isAuthenticated"
-                  @click="reportCircle"
-                  style="padding: 0.75rem; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 0.5rem; cursor: pointer; font-weight: 500; transition: all 0.2s;"
-                  onmouseover="this.style.backgroundColor='#fee2e2'"
-                  onmouseout="this.style.backgroundColor='#fef2f2'"
-                >
-                  <ExclamationCircleIcon class="h-4 w-4 inline mr-1" />
-                  報告
+                  <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                  </svg>
+                  Twitterでシェア
                 </button>
               </div>
             </div>
@@ -290,10 +269,7 @@ import {
   MapIcon,
   DocumentTextIcon,
   PhoneIcon,
-  BoltIcon,
-  PencilIcon,
-  LinkIcon,
-  ExclamationCircleIcon
+  BoltIcon
 } from '@heroicons/vue/24/outline'
 import type { Circle, BookmarkCategory, CircleItem, CircleItemFormData } from '~/types'
 
@@ -326,7 +302,6 @@ const permissions = computed(() => {
   }
 })
 
-const hasEditPermission = computed(() => permissions.value.canEdit)
 
 // 人気ジャンル取得
 const popularGenres = ref<string[]>([])
@@ -360,26 +335,16 @@ const handleBookmark = async (category) => {
   }
 }
 
-const shareCircle = async () => {
-  if (navigator.share) {
-    try {
-      await navigator.share({
-        title: `${circle.value.circleName} - geika check!`,
-        text: circle.value.description,
-        url: window.location.href
-      })
-    } catch (err) {
-      console.log('Share cancelled')
-    }
-  } else {
-    // フォールバック: URLをクリップボードにコピー
-    await navigator.clipboard.writeText(window.location.href)
-    alert('URLをクリップボードにコピーしました')
-  }
-}
-
-const reportCircle = () => {
-  alert('報告機能は準備中です')
+const shareToTwitter = () => {
+  if (!circle.value) return
+  
+  const text = `${circle.value.circleName} | geika check!`
+  const url = window.location.href
+  const hashtags = 'アイカツ,芸カ'
+  
+  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}&hashtags=${encodeURIComponent(hashtags)}`
+  
+  window.open(twitterUrl, '_blank', 'width=550,height=420')
 }
 
 // 画像アップロード処理
