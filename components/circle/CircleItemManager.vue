@@ -19,19 +19,7 @@
         :key="item.id"
         class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
       >
-        <div class="flex items-start gap-4">
-          <!-- 頒布物画像 -->
-          <div v-if="item.imageUrl" class="flex-shrink-0 w-20 h-20">
-            <img
-              :src="item.imageUrl"
-              :alt="item.name"
-              class="w-full h-full object-cover rounded-md border border-gray-200"
-            />
-          </div>
-          <div v-else class="flex-shrink-0 w-20 h-20 bg-gray-100 rounded-md border border-gray-200 flex items-center justify-center">
-            <PhotoIcon class="h-8 w-8 text-gray-400" />
-          </div>
-          
+        <div class="flex items-start">
           <div class="flex-1 min-w-0">
             <h4 class="text-sm font-medium text-gray-900 truncate">{{ item.name }}</h4>
             <p class="text-sm text-gray-600 mt-1">{{ formatPrice(item.price) }}</p>
@@ -77,8 +65,7 @@
       <ShoppingBagIcon class="mx-auto h-12 w-12 text-gray-300" />
       <p class="mt-2 text-sm">頒布物が登録されていません</p>
       <p v-if="canEdit" class="mt-1 text-xs">
-        「頒布物を追加」ボタンから登録してください<br>
-        <span class="text-gray-400">※ 画像の登録は任意です</span>
+        「頒布物を追加」ボタンから登録してください
       </p>
     </div>
 
@@ -142,25 +129,6 @@
               ></textarea>
             </div>
             
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                頒布物画像 <span class="text-gray-500 font-normal">(任意)</span>
-              </label>
-              <ImageUpload
-                v-model="formData.imageUrl"
-                label="頒布物画像"
-                :path="`circle-images/${eventId}/${circleId}/items`"
-                :can-edit="true"
-                :max-size="3"
-                @error="uploadError = $event"
-              />
-              <p class="mt-1 text-xs text-gray-500">
-                頒布物の写真があると、より魅力的に表示されます
-              </p>
-              <p v-if="uploadError" class="mt-1 text-sm text-red-600">
-                {{ uploadError }}
-              </p>
-            </div>
             
             <div class="flex items-center">
               <input
@@ -203,8 +171,7 @@ import {
   PlusIcon,
   PencilIcon,
   TrashIcon,
-  ShoppingBagIcon,
-  PhotoIcon
+  ShoppingBagIcon
 } from '@heroicons/vue/24/outline'
 import type { CircleItem, CircleItemFormData } from '~/types'
 
@@ -216,8 +183,8 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'add-item', item: CircleItemFormData & { imageUrl?: string }): void
-  (e: 'update-item', id: string, item: CircleItemFormData & { imageUrl?: string }): void
+  (e: 'add-item', item: CircleItemFormData): void
+  (e: 'update-item', id: string, item: CircleItemFormData): void
   (e: 'delete-item', id: string): void
 }
 
@@ -227,14 +194,12 @@ const emit = defineEmits<Emits>()
 const showAddForm = ref(false)
 const editingItem = ref<CircleItem | null>(null)
 const saving = ref(false)
-const uploadError = ref('')
 
-const formData = reactive<CircleItemFormData & { imageUrl?: string }>({
+const formData = reactive<CircleItemFormData>({
   name: '',
   price: 0,
   description: '',
-  isAvailable: true,
-  imageUrl: undefined
+  isAvailable: true
 })
 
 const formatPrice = (price: number): string => {
@@ -246,9 +211,7 @@ const resetForm = () => {
   formData.price = 0
   formData.description = ''
   formData.isAvailable = true
-  formData.imageUrl = undefined
   editingItem.value = null
-  uploadError.value = ''
 }
 
 const closeForm = () => {
@@ -262,7 +225,6 @@ const editItem = (item: CircleItem) => {
   formData.price = item.price
   formData.description = item.description || ''
   formData.isAvailable = item.isAvailable
-  formData.imageUrl = item.imageUrl
   showAddForm.value = true
 }
 

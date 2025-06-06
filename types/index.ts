@@ -57,7 +57,6 @@ export interface CircleItem {
   name: string; // 頒布物名
   price: number; // 価格
   description?: string; // 頒布物の説明
-  imageUrl?: string; // 頒布物の画像URL（オプション）
   isAvailable: boolean; // 在庫有無
   createdAt: Date;
   updatedAt: Date;

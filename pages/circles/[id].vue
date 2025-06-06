@@ -391,7 +391,7 @@ const updateMenuImage = async (imageUrl: string | undefined) => {
 }
 
 // 頒布物管理
-const addItem = async (itemData: CircleItemFormData & { imageUrl?: string }) => {
+const addItem = async (itemData: CircleItemFormData) => {
   if (!circle.value) return
   
   const newItem: CircleItem = {
@@ -414,7 +414,7 @@ const addItem = async (itemData: CircleItemFormData & { imageUrl?: string }) => 
   }
 }
 
-const updateItem = async (itemId: string, itemData: CircleItemFormData & { imageUrl?: string }) => {
+const updateItem = async (itemId: string, itemData: CircleItemFormData) => {
   if (!circle.value || !circle.value.items) return
   
   const updatedItems = circle.value.items.map(item => 
