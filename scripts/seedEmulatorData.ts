@@ -50,6 +50,26 @@ const sampleCircles: Circle[] = [
       pixiv: '12345678',
       oshinaUrl: 'https://ichigo-fan.example.com'
     },
+    items: [
+      {
+        id: 'item_001',
+        name: 'いちごアクリルキーホルダー',
+        price: 800,
+        description: '星宮いちごちゃんのオリジナルアクリルキーホルダー',
+        isAvailable: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 'item_002',
+        name: 'イラスト集「Strawberry Dreams」',
+        price: 1000,
+        description: 'いちごちゃんのイラスト集、フルカラー20ページ',
+        isAvailable: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ],
     isAdult: false,
     ownerId: 'user-001',
     isPublic: true,
@@ -74,6 +94,17 @@ const sampleCircles: Circle[] = [
       twitter: 'aoi_laboratory',
       pixiv: '87654321'
     },
+    items: [
+      {
+        id: 'item_003',
+        name: '漫画「あおいの日常」',
+        price: 500,
+        description: '霧矢あおいちゃんの日常を描いた漫画、28ページ',
+        isAvailable: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ],
     isAdult: false,
     ownerId: 'user-002',
     isPublic: true,

@@ -28,6 +28,7 @@
     "@headlessui/vue": "^1.7.23",
     "@heroicons/vue": "^2.2.0",
     "@pinia/nuxt": "^0.5.5",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "firebase": "^10.13.2",
     "nuxt": "^3.17.4",
     "pinia": "^2.2.6",

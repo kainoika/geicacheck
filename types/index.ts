@@ -24,11 +24,13 @@ export interface Circle {
   circleKana?: string;
   penName?: string;
   penNameKana?: string;
-  circleImageUrl?: string; // サークルの画像URL
+  circleCutImageUrl?: string; // サークルカット画像URL
+  menuImageUrl?: string; // お品書き画像URL
   genre: string[]; // ジャンルの配列
   placement: PlacementInfo;
   description?: string;
   contact: ContactInfo;
+  items?: CircleItem[]; // 頒布物一覧
   isAdult: boolean;
   ownerId?: string;
   isPublic: boolean;
@@ -47,6 +49,18 @@ export interface ContactInfo {
   twitter?: string;
   pixiv?: string;
   oshinaUrl?: string;
+}
+
+// 頒布物関連の型定義
+export interface CircleItem {
+  id: string;
+  name: string; // 頒布物名
+  price: number; // 価格
+  description?: string; // 頒布物の説明
+  imageUrl?: string; // 頒布物の画像URL（オプション）
+  isAvailable: boolean; // 在庫有無
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // ブックマーク関連の型定義
@@ -215,6 +229,13 @@ export interface CircleFormData {
   tags: string[];
   isAdult: boolean;
   isPublic: boolean;
+}
+
+export interface CircleItemFormData {
+  name: string;
+  price: number;
+  description?: string;
+  isAvailable: boolean;
 }
 
 export interface BookmarkFormData {

@@ -3,6 +3,7 @@ import {
   doc,
   getDocs,
   getDoc,
+  updateDoc,
   query,
   where,
   orderBy,
@@ -115,8 +116,10 @@ export const useCircles = () => {
           circleKana: data.circleKana,
           penName: data.penName,
           penNameKana: data.penNameKana,
-          circleImageUrl: data.circleImageUrl,
+          circleCutImageUrl: data.circleCutImageUrl,
+          menuImageUrl: data.menuImageUrl,
           genre: data.genre || [],
+          items: data.items || [],
           placement: data.placement,
           description: data.description,
           contact: data.contact || {},
@@ -250,8 +253,10 @@ export const useCircles = () => {
             circleKana: data.circleKana,
             penName: data.penName,
             penNameKana: data.penNameKana,
-            circleImageUrl: data.circleImageUrl,
+            circleCutImageUrl: data.circleCutImageUrl,
+            menuImageUrl: data.menuImageUrl,
             genre: data.genre || [],
+            items: data.items || [],
             placement: data.placement,
             description: data.description,
             contact: data.contact || {},
@@ -498,6 +503,29 @@ export const useCircles = () => {
     }
   };
 
+  // サークル情報を更新
+  const updateCircle = async (circleId: string, eventId: string, updates: Partial<Circle>) => {
+    if (!$firestore) {
+      throw new Error("Firestore is not initialized");
+    }
+
+    try {
+      const circleRef = doc($firestore, "events", eventId, "circles", circleId);
+      
+      // updatedAtを追加
+      const updateData = {
+        ...updates,
+        updatedAt: new Date()
+      };
+      
+      await updateDoc(circleRef, updateData);
+      console.log('✅ Circle updated:', circleId);
+    } catch (err) {
+      console.error("Update circle error:", err);
+      throw new Error("サークル情報の更新に失敗しました");
+    }
+  };
+
   return {
     circles: readonly(circles),
     loading: readonly(loading),
@@ -507,6 +535,7 @@ export const useCircles = () => {
     fetchCirclesByIds,
     searchCircles,
     performSearch,
+    updateCircle,
     formatPlacement,
     getAvailableGenres,
     getPopularGenres,

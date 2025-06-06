@@ -86,20 +86,38 @@
         <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
           <!-- 左カラム：詳細情報 -->
           <div style="display: flex; flex-direction: column; gap: 2rem;">
+            <!-- サークルカット画像 -->
+            <div style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
+              <ImageUpload
+                v-model="circle.circleCutImageUrl"
+                label="サークルカット画像"
+                :path="`circle-images/${currentEvent?.id}/${circle.id}/circle-cut`"
+                :can-edit="permissions.canUploadImages"
+                @update:modelValue="updateCircleCut"
+                @error="uploadError = $event"
+              />
+            </div>
+
+            <!-- お品書き画像 -->
+            <div style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
+              <ImageUpload
+                v-model="circle.menuImageUrl"
+                label="お品書き画像"
+                :path="`circle-images/${currentEvent?.id}/${circle.id}/menu`"
+                :can-edit="permissions.canUploadImages"
+                @update:modelValue="updateMenuImage"
+                @error="uploadError = $event"
+              />
+            </div>
+
             <!-- ジャンル -->
             <div style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
-              <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
-                🎨 ジャンル
-              </h2>
-              <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                <span 
-                  v-for="genre in circle.genre" 
-                  :key="genre"
-                  style="background: #e0f2fe; color: #0277bd; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 500;"
-                >
-                  {{ genre }}
-                </span>
-              </div>
+              <GenreManager
+                :genres="circle.genre"
+                :can-edit="permissions.canEditGenres"
+                :popular-genres="popularGenres"
+                @update:genres="updateGenres"
+              />
             </div>
 
             <!-- 説明 -->
@@ -110,6 +128,19 @@
               <p style="color: #4b5563; line-height: 1.6; margin: 0;">
                 {{ circle.description }}
               </p>
+            </div>
+
+            <!-- 頒布物一覧 -->
+            <div style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
+              <CircleItemManager
+                :items="circle.items || []"
+                :can-edit="permissions.canManageItems"
+                :circle-id="circle.id"
+                :event-id="circle.eventId"
+                @add-item="addItem"
+                @update-item="updateItem"
+                @delete-item="deleteItem"
+              />
             </div>
 
           </div>
@@ -239,7 +270,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Circle, BookmarkCategory } from '~/types'
+import type { Circle, BookmarkCategory, CircleItem, CircleItemFormData } from '~/types'
 
 // Route params
 const route = useRoute()
@@ -249,18 +280,40 @@ const circleId = route.params.id as string
 const circle = ref<Circle | null>(null)
 const loading = ref(true)
 const error = ref<string | null>(null)
+const saving = ref(false)
+const uploadError = ref('')
 
 // Composables
 const { isAuthenticated, user } = useAuth()
-const { fetchCircleById, formatPlacement } = useCircles()
+const { fetchCircleById, formatPlacement, updateCircle, getPopularGenres } = useCircles()
 const { currentEvent } = useEvents()
 const { addBookmark, toggleBookmark, getBookmarkByCircleId } = useBookmarks()
+const { canEditCircle, canUploadImages, canManageItems, canEditGenres } = useCirclePermissions()
 
-// 編集権限（実装は後で必要に応じて追加）
-const hasEditPermission = computed(() => {
-  // 実際の実装では、サークルの編集権限をチェック
-  return false
+// 権限チェック
+const permissions = computed(() => {
+  if (!circle.value) return { canEdit: false, canUploadImages: false, canManageItems: false, canEditGenres: false }
+  return {
+    canEdit: canEditCircle(circle.value),
+    canUploadImages: canUploadImages(circle.value),
+    canManageItems: canManageItems(circle.value),
+    canEditGenres: canEditGenres(circle.value)
+  }
 })
+
+const hasEditPermission = computed(() => permissions.value.canEdit)
+
+// 人気ジャンル取得
+const popularGenres = ref<string[]>([])
+
+const loadPopularGenres = async () => {
+  if (!currentEvent.value) return
+  try {
+    popularGenres.value = await getPopularGenres(currentEvent.value.id)
+  } catch (err) {
+    console.error('人気ジャンル取得エラー:', err)
+  }
+}
 
 // ブックマーク状態
 const bookmark = computed(() => getBookmarkByCircleId(circleId))
@@ -304,6 +357,114 @@ const reportCircle = () => {
   alert('報告機能は準備中です')
 }
 
+// 画像アップロード処理
+const updateCircleCut = async (imageUrl: string | undefined) => {
+  if (!circle.value) return
+  saving.value = true
+  try {
+    await updateCircle(circle.value.id, currentEvent.value!.id, {
+      circleCutImageUrl: imageUrl
+    })
+    circle.value.circleCutImageUrl = imageUrl
+  } catch (err) {
+    console.error('サークルカット更新エラー:', err)
+    uploadError.value = 'サークルカットの更新に失敗しました'
+  } finally {
+    saving.value = false
+  }
+}
+
+const updateMenuImage = async (imageUrl: string | undefined) => {
+  if (!circle.value) return
+  saving.value = true
+  try {
+    await updateCircle(circle.value.id, currentEvent.value!.id, {
+      menuImageUrl: imageUrl
+    })
+    circle.value.menuImageUrl = imageUrl
+  } catch (err) {
+    console.error('お品書き更新エラー:', err)
+    uploadError.value = 'お品書きの更新に失敗しました'
+  } finally {
+    saving.value = false
+  }
+}
+
+// 頒布物管理
+const addItem = async (itemData: CircleItemFormData & { imageUrl?: string }) => {
+  if (!circle.value) return
+  
+  const newItem: CircleItem = {
+    id: `item_${Date.now()}`,
+    ...itemData,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
+  
+  const updatedItems = [...(circle.value.items || []), newItem]
+  
+  try {
+    await updateCircle(circle.value.id, currentEvent.value!.id, {
+      items: updatedItems
+    })
+    circle.value.items = updatedItems
+  } catch (err) {
+    console.error('頒布物追加エラー:', err)
+    alert('頒布物の追加に失敗しました')
+  }
+}
+
+const updateItem = async (itemId: string, itemData: CircleItemFormData & { imageUrl?: string }) => {
+  if (!circle.value || !circle.value.items) return
+  
+  const updatedItems = circle.value.items.map(item => 
+    item.id === itemId 
+      ? { ...item, ...itemData, updatedAt: new Date() }
+      : item
+  )
+  
+  try {
+    await updateCircle(circle.value.id, currentEvent.value!.id, {
+      items: updatedItems
+    })
+    circle.value.items = updatedItems
+  } catch (err) {
+    console.error('頒布物更新エラー:', err)
+    alert('頒布物の更新に失敗しました')
+  }
+}
+
+const deleteItem = async (itemId: string) => {
+  if (!circle.value || !circle.value.items) return
+  
+  const updatedItems = circle.value.items.filter(item => item.id !== itemId)
+  
+  try {
+    await updateCircle(circle.value.id, currentEvent.value!.id, {
+      items: updatedItems
+    })
+    circle.value.items = updatedItems
+  } catch (err) {
+    console.error('頒布物削除エラー:', err)
+    alert('頒布物の削除に失敗しました')
+  }
+}
+
+// ジャンル管理
+const updateGenres = async (genres: string[]) => {
+  if (!circle.value) return
+  
+  try {
+    await updateCircle(circle.value.id, currentEvent.value!.id, {
+      genre: genres
+    })
+    circle.value.genre = genres
+  } catch (err) {
+    console.error('ジャンル更新エラー:', err)
+    alert('ジャンルの更新に失敗しました')
+  }
+}
+
 // データ取得
 const fetchCircle = async () => {
   loading.value = true
@@ -344,6 +505,7 @@ onMounted(async () => {
   }
   
   await fetchCircle()
+  await loadPopularGenres()
 })
 
 // イベント変更時にデータを再読み込み
