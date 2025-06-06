@@ -318,6 +318,11 @@ export const useBookmarks = () => {
     return bookmarks.value.find((b) => b.circleId === circleId);
   };
 
+  // イベント別ブックマークを取得
+  const getBookmarksByEventId = (eventId: string): BookmarkWithCircle[] => {
+    return bookmarksWithCircles.value.filter((bookmark) => bookmark.eventId === eventId);
+  };
+
   // ブックマークをトグル
   const toggleBookmark = async (
     circleId: string,
@@ -420,6 +425,7 @@ export const useBookmarks = () => {
     removeBookmarkByCircleId,
     isBookmarked,
     getBookmarkByCircleId,
+    getBookmarksByEventId,
     toggleBookmark,
     generateExportData,
     getCategoryLabel,
