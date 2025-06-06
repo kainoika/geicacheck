@@ -10,7 +10,7 @@
               <input
                 v-model="searchQuery"
                 type="text"
-                placeholder="サークル名、タグで検索..."
+                :placeholder="searchPlaceholder"
                 style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem;"
                 @input="handleRealtimeSearch"
                 @keyup.enter="handleSearch"
@@ -20,31 +20,32 @@
               </div>
             </div>
             
-            <button 
-              @click="toggleFilters"
-              style="padding: 0.75rem 1rem; border: 1px solid #d1d5db; background: white; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem;"
-              :style="{ 
-                backgroundColor: showFilters ? '#fef3f2' : 'white',
-                borderColor: showFilters ? '#ff69b4' : '#d1d5db',
-                color: showFilters ? '#ff69b4' : '#374151'
-              }"
-            >
-              🔧 フィルター
-              <span v-if="activeFiltersCount > 0" style="background: #ff69b4; color: white; border-radius: 50%; width: 1.25rem; height: 1.25rem; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600;">
-                {{ activeFiltersCount }}
-              </span>
-            </button>
             
           </div>
 
-          <!-- フィルターパネル -->
-          <div v-if="showFilters" style="animation: slideDown 0.2s ease-out;">
-            <FilterPanel
-              v-model="filters"
-              @apply="applyFilters"
-              @reset="resetFilters"
-            />
+          <!-- 検索ヒントと人気ジャンルタグ -->
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <!-- 検索ヒント -->
+            <div style="font-size: 0.875rem; color: #6b7280; display: flex; align-items: center; gap: 0.5rem;">
+              💡 複数のキーワードをスペースで区切って検索できます
+            </div>
+            
+            <!-- 人気ジャンルタグ -->
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+              <span style="font-size: 0.875rem; color: #6b7280; font-weight: 500;">人気ジャンル:</span>
+              <button
+                v-for="genre in popularGenres"
+                :key="genre"
+                @click="addGenreToSearch(genre)"
+                style="padding: 0.25rem 0.75rem; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 1rem; font-size: 0.75rem; color: #374151; cursor: pointer; transition: all 0.2s;"
+                onmouseover="this.style.backgroundColor='#e5e7eb'"
+                onmouseout="this.style.backgroundColor='#f3f4f6'"
+              >
+                {{ genre }}
+              </button>
+            </div>
           </div>
+
 
 
           <!-- 表示モード切り替え -->
@@ -169,32 +170,26 @@
 import type { Circle, BookmarkCategory, SearchParams } from '~/types'
 
 // Composables
-const { circles, loading, error, fetchCircles, searchCircles, performSearch } = useCircles()
+const { circles, loading, error, fetchCircles, searchCircles, performSearch, getPopularGenres } = useCircles()
 const { addBookmark, removeBookmark } = useBookmarks()
 const { currentEvent, fetchEvents } = useEvents()
 
 // State
 const searchQuery = ref('')
-const showFilters = ref(false)
 const viewMode = ref('grid')
 const currentPage = ref(1)
 const itemsPerPage = ref(12)
 const searchTimeoutId = ref<NodeJS.Timeout | null>(null)
+const isMobile = ref(false)
 
-const filters = ref<SearchParams>({
-  genres: [],
-  blocks: [],
-  isAdult: undefined,  // 初期状態では成人向けフィルターを適用しない
-  genreFilterMode: 'OR'
-})
+// 人気ジャンル（動的に取得）
+const popularGenres = ref<string[]>([])
 
-// Computed
-const activeFiltersCount = computed(() => {
-  let count = 0
-  if (filters.value.genres?.length) count++
-  if (filters.value.blocks?.length) count++
-  if (filters.value.isAdult !== undefined) count++ // 成人向けフィルターが設定されている場合カウント
-  return count
+// レスポンシブなプレースホルダー
+const searchPlaceholder = computed(() => {
+  return isMobile.value 
+    ? 'いちご グッズ など複数語で検索...'
+    : '「いちご グッズ」「あおい 漫画」など複数ワードで検索...'
 })
 
 const totalPages = computed(() => 
@@ -208,14 +203,9 @@ const paginatedCircles = computed(() => {
 })
 
 // Methods
-const toggleFilters = () => {
-  showFilters.value = !showFilters.value
-}
-
 const handleSearch = async () => {
   currentPage.value = 1
   await performSearch(searchQuery.value, {
-    ...filters.value,
     page: currentPage.value,
     limit: itemsPerPage.value
   }, currentEvent.value?.id)
@@ -232,35 +222,10 @@ const handleRealtimeSearch = () => {
   searchTimeoutId.value = setTimeout(async () => {
     currentPage.value = 1
     await performSearch(searchQuery.value, {
-      ...filters.value,
       page: currentPage.value,
       limit: itemsPerPage.value
     }, currentEvent.value?.id)
   }, 300)
-}
-
-const applyFilters = async () => {
-  showFilters.value = false
-  currentPage.value = 1
-  
-  await performSearch(searchQuery.value, {
-    ...filters.value,
-    page: currentPage.value,
-    limit: itemsPerPage.value
-  }, currentEvent.value?.id)
-}
-
-const resetFilters = async () => {
-  filters.value = {
-    genres: [],
-    blocks: [],
-    isAdult: undefined,  // リセット時も成人向けフィルターを適用しない
-    genreFilterMode: 'OR'
-  }
-  searchQuery.value = ''
-  currentPage.value = 1
-  showFilters.value = false
-  await fetchData()
 }
 
 const clearSearch = async () => {
@@ -279,6 +244,15 @@ const handleBookmark = async (circleId: string, category: BookmarkCategory) => {
   }
 }
 
+// 人気ジャンルタグをクリックした時の処理
+const addGenreToSearch = (genre: string) => {
+  // 既に検索クエリにそのジャンルが含まれていない場合のみ追加
+  if (!searchQuery.value.toLowerCase().includes(genre.toLowerCase())) {
+    searchQuery.value = searchQuery.value ? `${searchQuery.value} ${genre}` : genre
+    handleRealtimeSearch()
+  }
+}
+
 const fetchData = async () => {
   console.log('🔍 fetchData called')
   console.log('📅 currentEvent.value:', currentEvent.value)
@@ -291,7 +265,6 @@ const fetchData = async () => {
   try {
     console.log('🔄 Fetching circles for event:', currentEvent.value.id)
     const result = await fetchCircles({
-      ...filters.value,
       page: currentPage.value,
       limit: itemsPerPage.value
     }, currentEvent.value.id)
@@ -305,10 +278,41 @@ const fetchData = async () => {
   }
 }
 
+// 人気ジャンルを取得
+const fetchPopularGenres = async () => {
+  if (!currentEvent.value) {
+    return
+  }
+  
+  try {
+    console.log('🔄 Fetching popular genres for event:', currentEvent.value.id)
+    const genres = await getPopularGenres(currentEvent.value.id, 10)
+    popularGenres.value = genres
+    console.log('✅ Popular genres fetched:', genres)
+  } catch (err) {
+    console.error('❌ Fetch popular genres error:', err)
+  }
+}
+
+// 画面サイズチェック関数
+const checkMobileSize = () => {
+  if (process.client) {
+    isMobile.value = window.innerWidth < 768
+  }
+}
+
 // 初期データ読み込み
 onMounted(async () => {
   console.log('🚀 Circles page mounted')
   console.log('📅 currentEvent:', currentEvent.value)
+  
+  // 画面サイズをチェック
+  checkMobileSize()
+  
+  // リサイズイベントリスナーを追加
+  if (process.client) {
+    window.addEventListener('resize', checkMobileSize)
+  }
   
   // プラグインでイベントが初期化されていない場合のフォールバック
   if (!currentEvent.value) {
@@ -340,6 +344,7 @@ onMounted(async () => {
   if (currentEvent.value) {
     console.log('✅ currentEvent available:', currentEvent.value.id)
     await fetchData()
+    await fetchPopularGenres()
   } else {
     console.error('❌ No currentEvent available after waiting')
   }
@@ -349,13 +354,19 @@ onMounted(async () => {
 watch(currentEvent, async () => {
   if (currentEvent.value) {
     await fetchData()
+    await fetchPopularGenres()
   }
 })
 
-// コンポーネントアンマウント時にタイマーをクリア
+// コンポーネントアンマウント時にタイマーをクリアとイベントリスナーを削除
 onUnmounted(() => {
   if (searchTimeoutId.value) {
     clearTimeout(searchTimeoutId.value)
+  }
+  
+  // リサイズイベントリスナーを削除
+  if (process.client) {
+    window.removeEventListener('resize', checkMobileSize)
   }
 })
 

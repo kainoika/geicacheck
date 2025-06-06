@@ -95,10 +95,6 @@ export const useCircles = () => {
       
       console.log('🔍 Query path:', `events/${targetEventId}/circles`);
 
-      // フィルター条件を追加
-      if (params.isAdult !== undefined) {
-        q = query(q, where("isAdult", "==", params.isAdult));
-      }
 
       // 全データを取得してクライアントサイドでフィルタリング
       // Firestoreの制限を回避
@@ -300,10 +296,6 @@ export const useCircles = () => {
       const circlesRef = collection($firestore, "events", targetEventId, "circles");
       let q = query(circlesRef, where("isPublic", "==", true));
 
-      // 基本的なフィルターを適用
-      if (filters.isAdult !== undefined) {
-        q = query(q, where("isAdult", "==", filters.isAdult));
-      }
 
       // 全データを取得してクライアントサイドでフィルタリング
       // Firestoreの制限を回避
@@ -336,7 +328,7 @@ export const useCircles = () => {
       // クライアントサイドでフィルタリング適用
       allCircles = applyClientSideFilters(allCircles, filters);
 
-      // クライアントサイドでテキスト検索（サークル名、ペンネームのみ）
+      // クライアントサイドでテキスト検索（サークル名、ペンネーム、ジャンル、説明文）
       const searchTerms = searchQuery.toLowerCase().split(/\s+/);
       const filteredCircles = allCircles.filter((circle) => {
         const searchText = [
@@ -344,6 +336,8 @@ export const useCircles = () => {
           circle.circleKana,
           circle.penName,
           circle.penNameKana,
+          ...(circle.genre || []), // ジャンル配列を展開
+          circle.description, // サークル説明文
         ]
           .filter(Boolean) // undefined/nullを除外
           .join(" ")
@@ -424,6 +418,42 @@ export const useCircles = () => {
     }
   };
 
+  // 人気ジャンルを使用頻度順で取得
+  const getPopularGenres = async (eventId?: string, limit: number = 10): Promise<string[]> => {
+    try {
+      // イベントIDを取得
+      const targetEventId = eventId || currentEvent.value?.id;
+      if (!targetEventId) {
+        return [];
+      }
+      
+      const circlesRef = collection($firestore, "events", targetEventId, "circles");
+      let q = query(circlesRef, where("isPublic", "==", true));
+      
+      const snapshot = await getDocs(q);
+
+      // ジャンル使用頻度をカウント
+      const genreCount = new Map<string, number>();
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.genre && Array.isArray(data.genre)) {
+          data.genre.forEach((genre: string) => {
+            genreCount.set(genre, (genreCount.get(genre) || 0) + 1);
+          });
+        }
+      });
+
+      // 使用頻度順でソートして上位を返す
+      return Array.from(genreCount.entries())
+        .sort((a, b) => b[1] - a[1]) // 使用頻度の降順
+        .slice(0, limit) // 上位N件
+        .map(([genre]) => genre); // ジャンル名のみ取得
+    } catch (err) {
+      console.error("Get popular genres error:", err);
+      return [];
+    }
+  };
+
   // エリア一覧を取得
   const getAvailableAreas = async (eventId?: string): Promise<string[]> => {
     try {
@@ -453,37 +483,10 @@ export const useCircles = () => {
     }
   };
 
-  // クライアントサイドフィルタリング共通関数
+  // クライアントサイドフィルタリング共通関数（現在は不要だが将来の拡張のため残す）
   const applyClientSideFilters = (circleList: Circle[], filters: SearchParams): Circle[] => {
-    let filteredList = [...circleList];
-
-    // 成人向けフィルター
-    if (filters.isAdult !== undefined) {
-      filteredList = filteredList.filter(circle => circle.isAdult === filters.isAdult);
-    }
-
-    // ジャンルフィルター (AND/OR切り替え可能)
-    if (filters.genres && filters.genres.length > 0) {
-      const mode = filters.genreFilterMode || 'OR';
-      filteredList = filteredList.filter(circle => {
-        if (mode === 'AND') {
-          // AND検索 - すべてのジャンルを含む
-          return filters.genres!.every(genre => circle.genre.includes(genre));
-        } else {
-          // OR検索 - いずれかのジャンルを含む
-          return filters.genres!.some(genre => circle.genre.includes(genre));
-        }
-      });
-    }
-
-    // 配置（ブロック）フィルター
-    if (filters.blocks && filters.blocks.length > 0) {
-      filteredList = filteredList.filter(circle => {
-        return filters.blocks!.includes(circle.placement.block);
-      });
-    }
-
-    return filteredList;
+    // 現在はフィルターなしで全データを返す
+    return [...circleList];
   };
 
   // 統合検索・フィルター関数
@@ -506,6 +509,7 @@ export const useCircles = () => {
     performSearch,
     formatPlacement,
     getAvailableGenres,
+    getPopularGenres,
     getAvailableAreas,
   };
 };

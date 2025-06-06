@@ -47,29 +47,6 @@
         </div>
       </div>
 
-      <!-- 配置フィルター（ブロック） -->
-      <div class="filter-group">
-        <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #374151;">配置（ブロック）</h4>
-        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-          <label 
-            v-for="block in availableBlocks" 
-            :key="block"
-            style="display: flex; align-items: center; cursor: pointer; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; transition: all 0.2s;"
-            :style="{ 
-              backgroundColor: selectedBlocks.includes(block) ? '#fef3f2' : 'white',
-              borderColor: selectedBlocks.includes(block) ? '#ff69b4' : '#d1d5db'
-            }"
-          >
-            <input
-              type="checkbox"
-              :value="block"
-              v-model="selectedBlocks"
-              style="margin-right: 0.5rem;"
-            >
-            <span style="font-size: 0.875rem;">{{ block }}ブロック</span>
-          </label>
-        </div>
-      </div>
 
       <!-- 成人向けフィルター -->
       <div class="filter-group">
@@ -155,23 +132,16 @@ const { currentEvent } = useEvents()
 
 // State
 const selectedGenres = ref(props.modelValue.genres || [])
-const selectedBlocks = ref(props.modelValue.blocks || [])
 const adultFilter = ref(props.modelValue.isAdult !== undefined ? props.modelValue.isAdult : undefined)
 const genreFilterMode = ref(props.modelValue.genreFilterMode || 'OR')
 
 // Available options
 const availableGenres = ref<string[]>([])
-const availableBlocks = ref([
-  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
-  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-  'U', 'V', 'W', 'X', 'Y', 'Z'
-])
 
 // Methods
 const applyFilters = () => {
   const filters = {
     genres: selectedGenres.value,
-    blocks: selectedBlocks.value,
     isAdult: adultFilter.value,
     genreFilterMode: genreFilterMode.value
   }
@@ -182,13 +152,11 @@ const applyFilters = () => {
 
 const resetFilters = () => {
   selectedGenres.value = []
-  selectedBlocks.value = []
   adultFilter.value = undefined
   genreFilterMode.value = 'OR'
   
   const filters = {
     genres: [],
-    blocks: [],
     isAdult: undefined,
     genreFilterMode: 'OR' as const
   }
@@ -212,7 +180,6 @@ const initializeGenres = async () => {
 // Watch for prop changes
 watch(() => props.modelValue, (newValue) => {
   selectedGenres.value = newValue.genres || []
-  selectedBlocks.value = newValue.blocks || []
   adultFilter.value = newValue.isAdult !== undefined ? newValue.isAdult : undefined
   genreFilterMode.value = newValue.genreFilterMode || 'OR'
 }, { deep: true })

@@ -70,10 +70,6 @@ export interface BookmarkWithCircle extends Bookmark {
 // 検索・フィルター関連の型定義
 export interface SearchFilters {
   query?: string;
-  genres?: string[];
-  blocks?: string[];
-  isAdult?: boolean;
-  genreFilterMode?: 'AND' | 'OR'; // ジャンルフィルターのモード
 }
 
 export interface SearchParams extends SearchFilters {
