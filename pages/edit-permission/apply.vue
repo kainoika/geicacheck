@@ -26,7 +26,7 @@
     <div style="max-width: 800px; margin: 0 auto; padding: 2rem 1rem;">
       <!-- 未ログイン状態 -->
       <div v-if="!isAuthenticated" style="text-align: center; padding: 4rem;">
-        <div style="color: #9ca3af; font-size: 3rem; margin-bottom: 1rem;">🔒</div>
+        <LockClosedIcon style="color: #9ca3af; width: 3rem; height: 3rem; margin: 0 auto 1rem;" />
         <h2 style="font-size: 1.5rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
           ログインが必要です
         </h2>
@@ -44,10 +44,10 @@
       <!-- 既に申請済み -->
       <div v-else-if="existingApplication" style="text-align: center; padding: 4rem;">
         <div 
-          style="font-size: 3rem; margin-bottom: 1rem;"
+          style="margin-bottom: 1rem; display: flex; justify-content: center;"
           :style="{ color: getStatusColor(existingApplication.status) }"
         >
-          {{ getStatusIcon(existingApplication.status) }}
+          <component :is="getStatusIcon(existingApplication.status)" style="width: 3rem; height: 3rem;" />
         </div>
         <h2 style="font-size: 1.5rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
           {{ getStatusTitle(existingApplication.status) }}
@@ -84,7 +84,7 @@
         <!-- 申請条件チェック -->
         <div style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb; margin-bottom: 2rem;">
           <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
-            ✅ 申請条件チェック
+            <CheckCircleIcon class="h-5 w-5" /> 申請条件チェック
           </h2>
           
           <div style="display: flex; flex-direction: column; gap: 1rem;">
@@ -95,7 +95,7 @@
               :style="{ backgroundColor: requirement.met ? '#f0fdf4' : '#fef2f2' }"
             >
               <div :style="{ color: requirement.met ? '#16a34a' : '#dc2626', fontSize: '1.25rem' }">
-                {{ requirement.met ? '✅' : '❌' }}
+                <component :is="requirement.met ? CheckCircleIcon : XCircleIcon" class="h-5 w-5" />
               </div>
               <div style="flex: 1;">
                 <div style="font-weight: 500;" :style="{ color: requirement.met ? '#15803d' : '#991b1b' }">
@@ -121,7 +121,7 @@
         <!-- 申請フォーム -->
         <form v-if="allRequirementsMet" @submit.prevent="handleSubmit" style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
           <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
-            📝 申請フォーム
+            <DocumentTextIcon class="h-5 w-5" /> 申請フォーム
           </h2>
           
           <!-- 申請理由 -->
@@ -206,6 +206,15 @@
 </template>
 
 <script setup>
+import {
+  LockClosedIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  DocumentTextIcon,
+  ClockIcon,
+  ClipboardDocumentListIcon
+} from '@heroicons/vue/24/outline'
+
 // State
 // Composables
 const { user, isAuthenticated } = useAuth()
@@ -260,10 +269,10 @@ const isFormValid = computed(() =>
 // Methods
 const getStatusIcon = (status) => {
   switch (status) {
-    case 'pending': return '⏳'
-    case 'approved': return '✅'
-    case 'rejected': return '❌'
-    default: return '📋'
+    case 'pending': return ClockIcon
+    case 'approved': return CheckCircleIcon
+    case 'rejected': return XCircleIcon
+    default: return ClipboardDocumentListIcon
   }
 }
 

@@ -21,7 +21,7 @@
     <div style="max-width: 1280px; margin: 0 auto; padding: 2rem 1rem;">
       <!-- 未ログイン状態 -->
       <div v-if="!user" style="text-align: center; padding: 4rem;">
-        <div style="color: #9ca3af; font-size: 3rem; margin-bottom: 1rem;">🔒</div>
+        <LockClosedIcon style="color: #9ca3af; width: 3rem; height: 3rem; margin: 0 auto 1rem;" />
         <h2 style="font-size: 1.5rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
           ログインが必要です
         </h2>
@@ -41,7 +41,7 @@
         <!-- プロフィール情報 -->
         <div style="background: white; border-radius: 0.5rem; padding: 2rem; border: 1px solid #e5e7eb;">
           <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
-            👤 基本情報
+            <UserIcon class="h-5 w-5" /> 基本情報
           </h2>
           
           <div style="display: flex; align-items: start; gap: 1.5rem; margin-bottom: 2rem;">
@@ -56,7 +56,7 @@
                 v-else
                 style="width: 5rem; height: 5rem; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #9ca3af;"
               >
-                {{ user.displayName ? user.displayName.charAt(0) : '👤' }}
+                <UserIcon v-if="!user.displayName" class="h-8 w-8 text-gray-400" />{{ user.displayName ? user.displayName.charAt(0) : '' }}
               </div>
             </div>
             
@@ -69,7 +69,7 @@
                 {{ user.email }}
               </p>
               <div v-if="user.twitterHandle" style="display: flex; align-items: center; gap: 0.5rem; color: #1da1f2;">
-                <span>🐦</span>
+                <AtSymbolIcon class="h-4 w-4" />
                 <a 
                   :href="`https://twitter.com/${user.twitterHandle}`"
                   target="_blank"
@@ -131,21 +131,21 @@
                 @click="exportBookmarks"
                 style="padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; font-weight: 500;"
               >
-                📊 ブックマークをCSVエクスポート
+                <DocumentArrowDownIcon class="h-4 w-4 mr-1" /> ブックマークをCSVエクスポート
               </button>
               
               <button 
                 @click="showDeleteConfirm = true"
                 style="padding: 0.5rem 1rem; background: #ef4444; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; font-weight: 500;"
               >
-                🗑️ アカウント削除
+                <TrashIcon class="h-4 w-4 mr-1" /> アカウント削除
               </button>
               
               <button 
                 @click="handleSignOut"
                 style="padding: 0.5rem 1rem; background: #6b7280; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; font-weight: 500;"
               >
-                🚪 ログアウト
+                <ArrowRightOnRectangleIcon class="h-4 w-4 mr-1" /> ログアウト
               </button>
             </div>
           </div>
@@ -154,12 +154,12 @@
         <!-- 編集権限情報 -->
         <div style="background: white; border-radius: 0.5rem; padding: 2rem; border: 1px solid #e5e7eb;">
           <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
-            ✏️ 編集権限
+            <PencilIcon class="h-5 w-5" /> 編集権限
           </h2>
           
           <div v-if="editPermission.hasPermission" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
             <div style="display: flex; align-items: center; gap: 0.5rem; color: #16a34a; margin-bottom: 0.5rem;">
-              <span>✅</span>
+              <CheckCircleIcon class="h-5 w-5" />
               <span style="font-weight: 600;">編集権限が承認されています</span>
             </div>
             <p style="color: #15803d; font-size: 0.875rem; margin: 0;">
@@ -169,7 +169,7 @@
           
           <div v-else-if="editPermission.isPending" style="background: #fefce8; border: 1px solid #fde047; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
             <div style="display: flex; align-items: center; gap: 0.5rem; color: #ca8a04; margin-bottom: 0.5rem;">
-              <span>⏳</span>
+              <ClockIcon class="h-5 w-5" />
               <span style="font-weight: 600;">編集権限申請中</span>
             </div>
             <p style="color: #a16207; font-size: 0.875rem; margin: 0;">
@@ -179,7 +179,7 @@
           
           <div v-else style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
             <div style="display: flex; align-items: center; gap: 0.5rem; color: #64748b; margin-bottom: 0.5rem;">
-              <span>📝</span>
+              <DocumentTextIcon class="h-5 w-5" />
               <span style="font-weight: 600;">編集権限なし</span>
             </div>
             <p style="color: #475569; font-size: 0.875rem; margin: 0 0 1rem 0;">
@@ -244,6 +244,19 @@
 </template>
 
 <script setup>
+import {
+  LockClosedIcon,
+  UserIcon,
+  AtSymbolIcon,
+  DocumentArrowDownIcon,
+  TrashIcon,
+  ArrowRightOnRectangleIcon,
+  PencilIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  DocumentTextIcon
+} from '@heroicons/vue/24/outline'
+
 // Composables
 const { user, isAuthenticated } = useAuth()
 const { bookmarks } = useBookmarks()
