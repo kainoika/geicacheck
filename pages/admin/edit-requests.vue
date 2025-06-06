@@ -57,7 +57,7 @@
               color: activeStatus === status.key ? 'white' : '#6b7280'
             }"
           >
-            <span>{{ status.icon }}</span>
+            <component :is="getStatusIcon(status.key)" class="h-4 w-4" />
             <span>{{ status.label }}</span>
             <span 
               v-if="getRequestCount(status.key) > 0"
@@ -151,9 +151,10 @@
                 style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; border-radius: 0.5rem;"
                 :style="{ backgroundColor: check.passed ? '#f0fdf4' : '#fef2f2' }"
               >
-                <span :style="{ color: check.passed ? '#16a34a' : '#dc2626' }">
-                  {{ check.passed ? '✅' : '❌' }}
-                </span>
+                <component 
+                  :is="check.passed ? CheckCircleIcon : XCircleIcon" 
+                  :class="['h-5 w-5', check.passed ? 'text-green-600' : 'text-red-600']"
+                />
                 <div>
                   <div style="font-weight: 500; font-size: 0.875rem;" :style="{ color: check.passed ? '#15803d' : '#991b1b' }">
                     {{ check.name }}
@@ -203,7 +204,7 @@
 
       <!-- 空の状態 -->
       <div v-else style="text-align: center; padding: 4rem;">
-        <div style="color: #9ca3af; font-size: 3rem; margin-bottom: 1rem;">📋</div>
+        <ClipboardDocumentListIcon style="color: #9ca3af; width: 3rem; height: 3rem; margin: 0 auto 1rem;" />
         <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
           {{ getEmptyStateTitle() }}
         </h3>
@@ -287,6 +288,13 @@
 </template>
 
 <script setup>
+import {
+  ClipboardDocumentListIcon,
+  ClockIcon,
+  CheckCircleIcon,
+  XCircleIcon
+} from '@heroicons/vue/24/outline'
+
 // State
 const activeStatus = ref('pending')
 const showApproveModal = ref(false)
@@ -365,10 +373,10 @@ const editRequests = ref([
 ])
 
 const statusFilters = ref([
-  { key: 'all', label: 'すべて', icon: '📋', color: '#6b7280' },
-  { key: 'pending', label: '申請中', icon: '⏳', color: '#f59e0b' },
-  { key: 'approved', label: '承認済み', icon: '✅', color: '#10b981' },
-  { key: 'rejected', label: '却下', icon: '❌', color: '#ef4444' }
+  { key: 'all', label: 'すべて', color: '#6b7280' },
+  { key: 'pending', label: '申請中', color: '#f59e0b' },
+  { key: 'approved', label: '承認済み', color: '#10b981' },
+  { key: 'rejected', label: '却下', color: '#ef4444' }
 ])
 
 // Computed
@@ -392,6 +400,16 @@ const rejectedCount = computed(() =>
 )
 
 // Methods
+const getStatusIcon = (status) => {
+  switch (status) {
+    case 'all': return ClipboardDocumentListIcon
+    case 'pending': return ClockIcon
+    case 'approved': return CheckCircleIcon
+    case 'rejected': return XCircleIcon
+    default: return ClipboardDocumentListIcon
+  }
+}
+
 const getRequestCount = (status) => {
   if (status === 'all') return editRequests.value.length
   return editRequests.value.filter(request => request.status === status).length

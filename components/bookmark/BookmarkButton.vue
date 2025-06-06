@@ -28,12 +28,10 @@
         leave-from-class="opacity-100 scale-100"
         leave-to-class="opacity-0 scale-0"
       >
-        <div 
+        <SparklesIcon 
           v-if="showSparkle"
-          class="absolute -top-1 -right-1 text-yellow-400 pointer-events-none"
-        >
-          ✨
-        </div>
+          class="absolute -top-1 -right-1 h-4 w-4 text-yellow-400 pointer-events-none"
+        />
       </Transition>
     </button>
 
@@ -69,7 +67,7 @@
               ]"
             />
             <div class="flex-1 text-left">
-              <div class="font-medium">📖 チェック予定</div>
+              <div class="font-medium">チェック予定</div>
               <div class="text-xs text-gray-500">見に行く予定</div>
             </div>
             <CheckIcon 
@@ -95,7 +93,7 @@
               ]"
             />
             <div class="flex-1 text-left">
-              <div class="font-medium">⭐ 気になる</div>
+              <div class="font-medium">気になる</div>
               <div class="text-xs text-gray-500">興味がある</div>
             </div>
             <CheckIcon 
@@ -121,7 +119,7 @@
               ]"
             />
             <div class="flex-1 text-left">
-              <div class="font-medium">🔥 優先</div>
+              <div class="font-medium">優先</div>
               <div class="text-xs text-gray-500">絶対に行く</div>
             </div>
             <CheckIcon 
@@ -159,7 +157,8 @@ import {
   StarIcon,
   FireIcon,
   CheckIcon,
-  TrashIcon
+  TrashIcon,
+  SparklesIcon
 } from '@heroicons/vue/24/outline'
 import {
   BookmarkIcon as BookmarkSolidIcon,

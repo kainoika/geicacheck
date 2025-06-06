@@ -15,9 +15,7 @@
                 @input="handleRealtimeSearch"
                 @keyup.enter="handleSearch"
               >
-              <div style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #9ca3af;">
-                🔍
-              </div>
+              <MagnifyingGlassIcon style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: #9ca3af; width: 1.25rem; height: 1.25rem;" />
             </div>
             
             
@@ -27,7 +25,8 @@
           <div style="display: flex; flex-direction: column; gap: 0.75rem;">
             <!-- 検索ヒント -->
             <div style="font-size: 0.875rem; color: #6b7280; display: flex; align-items: center; gap: 0.5rem;">
-              💡 複数のキーワードをスペースで区切って検索できます
+              <LightBulbIcon style="width: 1rem; height: 1rem;" />
+              複数のキーワードをスペースで区切って検索できます
             </div>
             
             <!-- 人気ジャンルタグ -->
@@ -63,7 +62,8 @@
                   color: viewMode === 'grid' ? 'white' : '#374151'
                 }"
               >
-                🔲 グリッド
+                <Squares2X2Icon style="width: 1rem; height: 1rem; display: inline-block; margin-right: 0.25rem; vertical-align: -0.125rem;" />
+                グリッド
               </button>
               <button 
                 @click="viewMode = 'list'"
@@ -73,7 +73,8 @@
                   color: viewMode === 'list' ? 'white' : '#374151'
                 }"
               >
-                📋 リスト
+                <ListBulletIcon style="width: 1rem; height: 1rem; display: inline-block; margin-right: 0.25rem; vertical-align: -0.125rem;" />
+                リスト
               </button>
             </div>
           </div>
@@ -145,7 +146,7 @@
 
       <!-- 空の状態 -->
       <div v-else style="text-align: center; padding: 4rem;">
-        <div style="color: #9ca3af; font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+        <MagnifyingGlassIcon style="color: #9ca3af; width: 3rem; height: 3rem; margin: 0 auto 1rem;" />
         <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 0.5rem 0;">
           {{ searchQuery ? '検索結果が見つかりません' : 'サークルが見つかりません' }}
         </h3>
@@ -168,6 +169,12 @@
 
 <script setup lang="ts">
 import type { Circle, BookmarkCategory, SearchParams } from '~/types'
+import { 
+  MagnifyingGlassIcon,
+  LightBulbIcon,
+  Squares2X2Icon,
+  ListBulletIcon
+} from '@heroicons/vue/24/outline'
 
 // Composables
 const { circles, loading, error, fetchCircles, searchCircles, performSearch, getPopularGenres } = useCircles()

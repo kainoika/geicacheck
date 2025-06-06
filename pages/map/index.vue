@@ -33,21 +33,21 @@
                 style="padding: 0.5rem; border: none; background: none; cursor: pointer; border-radius: 0.25rem; color: #374151;"
                 title="ズームイン"
               >
-                🔍+
+                <PlusIcon class="h-4 w-4" />
               </button>
               <button 
                 @click="zoomOut"
                 style="padding: 0.5rem; border: none; background: none; cursor: pointer; border-radius: 0.25rem; color: #374151;"
                 title="ズームアウト"
               >
-                🔍-
+                <MinusIcon class="h-4 w-4" />
               </button>
               <button 
                 @click="resetZoom"
                 style="padding: 0.5rem; border: none; background: none; cursor: pointer; border-radius: 0.25rem; color: #374151;"
                 title="リセット"
               >
-                🎯
+                <ArrowsPointingOutIcon class="h-4 w-4" />
               </button>
             </div>
           </div>
@@ -103,7 +103,7 @@
                   v-model="visibleCategories"
                   style="accent-color: #ff69b4;"
                 >
-                <span>{{ category.icon }}</span>
+                <component :is="getCategoryIcon(category.key)" class="h-4 w-4" />
                 <span style="font-size: 0.875rem;">{{ category.label }}</span>
                 <span 
                   style="margin-left: auto; background: #ff69b4; color: white; border-radius: 50%; width: 1rem; height: 1rem; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600;"
@@ -117,7 +117,7 @@
           <!-- ブックマークリスト -->
           <div>
             <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
-              📍 ブックマークサークル
+              <MapPinIcon class="h-4 w-4 inline mr-1" /> ブックマークサークル
             </h3>
             <div style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 400px; overflow-y: auto;">
               <div 
@@ -180,7 +180,7 @@
         <!-- ローディング表示 -->
         <div v-else style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f8f9fa;">
           <div style="text-align: center;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">⏳</div>
+            <ClockIcon style="width: 3rem; height: 3rem; color: #6c757d; margin: 0 auto 1rem;" />
             <div style="font-size: 1.25rem; color: #6c757d;">イベント情報を読み込み中...</div>
           </div>
         </div>
@@ -190,6 +190,16 @@
 </template>
 
 <script setup lang="ts">
+import {
+  PlusIcon,
+  MinusIcon,
+  ArrowsPointingOutIcon,
+  MapPinIcon,
+  ClockIcon,
+  BookmarkIcon,
+  StarIcon,
+  FireIcon
+} from '@heroicons/vue/24/outline'
 import type { Circle, BookmarkCategory, BookmarkWithCircle } from '~/types'
 import EventMap from '~/components/map/EventMap.vue'
 
@@ -241,9 +251,9 @@ watch(currentEvent, async () => {
 })
 
 const bookmarkCategories = ref([
-  { key: 'check' as BookmarkCategory, label: 'チェック予定', icon: '📖' },
-  { key: 'interested' as BookmarkCategory, label: '気になる', icon: '⭐' },
-  { key: 'priority' as BookmarkCategory, label: '優先', icon: '🔥' }
+  { key: 'check' as BookmarkCategory, label: 'チェック予定' },
+  { key: 'interested' as BookmarkCategory, label: '気になる' },
+  { key: 'priority' as BookmarkCategory, label: '優先' }
 ])
 
 // Computed
@@ -263,8 +273,12 @@ const getBookmarkCount = (category: BookmarkCategory) => {
 }
 
 const getCategoryIcon = (category: BookmarkCategory) => {
-  const categoryData = bookmarkCategories.value.find(cat => cat.key === category)
-  return categoryData?.icon || '📍'
+  switch (category) {
+    case 'check': return BookmarkIcon
+    case 'interested': return StarIcon
+    case 'priority': return FireIcon
+    default: return BookmarkIcon
+  }
 }
 
 const focusOnCircle = (circle: Circle) => {

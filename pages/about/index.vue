@@ -3,7 +3,7 @@
     <!-- ヒーローセクション -->
     <section style="background: linear-gradient(135deg, #ff69b4 0%, #87ceeb 50%, #ffd700 100%); color: white; padding: 4rem 0;">
       <div style="max-width: 1280px; margin: 0 auto; padding: 0 1rem; text-align: center;">
-        <div style="font-size: 4rem; margin-bottom: 1rem; animation: sparkle 1.5s ease-in-out infinite;">✨</div>
+        <SparklesIcon style="width: 4rem; height: 4rem; margin: 0 auto 1rem; animation: sparkle 1.5s ease-in-out infinite; color: white;" />
         <h1 style="font-size: 3rem; font-weight: 700; margin: 0 0 1rem 0;">
           geika check!
         </h1>
@@ -19,12 +19,12 @@
       <!-- アプリの特徴 -->
       <section style="margin-bottom: 4rem;">
         <h2 style="font-size: 2rem; font-weight: 700; color: #111827; text-align: center; margin: 0 0 3rem 0;">
-          🌟 アプリの特徴
+          <StarIcon style="width: 1.5rem; height: 1.5rem; display: inline; margin-right: 0.5rem; vertical-align: -0.25rem;" /> アプリの特徴
         </h2>
         
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
           <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb; text-align: center;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">📖</div>
+            <div style="font-size: 3rem; margin-bottom: 1rem;"><BookOpenIcon style="width: 3rem; height: 3rem; color: #ff69b4; margin: 0 auto;" /></div>
             <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
               効率的なサークルチェック
             </h3>
@@ -34,7 +34,7 @@
           </div>
 
           <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb; text-align: center;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">⭐</div>
+            <div style="font-size: 3rem; margin-bottom: 1rem;"><StarIcon style="width: 3rem; height: 3rem; color: #ff69b4; margin: 0 auto;" /></div>
             <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
               3段階ブックマーク
             </h3>
@@ -44,7 +44,7 @@
           </div>
 
           <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb; text-align: center;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🗺️</div>
+            <div style="font-size: 3rem; margin-bottom: 1rem;"><MapIcon style="width: 3rem; height: 3rem; color: #ff69b4; margin: 0 auto;" /></div>
             <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
               インタラクティブマップ
             </h3>
@@ -54,7 +54,7 @@
           </div>
 
           <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb; text-align: center;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🔐</div>
+            <div style="font-size: 3rem; margin-bottom: 1rem;"><LockClosedIcon style="width: 3rem; height: 3rem; color: #ff69b4; margin: 0 auto;" /></div>
             <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
               Twitter認証
             </h3>
@@ -64,7 +64,7 @@
           </div>
 
           <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb; text-align: center;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+            <div style="font-size: 3rem; margin-bottom: 1rem;"><ChartBarIcon style="width: 3rem; height: 3rem; color: #ff69b4; margin: 0 auto;" /></div>
             <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
               CSVエクスポート
             </h3>
@@ -74,7 +74,7 @@
           </div>
 
           <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb; text-align: center;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">📱</div>
+            <div style="font-size: 3rem; margin-bottom: 1rem;"><DevicePhoneMobileIcon style="width: 3rem; height: 3rem; color: #ff69b4; margin: 0 auto;" /></div>
             <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
               PWA対応
             </h3>
@@ -88,7 +88,7 @@
       <!-- 使い方 -->
       <section style="margin-bottom: 4rem;">
         <h2 style="font-size: 2rem; font-weight: 700; color: #111827; text-align: center; margin: 0 0 3rem 0;">
-          📚 使い方
+          <BookOpenIcon style="width: 1.5rem; height: 1.5rem; display: inline; margin-right: 0.5rem; vertical-align: -0.25rem;" /> 使い方
         </h2>
         
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
@@ -153,7 +153,7 @@
       <!-- アイカツ！について -->
       <section style="margin-bottom: 4rem;">
         <h2 style="font-size: 2rem; font-weight: 700; color: #111827; text-align: center; margin: 0 0 3rem 0;">
-          💫 geika check!について
+          <SparklesIcon style="width: 1.5rem; height: 1.5rem; display: inline; margin-right: 0.5rem; vertical-align: -0.25rem;" /> geika check!について
         </h2>
         
         <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb;">
@@ -188,7 +188,7 @@
       <!-- 技術情報 -->
       <section style="margin-bottom: 4rem;">
         <h2 style="font-size: 2rem; font-weight: 700; color: #111827; text-align: center; margin: 0 0 3rem 0;">
-          🛠️ 技術情報
+          <WrenchScrewdriverIcon style="width: 1.5rem; height: 1.5rem; display: inline; margin-right: 0.5rem; vertical-align: -0.25rem;" /> 技術情報
         </h2>
         
         <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb;">
@@ -235,12 +235,12 @@
       <!-- お問い合わせ・サポート -->
       <section style="margin-bottom: 4rem;">
         <h2 style="font-size: 2rem; font-weight: 700; color: #111827; text-align: center; margin: 0 0 3rem 0;">
-          📞 お問い合わせ・サポート
+          <PhoneIcon style="width: 1.5rem; height: 1.5rem; display: inline; margin-right: 0.5rem; vertical-align: -0.25rem;" /> お問い合わせ・サポート
         </h2>
         
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
           <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb; text-align: center;">
-            <div style="font-size: 2rem; margin-bottom: 1rem;">🐦</div>
+            <div style="font-size: 2rem; margin-bottom: 1rem;"><AtSymbolIcon style="width: 2rem; height: 2rem; color: #1da1f2; margin: 0 auto;" /></div>
             <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
               Twitter
             </h3>
@@ -258,7 +258,7 @@
           </div>
 
           <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb; text-align: center;">
-            <div style="font-size: 2rem; margin-bottom: 1rem;">📧</div>
+            <div style="font-size: 2rem; margin-bottom: 1rem;"><EnvelopeIcon style="width: 2rem; height: 2rem; color: #ff69b4; margin: 0 auto;" /></div>
             <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
               メール
             </h3>
@@ -274,7 +274,7 @@
           </div>
 
           <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb; text-align: center;">
-            <div style="font-size: 2rem; margin-bottom: 1rem;">💻</div>
+            <div style="font-size: 2rem; margin-bottom: 1rem;"><ComputerDesktopIcon style="width: 2rem; height: 2rem; color: #374151; margin: 0 auto;" /></div>
             <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
               GitHub
             </h3>
@@ -297,7 +297,7 @@
       <section>
         <div style="background: #fef3f2; border: 1px solid #fecaca; border-radius: 1rem; padding: 2rem;">
           <h2 style="font-size: 1.5rem; font-weight: 600; color: #991b1b; margin: 0 0 1rem 0;">
-            ⚠️ 免責事項
+            <ExclamationTriangleIcon style="width: 1.5rem; height: 1.5rem; display: inline; margin-right: 0.5rem; vertical-align: -0.25rem;" /> 免責事項
           </h2>
           <div style="color: #7f1d1d; line-height: 1.6;">
             <p style="margin: 0 0 1rem 0;">
@@ -344,6 +344,21 @@
 </template>
 
 <script setup>
+import {
+  SparklesIcon,
+  StarIcon,
+  BookOpenIcon,
+  MapIcon,
+  LockClosedIcon,
+  ChartBarIcon,
+  DevicePhoneMobileIcon,
+  WrenchScrewdriverIcon,
+  PhoneIcon,
+  AtSymbolIcon,
+  EnvelopeIcon,
+  ComputerDesktopIcon,
+  ExclamationTriangleIcon
+} from '@heroicons/vue/24/outline'
 // SEO
 useHead({
   title: 'このアプリについて - geika check!',
