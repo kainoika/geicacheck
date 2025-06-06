@@ -126,3 +126,6 @@ circle_permissions/  # Granted permissions
 - `plugins/firebase.client.ts` - Firebase service initialization
 - `firestore.rules` - Database security rules
 - `scripts/` - Data migration and management utilities
+
+## Conversation Guidelines
+- 常に日本語で会話する
