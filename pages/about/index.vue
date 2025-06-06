@@ -7,11 +7,8 @@
         <h1 style="font-size: 3rem; font-weight: 700; margin: 0 0 1rem 0;">
           geika check!
         </h1>
-        <p style="font-size: 1.25rem; opacity: 0.9; margin: 0 0 2rem 0;">
-          アイカツ！同人イベントサークルチェックアプリ
-        </p>
         <p style="font-size: 1rem; opacity: 0.8; max-width: 600px; margin: 0 auto;">
-          「芸能人はカードが命！（芸カ）」のサークル情報を効率的にチェックして、<br>
+          アイカツ！シリーズオンリーイベント「芸能人はカードが命！」のサークル情報を効率的にチェックして、<br>
           イベントをもっと楽しく、もっと効率的に回れるWebアプリです。
         </p>
       </div>
@@ -32,7 +29,7 @@
               効率的なサークルチェック
             </h3>
             <p style="color: #6b7280; line-height: 1.6; margin: 0;">
-              ジャンルやタグで簡単にサークルを検索。お気に入りのサークルを素早く見つけて、効率的にイベントを回れます。
+              サークル名やジャンルで簡単にサークルを検索。お気に入りのサークルを素早く見つけて、効率的にイベントを回れます。
             </p>
           </div>
 
@@ -104,7 +101,7 @@
                 サークルを検索
               </h3>
               <p style="color: #6b7280; margin: 0; line-height: 1.5;">
-                ジャンルやタグ、サークル名で気になるサークルを検索します。
+                ジャンルやサークル名で気になるサークルを検索します。
               </p>
             </div>
           </div>
@@ -156,7 +153,7 @@
       <!-- アイカツ！について -->
       <section style="margin-bottom: 4rem;">
         <h2 style="font-size: 2rem; font-weight: 700; color: #111827; text-align: center; margin: 0 0 3rem 0;">
-          💫 アイカツ！について
+          💫 geika check!について
         </h2>
         
         <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb;">
@@ -169,16 +166,20 @@
                 このアプリの名前「geika check!」は、アイカツ！の楽曲「fashion check!」をモチーフにしています。
                 アイドルたちがファッションをチェックするように、私たちもサークルをチェックしましょう！
               </p>
-              <p style="color: #6b7280; line-height: 1.6; margin: 0;">
-                アイカツ！シリーズの魅力的なキャラクターたちと、同人イベントでの出会いを大切にしたいという想いから生まれました。
-              </p>
+
             </div>
             
+            <!-- https://www.youtube.com/watch?v=wverKIG3mDg を埋め込み -->
             <div style="text-align: center;">
-              <div style="font-size: 4rem; margin-bottom: 1rem;">🎵</div>
-              <p style="color: #ff69b4; font-weight: 600; font-style: italic;">
-                "Let's check it out!"
-              </p>
+              <iframe 
+                width="300" 
+                height="169" 
+                src="https://www.youtube.com/embed/wverKIG3mDg?si=1" 
+                title="YouTube video player" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                allowfullscreen
+              ></iframe>
             </div>
           </div>
         </div>
@@ -302,9 +303,6 @@
             <p style="margin: 0 0 1rem 0;">
               このアプリは非公式のファンメイドアプリです。アイカツ！シリーズおよび関連する公式コンテンツとは直接の関係はありません。
             </p>
-            <p style="margin: 0 0 1rem 0;">
-              アイカツ！は株式会社バンダイの登録商標です。その他の商標は各社に帰属します。
-            </p>
             <p style="margin: 0;">
               サークル情報の正確性については保証いたしかねます。最新の情報は各サークルの公式アカウントや頒布物でご確認ください。
             </p>
@@ -350,7 +348,7 @@
 useHead({
   title: 'このアプリについて - geika check!',
   meta: [
-    { name: 'description', content: 'geika check! はアイカツ！同人イベント「芸能人はカードが命！（芸カ）」のサークルチェックを効率化するWebアプリです。' },
+    { name: 'description', content: 'geika check! はアイカツ！シリーズオンリーイベント「芸能人はカードが命！」のサークルチェックを効率化するWebアプリです。' },
     { name: 'keywords', content: 'アイカツ,同人,イベント,サークル,チェック,ブックマーク,芸カ,geika check' },
     { property: 'og:title', content: 'このアプリについて - geika check!' },
     { property: 'og:description', content: 'アイカツ！同人イベントサークルチェックアプリの詳細情報' }
