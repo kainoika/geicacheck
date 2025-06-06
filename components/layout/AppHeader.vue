@@ -151,7 +151,7 @@
                                         <PencilIcon class="h-4 w-4 mr-2" />
                                         編集権限申請
                                     </NuxtLink>
-                                    <NuxtLink to="/admin/edit-requests"
+                                    <NuxtLink v-if="isAdmin" to="/admin/edit-requests"
                                         class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         @click="showUserMenu = false">
                                         <WrenchScrewdriverIcon class="h-4 w-4 mr-2" />
@@ -314,10 +314,8 @@ import {
 } from '@heroicons/vue/24/outline'
 
 // Composables
-const user = ref({ displayName: 'サンプルユーザー', photoURL: null })
-const isAuthenticated = ref(true)
-const signOut = async () => { console.log('Sign out') }
-const bookmarkCount = ref(0)
+const { user, isAuthenticated, isAdmin, signInWithTwitter, signOut } = useAuth()
+const { bookmarkCount } = useBookmarks()
 const router = useRouter()
 
 // イベント管理
@@ -358,9 +356,9 @@ const toggleSearch = () => {
 
 const handleSignIn = async () => {
     try {
-        await navigateTo('/auth/login')
+        await signInWithTwitter()
     } catch (error) {
-        console.error('Sign in navigation error:', error)
+        console.error('Sign in error:', error)
     }
 }
 
