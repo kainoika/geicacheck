@@ -122,6 +122,37 @@ npm run test:coverage
 npm run test:firebase
 ```
 
+### Firebase Emulator Suite（開発環境）
+
+ローカル開発では Firebase Emulator Suite を使用して、本番環境に接続せずにテストできます。
+
+```bash
+# Emulator Suite を起動
+npm run emulators:start
+
+# Emulator Suite を起動（データをインポート）
+npm run emulators:import
+
+# Emulator データをエクスポート
+npm run emulators:export
+```
+
+**Emulator 設定:**
+- **Auth Emulator**: http://localhost:9099
+- **Firestore Emulator**: http://localhost:8080
+- **Storage Emulator**: http://localhost:9199
+- **Emulator UI**: http://localhost:4000
+
+**開発環境でEmulatorを使用するには:**
+1. `.env` ファイルに `NUXT_PUBLIC_USE_FIREBASE_EMULATOR=true` を追加
+2. `npm run emulators:start` でEmulatorを起動
+3. 別のターミナルで `npm run dev` で開発サーバーを起動
+
+Emulatorを使用することで：
+- 本番データを汚さずに安全にテストが可能
+- オフラインでの開発が可能
+- 高速な読み書き操作でスムーズな開発体験
+
 ### データ管理スクリプト
 
 ```bash

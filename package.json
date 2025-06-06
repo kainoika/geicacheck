@@ -17,7 +17,12 @@
     "import:circles": "tsx scripts/importCircles.ts",
     "import:converted-circles": "tsx scripts/importConvertedCircles.ts",
     "seed:events": "tsx scripts/seedEvents.ts",
-    "import:event": "tsx scripts/importEvent.ts"
+    "import:event": "tsx scripts/importEvent.ts",
+    "seed:emulator": "tsx scripts/seedEmulatorData.ts",
+    "test:emulator": "tsx scripts/testEmulatorConnection.ts",
+    "emulators:start": "firebase emulators:start",
+    "emulators:export": "firebase emulators:export ./emulator-data",
+    "emulators:import": "firebase emulators:start --import=./emulator-data"
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.23",

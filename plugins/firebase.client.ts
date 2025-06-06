@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { getStorage, connectStorageEmulator } from "firebase/storage";
 
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig();
@@ -22,6 +22,26 @@ export default defineNuxtPlugin(() => {
   const auth = getAuth(app);
   const firestore = getFirestore(app);
   const storage = getStorage(app);
+
+  // 開発環境でEmulatorを使用
+  if (process.dev && config.public.useFirebaseEmulator) {
+    // Auth Emulator
+    if (!auth.emulatorConfig) {
+      connectAuthEmulator(auth, "http://localhost:9099", { disableWarnings: true });
+    }
+
+    // Firestore Emulator
+    if (!firestore._settings?.host?.includes("localhost:8080")) {
+      connectFirestoreEmulator(firestore, "localhost", 8080);
+    }
+
+    // Storage Emulator
+    if (!storage._customUrlOrRegion?.includes("localhost:9199")) {
+      connectStorageEmulator(storage, "localhost", 9199);
+    }
+
+    console.log("Firebase Emulator Suite connected");
+  }
 
   return {
     provide: {
