@@ -57,7 +57,7 @@
           <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
             <!-- 配置 -->
             <div style="display: flex; align-items: center; gap: 0.5rem; background: #fef3f2; padding: 0.5rem 1rem; border-radius: 0.5rem;">
-              <span style="font-size: 1.25rem;">📍</span>
+              <MapPinIcon class="h-5 w-5 text-red-500" />
               <div>
                 <div style="font-weight: 600; color: #111827;">{{ formatPlacement(circle.placement) }}</div>
               </div>
@@ -65,7 +65,7 @@
 
             <!-- 成人向けマーク -->
             <div v-if="circle.isAdult" style="display: flex; align-items: center; gap: 0.5rem; background: #fef3c7; padding: 0.5rem 1rem; border-radius: 0.5rem;">
-              <span style="font-size: 1.25rem;">⚠️</span>
+              <ExclamationTriangleIcon class="h-5 w-5 text-yellow-600" />
               <span style="font-weight: 600; color: #92400e;">成人向け</span>
             </div>
 
@@ -74,7 +74,7 @@
               to="/map"
               style="display: flex; align-items: center; gap: 0.5rem; background: #f0f9ff; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; color: #0284c7; font-weight: 500;"
             >
-              <span style="font-size: 1.25rem;">🗺️</span>
+              <MapIcon class="h-5 w-5 text-blue-600" />
               マップで確認
             </NuxtLink>
           </div>
@@ -123,7 +123,8 @@
             <!-- 説明 -->
             <div v-if="circle.description" style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
               <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
-                📝 サークル説明
+                <DocumentTextIcon class="h-5 w-5" />
+                サークル説明
               </h2>
               <p style="color: #4b5563; line-height: 1.6; margin: 0;">
                 {{ circle.description }}
@@ -150,7 +151,8 @@
             <!-- 連絡先 -->
             <div style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
               <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
-                📞 連絡先
+                <PhoneIcon class="h-5 w-5" />
+                連絡先
               </h2>
               <div style="display: flex; flex-direction: column; gap: 1rem;">
                 <!-- Twitter -->
@@ -163,7 +165,9 @@
                   onmouseover="this.style.backgroundColor='#e0f2fe'"
                   onmouseout="this.style.backgroundColor='#f0f9ff'"
                 >
-                  <span style="font-size: 1.25rem;">🐦</span>
+                  <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                  </svg>
                   <div>
                     <div style="font-weight: 600;">Twitter</div>
                     <!-- TwitterのURLからユーザーネームだけを表示 -->
@@ -181,7 +185,10 @@
                   onmouseover="this.style.backgroundColor='#e0f2fe'"
                   onmouseout="this.style.backgroundColor='#f0f9ff'"
                 >
-                  <span style="font-size: 1.25rem;">🎨</span>
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M4.935 0A4.924 4.924 0 0 0 0 4.935v14.13A4.924 4.924 0 0 0 4.935 24h14.13A4.924 4.924 0 0 0 24 19.065V4.935A4.924 4.924 0 0 0 19.065 0H4.935zm7.81 4.547c2.181 0 4.058.676 5.399 1.847a6.118 6.118 0 0 1 2.116 4.66c.005 1.854-.88 3.476-2.257 4.563-1.375 1.092-3.225 1.697-5.258 1.697-2.314 0-4.46-.87-5.64-2.287v6.326H5.021V5.995h2.084v1.107c1.18-1.418 3.326-2.555 5.64-2.555zm-.168 2.084c-1.434 0-2.717.603-3.604 1.565-.887.962-1.419 2.282-1.419 3.716 0 1.434.532 2.754 1.419 3.716.887.962 2.17 1.565 3.604 1.565 1.434 0 2.717-.603 3.604-1.565.887-.962 1.419-2.282 1.419-3.716 0-1.434-.532-2.754-1.419-3.716-.887-.962-2.17-1.565-3.604-1.565z" />
+                  </svg>
                   <div>
                     <div style="font-weight: 600;">Pixiv</div>
                     <div style="font-size: 0.875rem; opacity: 0.8;">作品を見る</div>
@@ -199,7 +206,9 @@
                   onmouseover="this.style.backgroundColor='#fed7aa'"
                   onmouseout="this.style.backgroundColor='#fff7ed'"
                 >
-                  <span style="font-size: 1.25rem;">📋</span>
+                  <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                  </svg>
                   <div>
                     <div style="font-weight: 600;">お品書き</div>
                     <div style="font-size: 0.875rem; opacity: 0.8;">頒布物一覧</div>
@@ -211,7 +220,8 @@
             <!-- 配置詳細 -->
             <div style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
               <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
-                📍 配置詳細
+                <MapPinIcon class="h-5 w-5" />
+                配置詳細
               </h2>
               <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                 <div style="display: flex; justify-content: space-between;">
@@ -228,7 +238,8 @@
             <!-- アクション -->
             <div style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
               <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
-                ⚡ アクション
+                <BoltIcon class="h-5 w-5" />
+                アクション
               </h2>
               <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                 <!-- 編集ボタン（編集権限がある場合） -->
@@ -239,7 +250,8 @@
                   onmouseover="this.style.backgroundColor='#dcfce7'"
                   onmouseout="this.style.backgroundColor='#f0fdf4'"
                 >
-                  ✏️ 情報を編集
+                  <PencilIcon class="h-4 w-4 inline mr-1" />
+                  情報を編集
                 </NuxtLink>
                 
                 <button
@@ -248,7 +260,8 @@
                   onmouseover="this.style.backgroundColor='#e5e7eb'"
                   onmouseout="this.style.backgroundColor='#f3f4f6'"
                 >
-                  🔗 シェア
+                  <LinkIcon class="h-4 w-4 inline mr-1" />
+                  シェア
                 </button>
                 
                 <button
@@ -258,7 +271,8 @@
                   onmouseover="this.style.backgroundColor='#fee2e2'"
                   onmouseout="this.style.backgroundColor='#fef2f2'"
                 >
-                  🚨 報告
+                  <ExclamationCircleIcon class="h-4 w-4 inline mr-1" />
+                  報告
                 </button>
               </div>
             </div>
@@ -270,6 +284,17 @@
 </template>
 
 <script setup lang="ts">
+import {
+  MapPinIcon,
+  ExclamationTriangleIcon,
+  MapIcon,
+  DocumentTextIcon,
+  PhoneIcon,
+  BoltIcon,
+  PencilIcon,
+  LinkIcon,
+  ExclamationCircleIcon
+} from '@heroicons/vue/24/outline'
 import type { Circle, BookmarkCategory, CircleItem, CircleItemFormData } from '~/types'
 
 // Route params
