@@ -261,27 +261,27 @@ const addGenreToSearch = (genre: string) => {
 }
 
 const fetchData = async () => {
-  console.log('🔍 fetchData called')
-  console.log('📅 currentEvent.value:', currentEvent.value)
+  console.log('fetchData called')
+  console.log('currentEvent.value:', currentEvent.value)
   
   if (!currentEvent.value) {
-    console.log('❌ No current event, skipping fetch')
+    console.log('No current event, skipping fetch')
     return
   }
   
   try {
-    console.log('🔄 Fetching circles for event:', currentEvent.value.id)
+    console.log('Fetching circles for event:', currentEvent.value.id)
     const result = await fetchCircles({
       page: currentPage.value,
       limit: itemsPerPage.value
     }, currentEvent.value.id)
     
-    console.log('✅ Circles fetched successfully')
-    console.log('📊 Result:', result)
-    console.log('📋 circles.value.length:', circles.value.length)
-    console.log('📋 circles.value:', circles.value)
+    console.log('Circles fetched successfully')
+    console.log('Result:', result)
+    console.log('circles.value.length:', circles.value.length)
+    console.log('circles.value:', circles.value)
   } catch (err) {
-    console.error('❌ Fetch data error:', err)
+    console.error('Fetch data error:', err)
   }
 }
 
@@ -292,12 +292,12 @@ const fetchPopularGenres = async () => {
   }
   
   try {
-    console.log('🔄 Fetching popular genres for event:', currentEvent.value.id)
+    console.log('Fetching popular genres for event:', currentEvent.value.id)
     const genres = await getPopularGenres(currentEvent.value.id, 10)
     popularGenres.value = genres
-    console.log('✅ Popular genres fetched:', genres)
+    console.log('Popular genres fetched:', genres)
   } catch (err) {
-    console.error('❌ Fetch popular genres error:', err)
+    console.error('Fetch popular genres error:', err)
   }
 }
 
@@ -310,8 +310,8 @@ const checkMobileSize = () => {
 
 // 初期データ読み込み
 onMounted(async () => {
-  console.log('🚀 Circles page mounted')
-  console.log('📅 currentEvent:', currentEvent.value)
+  console.log('Circles page mounted')
+  console.log('currentEvent:', currentEvent.value)
   
   // 画面サイズをチェック
   checkMobileSize()
@@ -323,7 +323,7 @@ onMounted(async () => {
   
   // プラグインでイベントが初期化されていない場合のフォールバック
   if (!currentEvent.value) {
-    console.log('⏳ Waiting for events to be initialized...')
+    console.log('Waiting for events to be initialized...')
     
     let attempts = 0
     const maxAttempts = 50 // 5秒間
@@ -334,26 +334,26 @@ onMounted(async () => {
       
       if (attempts === 10) {
         // 1秒後にfetchEventsを試す
-        console.log('🔄 Attempting to fetch events...')
+        console.log('Attempting to fetch events...')
         try {
           await fetchEvents()
         } catch (error) {
-          console.error('❌ Failed to fetch events:', error)
+          console.error('Failed to fetch events:', error)
         }
       }
       
       if (attempts % 10 === 0) {
-        console.log(`⏳ Still waiting... (${attempts * 100}ms)`)
+        console.log(`Still waiting... (${attempts * 100}ms)`)
       }
     }
   }
   
   if (currentEvent.value) {
-    console.log('✅ currentEvent available:', currentEvent.value.id)
+    console.log('currentEvent available:', currentEvent.value.id)
     await fetchData()
     await fetchPopularGenres()
   } else {
-    console.error('❌ No currentEvent available after waiting')
+    console.error('No currentEvent available after waiting')
   }
 })
 

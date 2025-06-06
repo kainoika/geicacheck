@@ -3,7 +3,7 @@
     <div style="background: white; border-radius: 1rem; padding: 2rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); max-width: 400px; width: 100%;">
       <!-- ヘッダー -->
       <div style="text-align: center; margin-bottom: 2rem;">
-        <div style="font-size: 3rem; margin-bottom: 1rem;">✨</div>
+        <SparklesIcon style="width: 3rem; height: 3rem; color: #ff69b4; margin: 0 auto 1rem;" />
         <h1 style="font-size: 1.875rem; font-weight: 700; color: #111827; margin: 0 0 0.5rem 0;">
           geika check!
         </h1>
@@ -17,7 +17,7 @@
         <!-- ログイン済み -->
         <div style="margin-bottom: 1.5rem;">
           <div style="width: 4rem; height: 4rem; border-radius: 50%; background: #f3f4f6; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
-            {{ user.displayName ? user.displayName.charAt(0) : '👤' }}
+            <UserIcon v-if="!user.displayName" class="h-6 w-6" />{{ user.displayName ? user.displayName.charAt(0) : '' }}
           </div>
           <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 0.5rem 0;">
             ログイン済み
@@ -62,7 +62,7 @@
           </h2>
           <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.5rem;">
             <div style="display: flex; align-items: start; gap: 0.75rem;">
-              <div style="color: #0284c7; font-size: 1.25rem;">ℹ️</div>
+              <InformationCircleIcon style="color: #0284c7; width: 1.25rem; height: 1.25rem;" />
               <div style="flex: 1;">
                 <h3 style="font-size: 0.875rem; font-weight: 600; color: #0c4a6e; margin: 0 0 0.5rem 0;">
                   ログインすると使える機能
@@ -87,14 +87,14 @@
           onmouseover="this.style.backgroundColor='#1a91da'"
           onmouseout="this.style.backgroundColor='#1da1f2'"
         >
-          <span style="font-size: 1.25rem;">🐦</span>
+          <AtSymbolIcon style="width: 1.25rem; height: 1.25rem;" />
           {{ loading ? 'ログイン中...' : 'Twitterでログイン' }}
         </button>
 
         <!-- 注意事項 -->
         <div style="background: #fef3f2; border: 1px solid #fecaca; border-radius: 0.5rem; padding: 1rem;">
           <div style="display: flex; align-items: start; gap: 0.75rem;">
-            <div style="color: #dc2626; font-size: 1.25rem;">⚠️</div>
+            <ExclamationTriangleIcon style="color: #dc2626; width: 1.25rem; height: 1.25rem;" />
             <div style="flex: 1;">
               <h3 style="font-size: 0.875rem; font-weight: 600; color: #991b1b; margin: 0 0 0.5rem 0;">
                 プライバシーについて
@@ -123,7 +123,7 @@
       <!-- エラー表示 -->
       <div v-if="error" style="margin-top: 1rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.5rem; padding: 1rem;">
         <div style="display: flex; align-items: start; gap: 0.75rem;">
-          <div style="color: #dc2626; font-size: 1.25rem;">❌</div>
+          <XCircleIcon style="color: #dc2626; width: 1.25rem; height: 1.25rem;" />
           <div style="flex: 1;">
             <h3 style="font-size: 0.875rem; font-weight: 600; color: #991b1b; margin: 0 0 0.5rem 0;">
               エラーが発生しました
@@ -139,6 +139,15 @@
 </template>
 
 <script setup>
+import {
+  SparklesIcon,
+  UserIcon,
+  InformationCircleIcon,
+  AtSymbolIcon,
+  ExclamationTriangleIcon,
+  XCircleIcon
+} from '@heroicons/vue/24/outline'
+
 // Composables
 const { user, loading, error, signInWithTwitter, signOut } = useAuth()
 

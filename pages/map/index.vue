@@ -225,14 +225,14 @@ const initError = ref<string | null>(null)
 // 初期化
 onMounted(async () => {
   try {
-    console.log('🚀 Map page mounted')
-    console.log('📅 Current event:', currentEvent.value)
+    console.log('Map page mounted')
+    console.log('Current event:', currentEvent.value)
     
     // ブックマーク情報を取得
     await fetchBookmarksWithCircles()
-    console.log('✅ Bookmarks loaded')
+    console.log('Bookmarks loaded')
   } catch (error) {
-    console.error('❌ Map initialization error:', error)
+    console.error('Map initialization error:', error)
     initError.value = error instanceof Error ? error.message : 'Unknown error'
   }
 })
@@ -241,11 +241,11 @@ onMounted(async () => {
 watch(currentEvent, async () => {
   try {
     if (currentEvent.value) {
-      console.log('🔄 Event changed, reloading bookmarks')
+      console.log('Event changed, reloading bookmarks')
       await fetchBookmarksWithCircles()
     }
   } catch (error) {
-    console.error('❌ Event change error:', error)
+    console.error('Event change error:', error)
     initError.value = error instanceof Error ? error.message : 'Unknown error'
   }
 })

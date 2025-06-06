@@ -18,7 +18,7 @@
               @click="exportBookmarks"
               style="padding: 0.75rem 1rem; background: #10b981; color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;"
             >
-              📊 CSVエクスポート
+              <DocumentArrowDownIcon class="h-4 w-4" /> CSVエクスポート
             </button>
           </div>
         </div>
@@ -29,7 +29,7 @@
     <div style="max-width: 1280px; margin: 0 auto; padding: 2rem 1rem;">
       <!-- 未ログイン状態 -->
       <div v-if="!isAuthenticated" style="text-align: center; padding: 4rem;">
-        <div style="color: #9ca3af; font-size: 3rem; margin-bottom: 1rem;">🔒</div>
+        <LockClosedIcon style="color: #9ca3af; width: 3rem; height: 3rem; margin: 0 auto 1rem;" />
         <h2 style="font-size: 1.5rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
           ログインが必要です
         </h2>
@@ -74,7 +74,7 @@
                 color: activeCategory === category.key ? 'white' : '#6b7280'
               }"
             >
-              <span>{{ category.icon }}</span>
+              <component :is="getCategoryIcon(category.key)" class="h-4 w-4" />
               <span>{{ category.label }}</span>
               <span 
                 v-if="getBookmarkCount(category.key) > 0"
@@ -124,7 +124,7 @@
                 }"
                 title="グリッド表示"
               >
-                ⊞
+                <Squares2X2Icon class="h-4 w-4" />
               </button>
               <button
                 @click="viewMode = 'list'"
@@ -139,7 +139,7 @@
                 }"
                 title="リスト表示"
               >
-                ☰
+                <Bars3Icon class="h-4 w-4" />
               </button>
             </div>
           </div>
@@ -171,7 +171,7 @@
         <!-- 空の状態 -->
         <div v-else style="text-align: center; padding: 4rem;">
           <div style="color: #9ca3af; font-size: 3rem; margin-bottom: 1rem;">
-            {{ getCurrentCategoryIcon() }}
+            <component :is="getCurrentCategoryIconComponent()" class="h-12 w-12" />
           </div>
           <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
             {{ getCurrentCategoryLabel() }}がありません
@@ -190,7 +190,7 @@
         <!-- 統計情報 -->
         <div v-if="bookmarksWithCircles.length > 0" style="margin-top: 3rem; background: white; border-radius: 0.5rem; padding: 2rem; border: 1px solid #e5e7eb;">
           <h3 style="font-size: 1.125rem; font-weight: 600; color: #111827; margin: 0 0 1.5rem 0;">
-            📊 ブックマーク統計
+            <ChartBarIcon class="h-5 w-5 inline mr-2" /> ブックマーク統計
           </h3>
           
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
@@ -238,6 +238,18 @@
 </template>
 
 <script setup>
+import {
+  DocumentArrowDownIcon,
+  LockClosedIcon,
+  Squares2X2Icon,
+  Bars3Icon,
+  ChartBarIcon,
+  BookmarkIcon,
+  StarIcon,
+  FireIcon,
+  RectangleStackIcon
+} from '@heroicons/vue/24/outline'
+
 // Composables
 const { user, isAuthenticated } = useAuth()
 const { bookmarks, bookmarksWithCircles, loading, fetchBookmarksWithCircles, toggleBookmark, generateExportData } = useBookmarks()
@@ -249,10 +261,10 @@ const viewMode = ref('grid')
 
 // カテゴリ定義
 const categories = ref([
-  { key: 'all', label: 'すべて', icon: '📚' },
-  { key: 'check', label: 'チェック予定', icon: '📖' },
-  { key: 'interested', label: '気になる', icon: '⭐' },
-  { key: 'priority', label: '優先', icon: '🔥' }
+  { key: 'all', label: 'すべて' },
+  { key: 'check', label: 'チェック予定' },
+  { key: 'interested', label: '気になる' },
+  { key: 'priority', label: '優先' }
 ])
 
 // Computed
@@ -264,6 +276,20 @@ const filteredBookmarks = computed(() => {
 })
 
 // Methods
+const getCategoryIcon = (category) => {
+  switch (category) {
+    case 'all': return RectangleStackIcon
+    case 'check': return BookmarkIcon
+    case 'interested': return StarIcon
+    case 'priority': return FireIcon
+    default: return BookmarkIcon
+  }
+}
+
+const getCurrentCategoryIconComponent = () => {
+  return getCategoryIcon(activeCategory.value)
+}
+
 const getBookmarkCount = (category) => {
   if (category === 'all') {
     return bookmarksWithCircles.value.length
@@ -276,10 +302,6 @@ const getCurrentCategoryLabel = () => {
   return category?.label || 'ブックマーク'
 }
 
-const getCurrentCategoryIcon = () => {
-  const category = categories.value.find(cat => cat.key === activeCategory.value)
-  return category?.icon || '📚'
-}
 
 const handleBookmark = async (circleId, category) => {
   try {
