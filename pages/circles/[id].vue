@@ -225,7 +225,7 @@
                 </div>
                 <div style="display: flex; justify-content: space-between;">
                   <span style="color: #6b7280;">番号</span>
-                  <span style="font-weight: 600; color: #111827;">{{ circle.placement.number1 }}-{{ circle.placement.number2 }}</span>
+                  <span style="font-weight: 600; color: #111827;">{{ circle.placement.number1 }}{{ circle.placement.number2 ? '-' + circle.placement.number2 : '' }}</span>
                 </div>
               </div>
             </div>
