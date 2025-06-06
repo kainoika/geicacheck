@@ -47,36 +47,9 @@
 
 
 
-          <!-- 表示モード切り替え -->
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div style="color: #6b7280;">
-              {{ loading ? '読み込み中...' : `${circles.length}件のサークル` }}
-            </div>
-            
-            <div style="display: flex; border: 1px solid #d1d5db; border-radius: 0.375rem; overflow: hidden;">
-              <button 
-                @click="viewMode = 'grid'"
-                style="padding: 0.5rem 1rem; border: none; cursor: pointer; transition: all 0.2s;"
-                :style="{ 
-                  backgroundColor: viewMode === 'grid' ? '#ff69b4' : 'white',
-                  color: viewMode === 'grid' ? 'white' : '#374151'
-                }"
-              >
-                <Squares2X2Icon style="width: 1rem; height: 1rem; display: inline-block; margin-right: 0.25rem; vertical-align: -0.125rem;" />
-                グリッド
-              </button>
-              <button 
-                @click="viewMode = 'list'"
-                style="padding: 0.5rem 1rem; border: none; border-left: 1px solid #d1d5db; cursor: pointer; transition: all 0.2s;"
-                :style="{ 
-                  backgroundColor: viewMode === 'list' ? '#ff69b4' : 'white',
-                  color: viewMode === 'list' ? 'white' : '#374151'
-                }"
-              >
-                <ListBulletIcon style="width: 1rem; height: 1rem; display: inline-block; margin-right: 0.25rem; vertical-align: -0.125rem;" />
-                リスト
-              </button>
-            </div>
+          <!-- サークル数表示 -->
+          <div style="color: #6b7280;">
+            {{ loading ? '読み込み中...' : `${circles.length}件のサークル` }}
           </div>
         </div>
       </div>
@@ -97,18 +70,8 @@
       <!-- サークル一覧 -->
       <div v-else-if="paginatedCircles.length > 0">
         <!-- グリッド表示 -->
-        <div v-if="viewMode === 'grid'" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
           <CircleCard
-            v-for="circle in paginatedCircles"
-            :key="circle.id"
-            :circle="circle"
-            @bookmark="handleBookmark"
-          />
-        </div>
-
-        <!-- リスト表示 -->
-        <div v-else style="display: flex; flex-direction: column; gap: 1rem;">
-          <CircleListItem
             v-for="circle in paginatedCircles"
             :key="circle.id"
             :circle="circle"
@@ -171,9 +134,7 @@
 import type { Circle, BookmarkCategory, SearchParams } from '~/types'
 import { 
   MagnifyingGlassIcon,
-  LightBulbIcon,
-  Squares2X2Icon,
-  ListBulletIcon
+  LightBulbIcon
 } from '@heroicons/vue/24/outline'
 
 // Composables
@@ -183,7 +144,6 @@ const { currentEvent, fetchEvents } = useEvents()
 
 // State
 const searchQuery = ref('')
-const viewMode = ref('grid')
 const currentPage = ref(1)
 const itemsPerPage = ref(12)
 const searchTimeoutId = ref<NodeJS.Timeout | null>(null)

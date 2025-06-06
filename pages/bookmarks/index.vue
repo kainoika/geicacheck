@@ -99,67 +99,19 @@
 
         <!-- ブックマーク一覧 -->
         <div v-if="filteredBookmarks.length > 0">
-          <!-- 表示切り替え -->
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-            <div>
-              <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0;">
-                {{ getCurrentCategoryLabel() }}
-              </h2>
-              <p style="color: #6b7280; margin: 0; font-size: 0.875rem;">
-                {{ filteredBookmarks.length }}件のサークル
-              </p>
-            </div>
-
-            <div style="display: flex; align-items: center; gap: 0.5rem; background: white; border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.25rem;">
-              <button
-                @click="viewMode = 'grid'"
-                :style="{
-                  padding: '0.5rem',
-                  border: 'none',
-                  borderRadius: '0.25rem',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  backgroundColor: viewMode === 'grid' ? '#ff69b4' : 'transparent',
-                  color: viewMode === 'grid' ? 'white' : '#6b7280'
-                }"
-                title="グリッド表示"
-              >
-                <Squares2X2Icon class="h-4 w-4" />
-              </button>
-              <button
-                @click="viewMode = 'list'"
-                :style="{
-                  padding: '0.5rem',
-                  border: 'none',
-                  borderRadius: '0.25rem',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  backgroundColor: viewMode === 'list' ? '#ff69b4' : 'transparent',
-                  color: viewMode === 'list' ? 'white' : '#6b7280'
-                }"
-                title="リスト表示"
-              >
-                <Bars3Icon class="h-4 w-4" />
-              </button>
-            </div>
+          <!-- ヘッダー -->
+          <div style="margin-bottom: 1.5rem;">
+            <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0;">
+              {{ getCurrentCategoryLabel() }}
+            </h2>
+            <p style="color: #6b7280; margin: 0; font-size: 0.875rem;">
+              {{ filteredBookmarks.length }}件のサークル
+            </p>
           </div>
 
           <!-- グリッド表示 -->
-          <div 
-            v-if="viewMode === 'grid'"
-            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;"
-          >
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
             <CircleCard
-              v-for="bookmark in filteredBookmarks"
-              :key="bookmark.id"
-              :circle="bookmark.circle"
-              @bookmark="handleBookmark"
-            />
-          </div>
-
-          <!-- リスト表示 -->
-          <div v-else style="display: flex; flex-direction: column; gap: 1rem;">
-            <CircleListItem
               v-for="bookmark in filteredBookmarks"
               :key="bookmark.id"
               :circle="bookmark.circle"
@@ -241,8 +193,6 @@
 import {
   DocumentArrowDownIcon,
   LockClosedIcon,
-  Squares2X2Icon,
-  Bars3Icon,
   ChartBarIcon,
   BookmarkIcon,
   StarIcon,
@@ -256,7 +206,6 @@ const { bookmarks, bookmarksWithCircles, loading, fetchBookmarksWithCircles, tog
 
 // State
 const activeCategory = ref('all')
-const viewMode = ref('grid')
 
 
 // カテゴリ定義
