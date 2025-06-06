@@ -25,8 +25,7 @@ npm run test:coverage   # Run tests with coverage report
 ```bash
 npm run test:firebase                # Test Firebase connection
 npm run convert:circles              # Convert circle data format
-npm run import:circles               # Import circles from CSV
-npm run import:converted-circles     # Import converted circles
+npm run import:converted-circles     # Import converted circles to Firestore
 npm run seed:events                  # Seed events data
 npm run migrate:multi-event          # Run multi-event migration
 ```
@@ -57,10 +56,11 @@ This is a **Nuxt 3 SPA** application for managing circle information at Aikatsu 
 - Event switching functionality throughout the application
 
 **Component Organization:**
-- Feature-based component grouping (`circle/`, `bookmark/`, `layout/`, `ui/`)
+- Feature-based component grouping (`circle/`, `bookmark/`, `layout/`, `ui/`, `map/`)
 - PascalCase naming convention with descriptive names
 - TypeScript interfaces for all props and emits
 - Reusable UI components in `ui/` directory
+- Map-related components in `map/` directory (EventMap.vue)
 
 ### Data Layer
 
@@ -72,12 +72,12 @@ This is a **Nuxt 3 SPA** application for managing circle information at Aikatsu 
 
 **Firestore Collections:**
 ```
-users/               # User profiles and settings
-circles/             # Circle information (event-specific)
-bookmarks/           # User bookmarks (event-specific)
-events/              # Event metadata and configuration
+users/                     # User profiles and settings
+  └── bookmarks/           # User bookmarks subcollection (event-specific)
+events/                    # Event metadata and configuration
+  └── circles/             # Circle information subcollection (event-specific)
 edit_permission_requests/  # Permission requests for circle editing
-circle_permissions/  # Granted permissions
+circle_permissions/        # Granted permissions
 ```
 
 **Authentication & Authorization:**
@@ -94,6 +94,8 @@ circle_permissions/  # Granted permissions
 3. Use established patterns for error handling and loading states
 4. Follow the existing component structure and naming conventions
 5. Ensure event-specific data isolation where applicable
+6. Replace dummy/sample data with real Firebase integration immediately
+7. Use proper authentication checks for admin-only features
 
 **Firebase Operations:**
 - Always use server timestamps for created/updated fields
@@ -112,6 +114,7 @@ circle_permissions/  # Granted permissions
 - Runtime config accessed via `useRuntimeConfig().public`
 - SPA mode configured for client-side rendering
 - Environment-specific Firebase projects for dev/staging/prod
+- Vite optimizations for estree-walker and global polyfills
 
 ### Testing
 - Unit tests use Vitest
@@ -120,12 +123,13 @@ circle_permissions/  # Granted permissions
 - Aim for 80%+ coverage on utility functions and composables
 
 ### Important Files
-- `nuxt.config.ts` - Main configuration (SPA mode, Firebase env vars)
+- `nuxt.config.ts` - Main configuration (SPA mode, Firebase env vars, component settings)
 - `types/index.ts` - Complete type definitions
 - `composables/` - Core business logic and state management
 - `plugins/firebase.client.ts` - Firebase service initialization
 - `firestore.rules` - Database security rules
 - `scripts/` - Data migration and management utilities
+- `components/map/EventMap.vue` - Interactive map component for event layouts
 
 ## Conversation Guidelines
 - 常に日本語で会話する
