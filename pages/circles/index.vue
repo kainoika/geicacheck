@@ -184,7 +184,7 @@ const searchTimeoutId = ref<NodeJS.Timeout | null>(null)
 const filters = ref<SearchParams>({
   genres: [],
   blocks: [],
-  isAdult: false,
+  isAdult: undefined,  // 初期状態では成人向けフィルターを適用しない
   genreFilterMode: 'OR'
 })
 
@@ -193,7 +193,7 @@ const activeFiltersCount = computed(() => {
   let count = 0
   if (filters.value.genres?.length) count++
   if (filters.value.blocks?.length) count++
-  if (filters.value.isAdult === true) count++ // 成人向けを含む場合のみカウント
+  if (filters.value.isAdult !== undefined) count++ // 成人向けフィルターが設定されている場合カウント
   return count
 })
 
@@ -254,7 +254,7 @@ const resetFilters = async () => {
   filters.value = {
     genres: [],
     blocks: [],
-    isAdult: false,
+    isAdult: undefined,  // リセット時も成人向けフィルターを適用しない
     genreFilterMode: 'OR'
   }
   searchQuery.value = ''

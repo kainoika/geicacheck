@@ -78,6 +78,15 @@
           <label style="display: flex; align-items: center; cursor: pointer;">
             <input
               type="radio"
+              :value="undefined"
+              v-model="adultFilter"
+              style="margin-right: 0.5rem;"
+            >
+            <span style="font-size: 0.875rem;">すべて表示</span>
+          </label>
+          <label style="display: flex; align-items: center; cursor: pointer;">
+            <input
+              type="radio"
               :value="false"
               v-model="adultFilter"
               style="margin-right: 0.5rem;"
@@ -91,7 +100,7 @@
               v-model="adultFilter"
               style="margin-right: 0.5rem;"
             >
-            <span style="font-size: 0.875rem;">成人向けを含む</span>
+            <span style="font-size: 0.875rem;">成人向けのみ</span>
           </label>
         </div>
       </div>
@@ -147,7 +156,7 @@ const { currentEvent } = useEvents()
 // State
 const selectedGenres = ref(props.modelValue.genres || [])
 const selectedBlocks = ref(props.modelValue.blocks || [])
-const adultFilter = ref(props.modelValue.isAdult !== undefined ? props.modelValue.isAdult : false)
+const adultFilter = ref(props.modelValue.isAdult !== undefined ? props.modelValue.isAdult : undefined)
 const genreFilterMode = ref(props.modelValue.genreFilterMode || 'OR')
 
 // Available options
@@ -174,13 +183,13 @@ const applyFilters = () => {
 const resetFilters = () => {
   selectedGenres.value = []
   selectedBlocks.value = []
-  adultFilter.value = false
+  adultFilter.value = undefined
   genreFilterMode.value = 'OR'
   
   const filters = {
     genres: [],
     blocks: [],
-    isAdult: false,
+    isAdult: undefined,
     genreFilterMode: 'OR' as const
   }
   
@@ -204,7 +213,7 @@ const initializeGenres = async () => {
 watch(() => props.modelValue, (newValue) => {
   selectedGenres.value = newValue.genres || []
   selectedBlocks.value = newValue.blocks || []
-  adultFilter.value = newValue.isAdult !== undefined ? newValue.isAdult : false
+  adultFilter.value = newValue.isAdult !== undefined ? newValue.isAdult : undefined
   genreFilterMode.value = newValue.genreFilterMode || 'OR'
 }, { deep: true })
 
