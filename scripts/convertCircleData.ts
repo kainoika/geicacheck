@@ -25,6 +25,7 @@ interface OriginalCircleData {
 }
 
 interface ConvertedCircleData {
+  id: string
   circleName: string
   circleKana: string
   penName: string
@@ -82,6 +83,9 @@ function normalizeUrl(url: string): string | null {
 // データ変換関数
 function convertCircleData(original: OriginalCircleData): ConvertedCircleData {
   return {
+    id: original.id && original.id.trim() !== '' 
+      ? original.id.trim() 
+      : `circle-${Date.now()}`, // IDが空の場合はタイムスタンプを使用
     circleName: original.circleName || '',
     circleKana: original.circleKana || '',
     penName: original.penName || '',
@@ -117,8 +121,8 @@ async function convertData() {
     console.log('🔄 JSONデータの変換を開始します...')
     
     // 元のJSONファイルを読み込み
-    const inputPath = join(process.cwd(), 'data', 'geika32-circle.json')
-    const outputPath = join(process.cwd(), 'data', 'geika32-circle-converted.json')
+    const inputPath = join(process.cwd(), 'data', 'geika31-circle.json')
+    const outputPath = join(process.cwd(), 'data', 'geika31-circle-converted.json')
     
     console.log(`📖 読み込み: ${inputPath}`)
     const jsonData = readFileSync(inputPath, 'utf-8')
