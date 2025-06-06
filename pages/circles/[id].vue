@@ -26,26 +26,26 @@
     <!-- サークル詳細 -->
     <div v-else-if="circle">
       <!-- ヘッダー -->
-      <div style="background: white; border-bottom: 1px solid #e5e7eb; padding: 2rem 0;">
-        <div style="max-width: 1280px; margin: 0 auto; padding: 0 1rem;">
-          <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+      <div class="header-section">
+        <div class="header-container">
+          <div class="header-top">
             <button 
               @click="$router.back()"
-              style="padding: 0.5rem; border: 1px solid #d1d5db; background: white; border-radius: 0.375rem; cursor: pointer; color: #6b7280;"
+              class="back-button"
             >
               ← 戻る
             </button>
-            <div style="flex: 1;">
-              <h1 style="font-size: 2rem; font-weight: 700; color: #111827; margin: 0 0 0.5rem 0;">
+            <div class="title-section">
+              <h1 class="circle-title">
                 {{ circle.circleName }}
               </h1>
-              <p v-if="circle.circleKana" style="color: #6b7280; margin: 0; font-size: 1.125rem;">
+              <p v-if="circle.circleKana" class="circle-kana">
                 {{ circle.circleKana }}
               </p>
             </div>
             
             <!-- ブックマークボタン -->
-            <div style="flex-shrink: 0;">
+            <div class="bookmark-section">
               <BookmarkButton 
                 :circle-id="circle.id"
                 @bookmark="handleBookmark"
@@ -54,40 +54,35 @@
           </div>
 
           <!-- 基本情報 -->
-          <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
+          <div class="info-tags">
             <!-- 配置 -->
-            <div style="display: flex; align-items: center; gap: 0.5rem; background: #fef3f2; padding: 0.5rem 1rem; border-radius: 0.5rem;">
-              <MapPinIcon class="h-5 w-5 text-red-500" />
-              <div>
-                <div style="font-weight: 600; color: #111827;">{{ formatPlacement(circle.placement) }}</div>
-              </div>
+            <div class="info-tag placement-tag">
+              <MapPinIcon class="h-4 w-4 text-red-500" />
+              <div class="tag-text">{{ formatPlacement(circle.placement) }}</div>
             </div>
 
             <!-- 成人向けマーク -->
-            <div v-if="circle.isAdult" style="display: flex; align-items: center; gap: 0.5rem; background: #fef3c7; padding: 0.5rem 1rem; border-radius: 0.5rem;">
-              <ExclamationTriangleIcon class="h-5 w-5 text-yellow-600" />
-              <span style="font-weight: 600; color: #92400e;">成人向け</span>
+            <div v-if="circle.isAdult" class="info-tag adult-tag">
+              <ExclamationTriangleIcon class="h-4 w-4 text-yellow-600" />
+              <span class="tag-text">成人向け</span>
             </div>
 
             <!-- マップで確認 -->
-            <NuxtLink 
-              to="/map"
-              style="display: flex; align-items: center; gap: 0.5rem; background: #f0f9ff; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; color: #0284c7; font-weight: 500;"
-            >
-              <MapIcon class="h-5 w-5 text-blue-600" />
-              マップで確認
+            <NuxtLink to="/map" class="info-tag map-tag">
+              <MapIcon class="h-4 w-4 text-blue-600" />
+              <span class="tag-text">マップで確認</span>
             </NuxtLink>
           </div>
         </div>
       </div>
 
       <!-- メインコンテンツ -->
-      <div style="max-width: 1280px; margin: 0 auto; padding: 2rem 1rem;">
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+      <div style="max-width: 1280px; margin: 0 auto; padding: 1rem;">
+        <div class="circle-detail-grid">
           <!-- 左カラム：詳細情報 -->
-          <div style="display: flex; flex-direction: column; gap: 2rem;">
+          <div class="main-content">
             <!-- サークルカット画像 -->
-            <div style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
+            <div class="content-card">
               <ImageUpload
                 v-model="circle.circleCutImageUrl"
                 label="サークルカット画像"
@@ -99,7 +94,7 @@
             </div>
 
             <!-- お品書き画像 -->
-            <div style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
+            <div class="content-card">
               <ImageUpload
                 v-model="circle.menuImageUrl"
                 label="お品書き画像"
@@ -111,7 +106,7 @@
             </div>
 
             <!-- ジャンル -->
-            <div style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
+            <div class="content-card">
               <GenreManager
                 :genres="circle.genre"
                 :can-edit="permissions.canEditGenres"
@@ -121,7 +116,7 @@
             </div>
 
             <!-- 説明 -->
-            <div v-if="circle.description" style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
+            <div v-if="circle.description" class="content-card">
               <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
                 <DocumentTextIcon class="h-5 w-5" />
                 サークル説明
@@ -132,7 +127,7 @@
             </div>
 
             <!-- 頒布物一覧 -->
-            <div style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
+            <div class="content-card">
               <CircleItemManager
                 :items="circle.items || []"
                 :can-edit="permissions.canManageItems"
@@ -147,9 +142,9 @@
           </div>
 
           <!-- 右カラム：サイドバー -->
-          <div style="display: flex; flex-direction: column; gap: 2rem;">
+          <div class="sidebar-content">
             <!-- 連絡先 -->
-            <div style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
+            <div class="content-card">
               <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
                 <PhoneIcon class="h-5 w-5" />
                 連絡先
@@ -218,7 +213,7 @@
             </div>
 
             <!-- 配置詳細 -->
-            <div style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
+            <div class="content-card">
               <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
                 <MapPinIcon class="h-5 w-5" />
                 配置詳細
@@ -236,7 +231,7 @@
             </div>
 
             <!-- アクション -->
-            <div style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
+            <div class="content-card">
               <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
                 <BoltIcon class="h-5 w-5" />
                 アクション
@@ -527,9 +522,192 @@ useHead(() => ({
   }
 }
 
-@media (max-width: 768px) {
-  .grid {
-    grid-template-columns: 1fr !important;
+/* ヘッダーセクション */
+.header-section {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1.5rem 0;
+}
+
+.header-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.header-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.back-button {
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  background: white;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  color: #6b7280;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.title-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.circle-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.circle-kana {
+  color: #6b7280;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.3;
+}
+
+.bookmark-section {
+  flex-shrink: 0;
+}
+
+/* 情報タグ */
+.info-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.info-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.placement-tag {
+  background: #fef3f2;
+  color: #dc2626;
+}
+
+.adult-tag {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.map-tag {
+  background: #f0f9ff;
+  color: #0284c7;
+  font-weight: 500;
+}
+
+.map-tag:hover {
+  background: #e0f2fe;
+}
+
+.tag-text {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* メインレイアウト */
+.circle-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.content-card {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  border: 1px solid #e5e7eb;
+}
+
+/* タブレット以上 */
+@media (min-width: 768px) {
+  .header-section {
+    padding: 2rem 0;
+  }
+  
+  .circle-title {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .circle-kana {
+    font-size: 1.125rem;
+  }
+  
+  .info-tag {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  .circle-detail-grid {
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+  }
+  
+  .main-content {
+    gap: 2rem;
+  }
+  
+  .sidebar-content {
+    gap: 2rem;
+  }
+  
+  .content-card {
+    padding: 1.5rem;
+  }
+}
+
+/* モバイル調整 */
+@media (max-width: 767px) {
+  .header-top {
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .back-button {
+    margin-top: 0.125rem;
+  }
+  
+  .info-tags {
+    gap: 0.5rem;
+  }
+  
+  .info-tag {
+    font-size: 0.8rem;
+    padding: 0.375rem 0.625rem;
+  }
+  
+  .tag-text {
+    font-size: 0.8rem;
   }
 }
 </style>
