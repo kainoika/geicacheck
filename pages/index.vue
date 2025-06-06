@@ -128,7 +128,7 @@
             <div class="grid grid-cols-1 grid-cols-md-2 grid-cols-lg-3 mb-4">
                 <!-- CSVエクスポート -->
                 <div class="card">
-                    <div style="font-size: 2rem; margin-bottom: 1rem;"><ComputerDesktopIcon style="width: 2rem; height: 2rem; color: #ff69b4; margin: 0 auto;" /></div>
+                    <div style="font-size: 2rem; margin-bottom: 1rem;"><DocumentArrowDownIcon style="width: 2rem; height: 2rem; color: #ff69b4; margin: 0 auto;" /></div>
                     <h3 style="color: #ff69b4; margin-bottom: 0.5rem;">CSVエクスポート</h3>
                     <p class="text-muted">
                         ブックマークリストをCSV形式でエクスポートして、他のアプリでも活用できます。
@@ -137,7 +137,7 @@
 
                 <!-- PWA対応 -->
                 <div class="card">
-                    <div style="font-size: 2rem; margin-bottom: 1rem;"><ComputerDesktopIcon style="width: 2rem; height: 2rem; color: #ff69b4; margin: 0 auto;" /></div>
+                    <div style="font-size: 2rem; margin-bottom: 1rem;"><DevicePhoneMobileIcon style="width: 2rem; height: 2rem; color: #ff69b4; margin: 0 auto;" /></div>
                     <h3 style="color: #ff69b4; margin-bottom: 0.5rem;">PWA対応</h3>
                     <p class="text-muted">
                         スマートフォンのホーム画面に追加して、アプリのように使用できます。
@@ -173,7 +173,9 @@ import {
     PencilIcon,
     WrenchScrewdriverIcon,
     InformationCircleIcon,
-    ComputerDesktopIcon
+    ComputerDesktopIcon,
+    DevicePhoneMobileIcon,
+    DocumentArrowDownIcon
 } from '@heroicons/vue/24/outline'
 
 // State

@@ -64,7 +64,7 @@
           </div>
 
           <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb; text-align: center;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;"><ChartBarIcon style="width: 3rem; height: 3rem; color: #ff69b4; margin: 0 auto;" /></div>
+            <div style="font-size: 3rem; margin-bottom: 1rem;"><DocumentArrowDownIcon style="width: 3rem; height: 3rem; color: #ff69b4; margin: 0 auto;" /></div>
             <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
               CSVエクスポート
             </h3>
@@ -350,14 +350,14 @@ import {
   BookOpenIcon,
   MapIcon,
   LockClosedIcon,
-  ChartBarIcon,
   DevicePhoneMobileIcon,
   WrenchScrewdriverIcon,
   PhoneIcon,
   AtSymbolIcon,
   EnvelopeIcon,
   ComputerDesktopIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  DocumentArrowDownIcon
 } from '@heroicons/vue/24/outline'
 // SEO
 useHead({
