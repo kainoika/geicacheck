@@ -21,6 +21,14 @@ export default defineNuxtConfig({
   // CSS設定
   css: ["~/assets/css/main.css"],
 
+  // コンポーネント設定
+  components: [
+    {
+      path: '~/components',
+      pathPrefix: false,
+    }
+  ],
+
   // アプリ設定
   app: {
     head: {
@@ -66,4 +74,23 @@ export default defineNuxtConfig({
 
   // ビルド設定
   ssr : false, // SPAモード
+
+  // Vite設定
+  vite: {
+    optimizeDeps: {
+      include: ['estree-walker']
+    },
+    define: {
+      global: 'globalThis'
+    }
+  },
+
+  // Nitro設定
+  nitro: {
+    esbuild: {
+      options: {
+        target: 'esnext'
+      }
+    }
+  }
 });
