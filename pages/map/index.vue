@@ -152,172 +152,36 @@
 
       <!-- マップエリア -->
       <div style="flex: 1; position: relative; overflow: hidden;">
-        <div 
-          ref="mapContainer"
-          style="width: 100%; height: 100%; position: relative; cursor: grab;"
-          @mousedown="startPan"
-          @mousemove="handlePan"
-          @mouseup="endPan"
-          @mouseleave="endPan"
-          @wheel="handleZoom"
-        >
-          <!-- SVGマップ -->
-          <svg 
-            :width="mapWidth" 
-            :height="mapHeight"
-            :style="{
-              transform: `translate(${panX}px, ${panY}px) scale(${zoomLevel})`,
-              transformOrigin: 'center center',
-              transition: isPanning ? 'none' : 'transform 0.3s ease'
-            }"
-            style="position: absolute; top: 50%; left: 50%; transform-origin: center center;"
-          >
-            <!-- 背景グリッド -->
-            <defs>
-              <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
-                <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#e5e7eb" stroke-width="1"/>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
-
-            <!-- エリア区分 -->
-            <g v-for="area in mapAreas" :key="area.id">
-              <!-- エリア背景 -->
-              <rect 
-                :x="area.x" 
-                :y="area.y" 
-                :width="area.width" 
-                :height="area.height"
-                :fill="area.color"
-                fill-opacity="0.1"
-                :stroke="area.color"
-                stroke-width="2"
-                rx="8"
-              />
-              
-              <!-- エリアラベル -->
-              <text 
-                :x="area.x + area.width / 2" 
-                :y="area.y + 20"
-                text-anchor="middle"
-                font-size="16"
-                font-weight="bold"
-                :fill="area.color"
-              >
-                {{ area.name }}
-              </text>
-
-              <!-- サークルスペース -->
-              <g v-for="space in area.spaces" :key="space.id">
-                <rect 
-                  :x="space.x" 
-                  :y="space.y" 
-                  :width="space.width" 
-                  :height="space.height"
-                  fill="white"
-                  stroke="#d1d5db"
-                  stroke-width="1"
-                  rx="2"
-                />
-                
-                <!-- サークル情報 -->
-                <text 
-                  :x="space.x + space.width / 2" 
-                  :y="space.y + space.height / 2"
-                  text-anchor="middle"
-                  font-size="8"
-                  fill="#6b7280"
-                  dominant-baseline="middle"
-                >
-                  {{ space.placement }}
-                </text>
-              </g>
-            </g>
-
-            <!-- ブックマークピン -->
-            <g v-for="bookmark in visibleBookmarks" :key="bookmark.id">
-              <circle 
-                :cx="getCirclePosition(bookmark.circle).x" 
-                :cy="getCirclePosition(bookmark.circle).y"
-                :r="8"
-                :fill="getCategoryColor(bookmark.category)"
-                stroke="white"
-                stroke-width="2"
-                style="cursor: pointer;"
-                @click="showCircleInfo(bookmark.circle)"
-              />
-              
-              <!-- ピンアイコン -->
-              <text 
-                :x="getCirclePosition(bookmark.circle).x" 
-                :y="getCirclePosition(bookmark.circle).y + 2"
-                text-anchor="middle"
-                font-size="8"
-                fill="white"
-                font-weight="bold"
-                style="pointer-events: none;"
-              >
-                {{ getCategoryIcon(bookmark.category) }}
-              </text>
-            </g>
-          </svg>
-
-          <!-- ズーム・パン説明 -->
-          <div style="position: absolute; bottom: 1rem; left: 1rem; background: rgba(0,0,0,0.7); color: white; padding: 0.5rem; border-radius: 0.375rem; font-size: 0.75rem;">
-            マウスホイール: ズーム | ドラッグ: パン
+        <!-- エラー表示 -->
+        <div v-if="initError" style="display: flex; align-items: center; justify-content: center; height: 100%; background: #fef2f2;">
+          <div style="text-align: center; padding: 2rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem; color: #dc2626;">⚠️</div>
+            <div style="font-size: 1.25rem; color: #dc2626; margin-bottom: 1rem;">マップの初期化に失敗しました</div>
+            <div style="font-size: 0.875rem; color: #6b7280;">{{ initError }}</div>
+            <button 
+              @click="initError = null; $router.go(0)" 
+              style="margin-top: 1rem; padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 0.375rem; cursor: pointer;"
+            >
+              ページを再読み込み
+            </button>
           </div>
         </div>
-
-        <!-- サークル情報ポップアップ -->
-        <div 
-          v-if="selectedCircle"
-          style="position: absolute; top: 1rem; right: 1rem; width: 300px; background: white; border-radius: 0.5rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border: 1px solid #e5e7eb; z-index: 10;"
-        >
-          <div style="padding: 1rem;">
-            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-              <h4 style="font-size: 1rem; font-weight: 600; color: #111827; margin: 0;">
-                {{ selectedCircle.circleName }}
-              </h4>
-              <button 
-                @click="selectedCircle = null"
-                style="padding: 0.25rem; border: none; background: none; cursor: pointer; color: #6b7280;"
-              >
-                ✕
-              </button>
-            </div>
-            
-            <div style="margin-bottom: 0.75rem;">
-              <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">
-                {{ formatPlacement(selectedCircle.placement) }}
-              </p>
-            </div>
-            
-            <div style="margin-bottom: 0.75rem;">
-              <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
-                <span 
-                  v-for="genre in selectedCircle.genre" 
-                  :key="genre"
-                  style="background: #e0f2fe; color: #0277bd; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.75rem;"
-                >
-                  {{ genre }}
-                </span>
-              </div>
-            </div>
-            
-            <div v-if="selectedCircle.description" style="margin-bottom: 1rem;">
-              <p style="font-size: 0.875rem; color: #4b5563; margin: 0; line-height: 1.4;">
-                {{ selectedCircle.description }}
-              </p>
-            </div>
-            
-            <div style="display: flex; gap: 0.5rem;">
-              <NuxtLink 
-                :to="`/circles/${selectedCircle.id}`"
-                style="flex: 1; padding: 0.5rem; background: #ff69b4; color: white; border-radius: 0.375rem; text-decoration: none; text-align: center; font-size: 0.875rem; font-weight: 500;"
-              >
-                詳細を見る
-              </NuxtLink>
-            </div>
+        
+        <!-- 正常時のマップ表示 -->
+        <div v-else-if="currentEvent">
+          <EventMap 
+            :visible-bookmarks="visibleBookmarks"
+            :event-id="currentEvent.id"
+            @circle-select="handleCircleSelect"
+            ref="eventMapRef"
+          />
+        </div>
+        
+        <!-- ローディング表示 -->
+        <div v-else style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f8f9fa;">
+          <div style="text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">⏳</div>
+            <div style="font-size: 1.25rem; color: #6c757d;">イベント情報を読み込み中...</div>
           </div>
         </div>
       </div>
@@ -325,97 +189,61 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type { Circle, BookmarkCategory, BookmarkWithCircle } from '~/types'
+import EventMap from '~/components/map/EventMap.vue'
+
 // State
-const mapContainer = ref(null)
 const showAllCircles = ref(false)
-const zoomLevel = ref(1)
-const panX = ref(0)
-const panY = ref(0)
-const isPanning = ref(false)
-const lastPanPoint = ref({ x: 0, y: 0 })
-const selectedCircle = ref(null)
+const visibleCategories = ref<BookmarkCategory[]>(['check', 'interested', 'priority'])
+const eventMapRef = ref<any>(null)
 
-const visibleCategories = ref(['check', 'interested', 'priority'])
+// Composables
+const { bookmarks, getBookmarksByEventId, fetchBookmarksWithCircles } = useBookmarks()
+const { currentEvent } = useEvents()
+const { formatPlacement } = useCircles()
 
-// マップ設定
-const mapWidth = ref(1200)
-const mapHeight = ref(800)
+// ブックマークデータ
+const bookmarkedCircles = computed(() => {
+  if (!currentEvent.value) return []
+  return getBookmarksByEventId(currentEvent.value.id)
+})
 
-// サンプルデータ
-const bookmarkedCircles = ref([
-  {
-    id: '1',
-    circleId: '1',
-    category: 'check',
-    circle: {
-      id: '1',
-      circleName: '星宮製作所',
-      placement: { day: '1', area: '東1', block: 'あ', number: '01', position: 'a' },
-      genre: ['アイカツ！', 'いちご'],
-      description: '星宮いちごちゃんのイラスト本とグッズを頒布予定です。'
-    }
-  },
-  {
-    id: '2',
-    circleId: '2',
-    category: 'interested',
-    circle: {
-      id: '2',
-      circleName: 'あおい工房',
-      placement: { day: '1', area: '東1', block: 'あ', number: '02', position: 'b' },
-      genre: ['アイカツ！', 'あおい'],
-      description: '霧矢あおいちゃんのアクセサリーとステッカーを作りました。'
-    }
-  },
-  {
-    id: '3',
-    circleId: '3',
-    category: 'priority',
-    circle: {
-      id: '3',
-      circleName: 'らんらん堂',
-      placement: { day: '1', area: '東1', block: 'い', number: '15', position: 'a' },
-      genre: ['アイカツ！', 'らん'],
-      description: '紫吹蘭ちゃんの同人誌とポストカードセットを頒布します。'
-    }
+// エラーハンドリング
+const initError = ref<string | null>(null)
+
+// 初期化
+onMounted(async () => {
+  try {
+    console.log('🚀 Map page mounted')
+    console.log('📅 Current event:', currentEvent.value)
+    
+    // ブックマーク情報を取得
+    await fetchBookmarksWithCircles()
+    console.log('✅ Bookmarks loaded')
+  } catch (error) {
+    console.error('❌ Map initialization error:', error)
+    initError.value = error instanceof Error ? error.message : 'Unknown error'
   }
-])
+})
+
+// イベント変更時にブックマークを再取得
+watch(currentEvent, async () => {
+  try {
+    if (currentEvent.value) {
+      console.log('🔄 Event changed, reloading bookmarks')
+      await fetchBookmarksWithCircles()
+    }
+  } catch (error) {
+    console.error('❌ Event change error:', error)
+    initError.value = error instanceof Error ? error.message : 'Unknown error'
+  }
+})
 
 const bookmarkCategories = ref([
-  { key: 'check', label: 'チェック予定', icon: '📖' },
-  { key: 'interested', label: '気になる', icon: '⭐' },
-  { key: 'priority', label: '優先', icon: '🔥' }
-])
-
-// マップエリア定義
-const mapAreas = ref([
-  {
-    id: 'east1',
-    name: '東1',
-    x: 100,
-    y: 100,
-    width: 400,
-    height: 200,
-    color: '#ff69b4',
-    spaces: [
-      { id: 'e1-a01a', placement: 'あ01a', x: 120, y: 130, width: 30, height: 20 },
-      { id: 'e1-a01b', placement: 'あ01b', x: 120, y: 155, width: 30, height: 20 },
-      { id: 'e1-a02a', placement: 'あ02a', x: 155, y: 130, width: 30, height: 20 },
-      { id: 'e1-a02b', placement: 'あ02b', x: 155, y: 155, width: 30, height: 20 },
-      { id: 'e1-i15a', placement: 'い15a', x: 300, y: 130, width: 30, height: 20 }
-    ]
-  },
-  {
-    id: 'east2',
-    name: '東2',
-    x: 550,
-    y: 100,
-    width: 400,
-    height: 200,
-    color: '#87ceeb',
-    spaces: []
-  }
+  { key: 'check' as BookmarkCategory, label: 'チェック予定', icon: '📖' },
+  { key: 'interested' as BookmarkCategory, label: '気になる', icon: '⭐' },
+  { key: 'priority' as BookmarkCategory, label: '優先', icon: '🔥' }
 ])
 
 // Computed
@@ -430,94 +258,42 @@ const visibleBookmarks = computed(() => {
 })
 
 // Methods
-const getBookmarkCount = (category) => {
+const getBookmarkCount = (category: BookmarkCategory) => {
   return bookmarkedCircles.value.filter(bookmark => bookmark.category === category).length
 }
 
-const getCategoryIcon = (category) => {
+const getCategoryIcon = (category: BookmarkCategory) => {
   const categoryData = bookmarkCategories.value.find(cat => cat.key === category)
   return categoryData?.icon || '📍'
 }
 
-const getCategoryColor = (category) => {
-  switch (category) {
-    case 'check': return '#0284c7'
-    case 'interested': return '#ca8a04'
-    case 'priority': return '#dc2626'
-    default: return '#6b7280'
+const focusOnCircle = (circle: Circle) => {
+  if (eventMapRef.value) {
+    eventMapRef.value.focusOnCircle(circle)
   }
 }
 
-const formatPlacement = (placement) => {
-  return `${placement.area}-${placement.block}-${placement.number}${placement.position}`
-}
-
-const getCirclePosition = (circle) => {
-  // 実際の配置に基づいて座標を計算
-  const placement = formatPlacement(circle.placement)
-  
-  // サンプル座標計算
-  if (placement === '東1-あ-01a') return { x: 135, y: 140 }
-  if (placement === '東1-あ-02b') return { x: 170, y: 165 }
-  if (placement === '東1-い-15a') return { x: 315, y: 140 }
-  
-  // デフォルト位置
-  return { x: 200, y: 200 }
-}
-
-const focusOnCircle = (circle) => {
-  const position = getCirclePosition(circle)
-  panX.value = -position.x * zoomLevel.value + mapContainer.value.clientWidth / 2
-  panY.value = -position.y * zoomLevel.value + mapContainer.value.clientHeight / 2
-  selectedCircle.value = circle
-}
-
-const showCircleInfo = (circle) => {
-  selectedCircle.value = circle
+const handleCircleSelect = (circle: Circle) => {
+  // サークル選択時の追加処理があればここに記述
 }
 
 // ズーム・パン機能
 const zoomIn = () => {
-  zoomLevel.value = Math.min(zoomLevel.value * 1.2, 3)
+  if (eventMapRef.value) {
+    eventMapRef.value.zoomIn()
+  }
 }
 
 const zoomOut = () => {
-  zoomLevel.value = Math.max(zoomLevel.value / 1.2, 0.5)
+  if (eventMapRef.value) {
+    eventMapRef.value.zoomOut()
+  }
 }
 
 const resetZoom = () => {
-  zoomLevel.value = 1
-  panX.value = 0
-  panY.value = 0
-}
-
-const handleZoom = (event) => {
-  event.preventDefault()
-  const delta = event.deltaY > 0 ? 0.9 : 1.1
-  zoomLevel.value = Math.max(0.5, Math.min(3, zoomLevel.value * delta))
-}
-
-const startPan = (event) => {
-  isPanning.value = true
-  lastPanPoint.value = { x: event.clientX, y: event.clientY }
-  mapContainer.value.style.cursor = 'grabbing'
-}
-
-const handlePan = (event) => {
-  if (!isPanning.value) return
-  
-  const deltaX = event.clientX - lastPanPoint.value.x
-  const deltaY = event.clientY - lastPanPoint.value.y
-  
-  panX.value += deltaX
-  panY.value += deltaY
-  
-  lastPanPoint.value = { x: event.clientX, y: event.clientY }
-}
-
-const endPan = () => {
-  isPanning.value = false
-  mapContainer.value.style.cursor = 'grab'
+  if (eventMapRef.value) {
+    eventMapRef.value.resetZoom()
+  }
 }
 
 // SEO
