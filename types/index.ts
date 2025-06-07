@@ -58,8 +58,17 @@ export interface CircleItem {
   price: number; // 価格
   description?: string; // 頒布物の説明
   isAvailable: boolean; // 在庫有無
+  onlineShopLinks?: OnlineShopLinks; // オンライン通販リンク
   createdAt: Date;
   updatedAt: Date;
+}
+
+// オンライン通販リンクの型定義
+export interface OnlineShopLinks {
+  booth?: string; // BOOTH URL
+  melonbooks?: string; // メロンブックス URL
+  toranoana?: string; // とらのあな URL
+  other?: string; // その他のURL
 }
 
 // ブックマーク関連の型定義
@@ -235,6 +244,7 @@ export interface CircleItemFormData {
   price: number;
   description?: string;
   isAvailable: boolean;
+  onlineShopLinks?: OnlineShopLinks;
 }
 
 export interface BookmarkFormData {

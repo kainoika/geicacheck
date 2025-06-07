@@ -41,6 +41,49 @@
                 {{ item.isAvailable ? '頒布予定' : '完売・頒布終了' }}
               </span>
             </div>
+            <!-- オンライン通販リンク -->
+            <div v-if="item.onlineShopLinks && Object.values(item.onlineShopLinks).some(link => link)" class="flex items-center gap-2 mt-3">
+              <a
+                v-if="item.onlineShopLinks.booth"
+                :href="item.onlineShopLinks.booth"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-medium hover:bg-blue-100 transition-colors"
+              >
+                <ShoppingCartIcon class="h-3 w-3 mr-1" />
+                BOOTH
+              </a>
+              <a
+                v-if="item.onlineShopLinks.melonbooks"
+                :href="item.onlineShopLinks.melonbooks"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center px-2.5 py-1 bg-green-50 text-green-700 rounded-md text-xs font-medium hover:bg-green-100 transition-colors"
+              >
+                <ShoppingCartIcon class="h-3 w-3 mr-1" />
+                メロンブックス
+              </a>
+              <a
+                v-if="item.onlineShopLinks.toranoana"
+                :href="item.onlineShopLinks.toranoana"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center px-2.5 py-1 bg-purple-50 text-purple-700 rounded-md text-xs font-medium hover:bg-purple-100 transition-colors"
+              >
+                <ShoppingCartIcon class="h-3 w-3 mr-1" />
+                とらのあな
+              </a>
+              <a
+                v-if="item.onlineShopLinks.other"
+                :href="item.onlineShopLinks.other"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center px-2.5 py-1 bg-gray-50 text-gray-700 rounded-md text-xs font-medium hover:bg-gray-100 transition-colors"
+              >
+                <ShoppingCartIcon class="h-3 w-3 mr-1" />
+                その他
+              </a>
+            </div>
           </div>
           
           <div v-if="canEdit" class="flex items-center space-x-2 ml-4">
@@ -79,7 +122,7 @@
       @click="closeForm"
     >
       <div
-        class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white"
+        class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white max-h-[80vh] overflow-y-auto"
         @click.stop
       >
         <div class="mt-3">
@@ -145,6 +188,53 @@
               </label>
             </div>
             
+            <!-- オンライン通販リンク -->
+            <div class="space-y-3">
+              <label class="block text-sm font-medium text-gray-700">
+                オンライン通販リンク
+              </label>
+              
+              <div>
+                <label class="block text-xs text-gray-600 mb-1">BOOTH</label>
+                <input
+                  v-model="formData.onlineShopLinks.booth"
+                  type="url"
+                  class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="https://..."
+                />
+              </div>
+              
+              <div>
+                <label class="block text-xs text-gray-600 mb-1">メロンブックス</label>
+                <input
+                  v-model="formData.onlineShopLinks.melonbooks"
+                  type="url"
+                  class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="https://..."
+                />
+              </div>
+              
+              <div>
+                <label class="block text-xs text-gray-600 mb-1">とらのあな</label>
+                <input
+                  v-model="formData.onlineShopLinks.toranoana"
+                  type="url"
+                  class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="https://..."
+                />
+              </div>
+              
+              <div>
+                <label class="block text-xs text-gray-600 mb-1">その他</label>
+                <input
+                  v-model="formData.onlineShopLinks.other"
+                  type="url"
+                  class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="https://..."
+                />
+              </div>
+            </div>
+            
             <div class="flex justify-end space-x-3 pt-4">
               <button
                 type="button"
@@ -174,9 +264,10 @@ import {
   PlusIcon,
   PencilIcon,
   TrashIcon,
-  ShoppingBagIcon
+  ShoppingBagIcon,
+  ShoppingCartIcon
 } from '@heroicons/vue/24/outline'
-import type { CircleItem, CircleItemFormData } from '~/types'
+import type { CircleItem, CircleItemFormData, OnlineShopLinks } from '~/types'
 
 interface Props {
   items: CircleItem[]
@@ -202,7 +293,13 @@ const formData = reactive<CircleItemFormData>({
   name: '',
   price: 0,
   description: '',
-  isAvailable: true
+  isAvailable: true,
+  onlineShopLinks: {
+    booth: '',
+    melonbooks: '',
+    toranoana: '',
+    other: ''
+  }
 })
 
 const formatPrice = (price: number): string => {
@@ -214,6 +311,12 @@ const resetForm = () => {
   formData.price = 0
   formData.description = ''
   formData.isAvailable = true
+  formData.onlineShopLinks = {
+    booth: '',
+    melonbooks: '',
+    toranoana: '',
+    other: ''
+  }
   editingItem.value = null
 }
 
@@ -228,6 +331,12 @@ const editItem = (item: CircleItem) => {
   formData.price = item.price
   formData.description = item.description || ''
   formData.isAvailable = item.isAvailable
+  formData.onlineShopLinks = {
+    booth: item.onlineShopLinks?.booth || '',
+    melonbooks: item.onlineShopLinks?.melonbooks || '',
+    toranoana: item.onlineShopLinks?.toranoana || '',
+    other: item.onlineShopLinks?.other || ''
+  }
   showAddForm.value = true
 }
 
