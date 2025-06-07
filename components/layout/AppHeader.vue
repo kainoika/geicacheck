@@ -108,12 +108,6 @@
 
                 <!-- ユーザーメニュー -->
                 <div class="flex items-center space-x-4">
-                    <!-- 検索ボタン（モバイル） -->
-                    <button @click="toggleSearch"
-                        class="md:hidden p-2 text-gray-400 hover:text-gray-500 transition-colors">
-                        <MagnifyingGlassIcon class="h-5 w-5" />
-                    </button>
-
                     <!-- ログイン状態 -->
                     <div v-if="isAuthenticated" class="relative">
                         <button @click="toggleUserMenu"
@@ -192,20 +186,6 @@
                 </div>
             </div>
 
-            <!-- モバイル検索バー -->
-            <Transition enter-active-class="transition ease-out duration-200"
-                enter-from-class="opacity-0 -translate-y-2" enter-to-class="opacity-100 translate-y-0"
-                leave-active-class="transition ease-in duration-150" leave-from-class="opacity-100 translate-y-0"
-                leave-to-class="opacity-0 -translate-y-2">
-                <div v-if="showSearch" class="md:hidden pb-4">
-                    <div class="relative">
-                        <input v-model="searchQuery" type="text" placeholder="サークル名、タグで検索..." class="w-full px-3 py-2 border border-gray-300 rounded-md pl-10"
-                            @keyup.enter="handleSearch">
-                        <MagnifyingGlassIcon
-                            class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    </div>
-                </div>
-            </Transition>
         </div>
 
         <!-- モバイルナビゲーション -->
@@ -297,7 +277,6 @@
 
 <script setup lang="ts">
 import {
-    MagnifyingGlassIcon,
     Bars3Icon,
     XMarkIcon,
     ChevronDownIcon,
@@ -331,27 +310,15 @@ const {
 // State
 const showMobileMenu = ref(false)
 const showUserMenu = ref(false)
-const showSearch = ref(false)
 const showEventMenu = ref(false)
-const searchQuery = ref('')
 
 // Methods
 const toggleMobileMenu = () => {
     showMobileMenu.value = !showMobileMenu.value
-    if (showMobileMenu.value) {
-        showSearch.value = false
-    }
 }
 
 const toggleUserMenu = () => {
     showUserMenu.value = !showUserMenu.value
-}
-
-const toggleSearch = () => {
-    showSearch.value = !showSearch.value
-    if (showSearch.value) {
-        showMobileMenu.value = false
-    }
 }
 
 const handleSignIn = async () => {
@@ -369,16 +336,6 @@ const handleSignOut = async () => {
         await navigateTo('/')
     } catch (error) {
         console.error('Sign out error:', error)
-    }
-}
-
-const handleSearch = () => {
-    if (searchQuery.value.trim()) {
-        router.push({
-            path: '/search',
-            query: { q: searchQuery.value.trim() }
-        })
-        showSearch.value = false
     }
 }
 
@@ -404,7 +361,6 @@ const formatEventDate = (date: Date) => {
 watch(() => router.currentRoute.value.path, () => {
     showMobileMenu.value = false
     showUserMenu.value = false
-    showSearch.value = false
     showEventMenu.value = false
 })
 
