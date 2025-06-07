@@ -83,6 +83,10 @@
           <div class="main-content">
             <!-- サークルカット画像 -->
             <div class="content-card">
+              <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                <PhotoIcon class="h-5 w-5" />
+                サークルカット
+              </h2>
               <ImageUpload
                 v-model="circle.circleCutImageUrl"
                 label="サークルカット画像"
@@ -95,6 +99,10 @@
 
             <!-- お品書き画像 -->
             <div class="content-card">
+              <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                <DocumentTextIcon class="h-5 w-5" />
+                お品書き
+              </h2>
               <ImageUpload
                 v-model="circle.menuImageUrl"
                 label="お品書き画像"
@@ -264,7 +272,8 @@ import {
   MapIcon,
   DocumentTextIcon,
   PhoneIcon,
-  BoltIcon
+  BoltIcon,
+  PhotoIcon
 } from '@heroicons/vue/24/outline'
 import type { Circle, BookmarkCategory, CircleItem, CircleItemFormData } from '~/types'
 

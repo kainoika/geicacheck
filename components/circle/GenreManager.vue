@@ -1,7 +1,10 @@
 <template>
   <div class="space-y-4">
     <div class="flex items-center justify-between">
-      <h3 class="text-lg font-medium text-gray-900">ジャンル</h3>
+      <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+        <TagIcon class="h-5 w-5" />
+        ジャンル
+      </h2>
       <button
         v-if="canEdit"
         @click="showAddForm = true"
