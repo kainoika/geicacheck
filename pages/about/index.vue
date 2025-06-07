@@ -294,7 +294,7 @@
       </section>
 
       <!-- 免責事項 -->
-      <section>
+      <section style="margin-bottom: 4rem;">
         <div style="background: #fef3f2; border: 1px solid #fecaca; border-radius: 1rem; padding: 2rem;">
           <h2 style="font-size: 1.5rem; font-weight: 600; color: #991b1b; margin: 0 0 1rem 0;">
             <ExclamationTriangleIcon style="width: 1.5rem; height: 1.5rem; display: inline; margin-right: 0.5rem; vertical-align: -0.25rem;" /> 免責事項
@@ -307,6 +307,38 @@
               サークル情報の正確性については保証いたしかねます。最新の情報は各サークルの公式アカウントや頒布物でご確認ください。
             </p>
           </div>
+        </div>
+      </section>
+
+      <!-- 利用規約・プライバシーポリシー -->
+      <section>
+        <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb; text-align: center;">
+          <h2 style="font-size: 1.5rem; font-weight: 600; color: #111827; margin: 0 0 1.5rem 0;">
+            <DocumentTextIcon style="width: 1.5rem; height: 1.5rem; display: inline; margin-right: 0.5rem; vertical-align: -0.25rem;" /> 法的情報
+          </h2>
+          <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
+            <NuxtLink 
+              to="/terms"
+              style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: #f9fafb; color: #374151; border: 1px solid #e5e7eb; border-radius: 0.5rem; text-decoration: none; font-weight: 500; transition: all 0.2s;"
+              onmouseover="this.style.borderColor='#ff69b4'; this.style.color='#ff69b4'"
+              onmouseout="this.style.borderColor='#e5e7eb'; this.style.color='#374151'"
+            >
+              <DocumentTextIcon style="width: 1.25rem; height: 1.25rem;" />
+              利用規約
+            </NuxtLink>
+            <NuxtLink 
+              to="/privacy"
+              style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: #f9fafb; color: #374151; border: 1px solid #e5e7eb; border-radius: 0.5rem; text-decoration: none; font-weight: 500; transition: all 0.2s;"
+              onmouseover="this.style.borderColor='#ff69b4'; this.style.color='#ff69b4'"
+              onmouseout="this.style.borderColor='#e5e7eb'; this.style.color='#374151'"
+            >
+              <ShieldCheckIcon style="width: 1.25rem; height: 1.25rem;" />
+              プライバシーポリシー
+            </NuxtLink>
+          </div>
+          <p style="color: #6b7280; margin: 1.5rem 0 0 0; font-size: 0.875rem;">
+            本サービスをご利用いただく前に、必ず利用規約とプライバシーポリシーをお読みください。
+          </p>
         </div>
       </section>
     </div>
@@ -357,7 +389,9 @@ import {
   EnvelopeIcon,
   ComputerDesktopIcon,
   ExclamationTriangleIcon,
-  DocumentArrowDownIcon
+  DocumentArrowDownIcon,
+  DocumentTextIcon,
+  ShieldCheckIcon
 } from '@heroicons/vue/24/outline'
 // SEO
 useHead({

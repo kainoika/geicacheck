@@ -84,6 +84,20 @@
                             </NuxtLink>
                         </li>
                         <li>
+                            <NuxtLink to="/terms"
+                                class="flex items-center text-sm text-gray-600 hover:text-pink-600 transition-colors">
+                                <DocumentTextIcon class="h-4 w-4 mr-2" />
+                                利用規約
+                            </NuxtLink>
+                        </li>
+                        <li>
+                            <NuxtLink to="/privacy"
+                                class="flex items-center text-sm text-gray-600 hover:text-pink-600 transition-colors">
+                                <ShieldCheckIcon class="h-4 w-4 mr-2" />
+                                プライバシーポリシー
+                            </NuxtLink>
+                        </li>
+                        <li>
                             <a href="https://github.com/geika-check/geika-check" target="_blank" rel="noopener noreferrer"
                                 class="text-sm text-gray-600 hover:text-pink-600 transition-colors inline-flex items-center">
                                 <ComputerDesktopIcon class="h-4 w-4 mr-2" />
@@ -153,7 +167,9 @@ import {
     PencilIcon,
     WrenchScrewdriverIcon,
     InformationCircleIcon,
-    ComputerDesktopIcon
+    ComputerDesktopIcon,
+    DocumentTextIcon,
+    ShieldCheckIcon
 } from '@heroicons/vue/24/outline'
 
 // 現在の年を取得
