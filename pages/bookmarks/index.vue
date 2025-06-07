@@ -3,23 +3,26 @@
     <!-- ヘッダー -->
     <div style="background: white; border-bottom: 1px solid #e5e7eb; padding: 2rem 0;">
       <div style="max-width: 1280px; margin: 0 auto; padding: 0 1rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <h1 style="font-size: 1.875rem; font-weight: 700; color: #111827; margin: 0 0 0.5rem 0;">
-              ブックマーク
-            </h1>
-            <p style="color: #6b7280; margin: 0;">
-              お気に入りのサークルをカテゴリ別に管理
-            </p>
-          </div>
-          
-          <div style="display: flex; gap: 1rem;">
-            <button 
-              @click="exportBookmarks"
-              style="padding: 0.75rem 1rem; background: #10b981; color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;"
-            >
-              <DocumentArrowDownIcon class="h-4 w-4" /> CSVエクスポート
-            </button>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h1 style="font-size: 1.875rem; font-weight: 700; color: #111827; margin: 0 0 0.5rem 0;">
+                ブックマーク
+              </h1>
+              <p style="color: #6b7280; margin: 0;">
+                お気に入りのサークルをカテゴリ別に管理
+              </p>
+            </div>
+            
+            <div style="display: flex; gap: 1rem;">
+              <button 
+                @click="exportBookmarks"
+                style="padding: 0.75rem 1rem; background: #10b981; color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap;"
+              >
+                <DocumentArrowDownIcon class="h-4 w-4" />
+                <span class="export-text">CSVエクスポート</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -55,7 +58,7 @@
         <div v-else>
         <!-- カテゴリタブ -->
         <div style="margin-bottom: 2rem;">
-          <div style="display: flex; gap: 0.5rem; background: white; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+          <div style="display: flex; gap: 0.5rem; background: white; padding: 0.5rem; border-radius: 0.5rem; border: 1px solid #e5e7eb; overflow-x: auto;">
             <button
               v-for="category in categories"
               :key="category.key"
@@ -70,12 +73,14 @@
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.5rem',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
                 backgroundColor: activeCategory === category.key ? '#ff69b4' : 'transparent',
                 color: activeCategory === category.key ? 'white' : '#6b7280'
               }"
             >
-              <component :is="getCategoryIcon(category.key)" class="h-4 w-4" />
-              <span>{{ category.label }}</span>
+              <component :is="getCategoryIcon(category.key)" class="h-4 w-4 flex-shrink-0" />
+              <span class="category-label">{{ category.label }}</span>
               <span 
                 v-if="getBookmarkCount(category.key) > 0"
                 :style="{
@@ -325,6 +330,36 @@ useHead({
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* モバイル対応 */
+@media (max-width: 640px) {
+  .export-text {
+    display: none;
+  }
+  
+  .category-label {
+    font-size: 0.875rem;
+  }
+  
+  /* ヘッダーのタイトル調整 */
+  h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  /* カテゴリタブのスクロール表示 */
+  ::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f3f4f6;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 2px;
   }
 }
 </style>
