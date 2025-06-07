@@ -1,20 +1,15 @@
 <template>
   <div class="space-y-4">
     <!-- 現在の画像表示 -->
-    <div v-if="modelValue" class="relative">
-      <img
+    <div v-if="modelValue">
+      <ImageViewer
         :src="modelValue"
         :alt="label"
-        class="w-full max-w-md h-auto rounded-lg border border-gray-300"
+        :title="label"
+        :can-edit="canEdit"
+        image-class="w-full max-w-md h-auto"
+        @remove="removeImage"
       />
-      <button
-        v-if="canEdit"
-        @click="removeImage"
-        class="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-        type="button"
-      >
-        <XMarkIcon class="h-4 w-4" />
-      </button>
     </div>
 
     <!-- アップロードエリア -->
@@ -76,7 +71,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { PhotoIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+import { PhotoIcon } from '@heroicons/vue/24/outline'
 import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage'
 
 interface Props {

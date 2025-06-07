@@ -11,22 +11,22 @@ export const useCirclePermissions = () => {
    * ユーザーが特定のサークルを編集する権限があるかチェック
    */
   const canEditCircle = (circle: any): boolean => {
+    // 認証状態チェック
     if (!isAuthenticated.value || !user.value) {
       return false
     }
 
     // 管理者は全てのサークルを編集可能
-    if (isAdmin.value) {
+    if (user.value.userType === 'admin') {
       return true
     }
 
     // サークルの所有者かチェック
-    if (circle.ownerId === user.value.uid) {
+    if (circle.ownerId && circle.ownerId === user.value.uid) {
       return true
     }
 
-    // TODO: サークル権限テーブルをチェック
-    // 現在は簡易実装として所有者と管理者のみ許可
+    // その他のユーザーには編集権限なし
     return false
   }
 

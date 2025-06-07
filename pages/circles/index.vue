@@ -70,7 +70,7 @@
       <!-- サークル一覧 -->
       <div v-else-if="paginatedCircles.length > 0">
         <!-- グリッド表示 -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
           <CircleCard
             v-for="circle in paginatedCircles"
             :key="circle.id"

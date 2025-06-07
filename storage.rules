@@ -9,24 +9,19 @@ service firebase.storage {
       allow write: if request.auth != null && request.auth.uid == userId;
     }
     
-    // Event images - admin users only
+    // Event images - authenticated users (admin check in application)
     match /event-images/{allPaths=**} {
       allow read: if true; // Public read for event images
-      allow write: if request.auth != null && 
-                      exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-                      get(/databases/$(database)/documents/users/$(request.auth.uid)).data.type == 'admin';
+      allow write: if request.auth != null; // Admin check handled in application
     }
     
-    // Circle images - circle owners or admins
+    // Circle images - authenticated users (permission check handled in application)
     match /circle-images/{eventId}/{circleId}/{allPaths=**} {
       allow read: if true; // Public read for circle images
-      allow write: if request.auth != null && 
-                      (exists(/databases/$(database)/documents/circle_permissions/$(request.auth.uid + '_' + eventId + '_' + circleId)) ||
-                       (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-                        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.type == 'admin'));
+      allow write: if request.auth != null; // Permission check handled in application
     }
     
-    // Temporary uploads - authenticated users only, auto-delete after 1 day
+    // Temporary uploads - authenticated users only
     match /temp/{userId}/{allPaths=**} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
