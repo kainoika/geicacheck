@@ -1,50 +1,60 @@
 <template>
-  <div style="min-height: 100vh; background: #f9fafb;">
+  <div class="min-h-screen bg-gray-50">
     <!-- ヘッダー -->
-    <div style="background: white; border-bottom: 1px solid #e5e7eb; padding: 1rem 0;">
-      <div style="max-width: 1280px; margin: 0 auto; padding: 0 1rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div class="bg-white border-b border-gray-200 sticky top-0 z-30">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center py-4 gap-4">
           <div>
-            <h1 style="font-size: 1.875rem; font-weight: 700; color: #111827; margin: 0 0 0.5rem 0;">
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900">
               会場マップ
             </h1>
-            <p style="color: #6b7280; margin: 0;">
+            <p class="text-sm text-gray-600 hidden sm:block">
               ブックマークしたサークルの配置を確認
             </p>
           </div>
           
-          <div style="display: flex; gap: 1rem; align-items: center;">
+          <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center">
+            <!-- モバイル：ブックマーク表示ボタン -->
+            <button 
+              @click="toggleSidebar"
+              class="sm:hidden flex items-center justify-center gap-2 px-4 py-2 bg-pink-500 text-white rounded-lg font-medium"
+            >
+              <MapPinIcon class="h-4 w-4" />
+              ブックマーク ({{ bookmarkedCircles.length }})
+            </button>
+            
             <!-- 表示設定 -->
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-              <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #374151;">
+            <div class="flex items-center gap-2">
+              <label class="flex items-center gap-2 text-sm text-gray-700">
                 <input 
                   type="checkbox" 
                   v-model="showAllCircles"
-                  style="accent-color: #ff69b4;"
+                  class="accent-pink-500"
                 >
-                全サークル表示
+                <span class="hidden sm:inline">全サークル表示</span>
+                <span class="sm:hidden">全表示</span>
               </label>
             </div>
             
             <!-- ズームコントロール -->
-            <div style="display: flex; gap: 0.25rem; background: white; border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.25rem;">
+            <div class="flex gap-1 bg-white border border-gray-300 rounded-lg p-1">
               <button 
                 @click="zoomIn"
-                style="padding: 0.5rem; border: none; background: none; cursor: pointer; border-radius: 0.25rem; color: #374151;"
+                class="p-2 hover:bg-gray-100 rounded border-none cursor-pointer text-gray-700"
                 title="ズームイン"
               >
                 <PlusIcon class="h-4 w-4" />
               </button>
               <button 
                 @click="zoomOut"
-                style="padding: 0.5rem; border: none; background: none; cursor: pointer; border-radius: 0.25rem; color: #374151;"
+                class="p-2 hover:bg-gray-100 rounded border-none cursor-pointer text-gray-700"
                 title="ズームアウト"
               >
                 <MinusIcon class="h-4 w-4" />
               </button>
               <button 
                 @click="resetZoom"
-                style="padding: 0.5rem; border: none; background: none; cursor: pointer; border-radius: 0.25rem; color: #374151;"
+                class="p-2 hover:bg-gray-100 rounded border-none cursor-pointer text-gray-700"
                 title="リセット"
               >
                 <ArrowsPointingOutIcon class="h-4 w-4" />
@@ -56,29 +66,52 @@
     </div>
 
     <!-- メインコンテンツ -->
-    <div style="display: flex; height: calc(100vh - 120px);">
+    <div class="relative">
+      <!-- モバイル用サイドバーオーバーレイ -->
+      <div 
+        v-if="sidebarOpen" 
+        @click="closeSidebar"
+        class="sm:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+      ></div>
+      
       <!-- サイドバー -->
-      <div style="width: 300px; background: white; border-right: 1px solid #e5e7eb; overflow-y: auto;">
-        <div style="padding: 1.5rem;">
+      <div 
+        :class="[
+          'fixed sm:static inset-y-0 left-0 z-50 w-80 sm:w-72 lg:w-80 bg-white border-r border-gray-200 overflow-y-auto transform transition-transform duration-300 ease-in-out',
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'
+        ]"
+        style="top: 0; height: 100vh; padding-top: 120px;"
+      >
+        <!-- モバイル用クローズボタン -->
+        <div class="sm:hidden flex justify-between items-center p-4 border-b border-gray-200">
+          <h2 class="text-lg font-semibold text-gray-900">ブックマーク</h2>
+          <button 
+            @click="closeSidebar"
+            class="p-2 hover:bg-gray-100 rounded-lg"
+          >
+            <XMarkIcon class="h-5 w-5 text-gray-500" />
+          </button>
+        </div>
+        <div class="p-4 sm:p-6">
           <!-- ブックマーク統計 -->
-          <div style="margin-bottom: 1.5rem;">
-            <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
+          <div class="mb-6">
+            <h3 class="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
               📊 ブックマーク統計
             </h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-              <div style="text-align: center; padding: 0.75rem; background: #fef3f2; border-radius: 0.5rem;">
-                <div style="font-size: 1.25rem; font-weight: 700; color: #ff69b4;">
+            <div class="grid grid-cols-2 gap-3">
+              <div class="text-center p-3 bg-pink-50 rounded-lg">
+                <div class="text-xl font-bold text-pink-500">
                   {{ bookmarkedCircles.length }}
                 </div>
-                <div style="font-size: 0.75rem; color: #6b7280;">
+                <div class="text-xs text-gray-600">
                   ブックマーク
                 </div>
               </div>
-              <div style="text-align: center; padding: 0.75rem; background: #f0f9ff; border-radius: 0.5rem;">
-                <div style="font-size: 1.25rem; font-weight: 700; color: #0284c7;">
+              <div class="text-center p-3 bg-blue-50 rounded-lg">
+                <div class="text-xl font-bold text-blue-600">
                   {{ getBookmarkCount('check') }}
                 </div>
-                <div style="font-size: 0.75rem; color: #6b7280;">
+                <div class="text-xs text-gray-600">
                   チェック予定
                 </div>
               </div>
@@ -86,28 +119,28 @@
           </div>
 
           <!-- フィルター -->
-          <div style="margin-bottom: 1.5rem;">
-            <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
+          <div class="mb-6">
+            <h3 class="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
               🔧 表示フィルター
             </h3>
-            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <div class="space-y-2">
               <label 
                 v-for="category in bookmarkCategories" 
                 :key="category.key"
-                style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.5rem; border-radius: 0.375rem; transition: all 0.2s;"
-                :style="{ backgroundColor: visibleCategories.includes(category.key) ? '#fef3f2' : 'transparent' }"
+                :class="[
+                  'flex items-center gap-3 cursor-pointer p-3 rounded-lg transition-all duration-200',
+                  visibleCategories.includes(category.key) ? 'bg-pink-50' : 'hover:bg-gray-50'
+                ]"
               >
                 <input
                   type="checkbox"
                   :value="category.key"
                   v-model="visibleCategories"
-                  style="accent-color: #ff69b4;"
+                  class="accent-pink-500"
                 >
-                <component :is="getCategoryIcon(category.key)" class="h-4 w-4" />
-                <span style="font-size: 0.875rem;">{{ category.label }}</span>
-                <span 
-                  style="margin-left: auto; background: #ff69b4; color: white; border-radius: 50%; width: 1rem; height: 1rem; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600;"
-                >
+                <component :is="getCategoryIcon(category.key)" class="h-4 w-4 text-gray-600" />
+                <span class="text-sm font-medium text-gray-700 flex-1">{{ category.label }}</span>
+                <span class="bg-pink-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-semibold">
                   {{ getBookmarkCount(category.key) }}
                 </span>
               </label>
@@ -116,32 +149,30 @@
 
           <!-- ブックマークリスト -->
           <div>
-            <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
-              <MapPinIcon class="h-4 w-4 inline mr-1" /> ブックマークサークル
+            <h3 class="text-base font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <MapPinIcon class="h-4 w-4" /> ブックマークサークル
             </h3>
-            <div style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 400px; overflow-y: auto;">
+            <div class="space-y-2 max-h-96 overflow-y-auto">
               <div 
                 v-for="bookmark in filteredBookmarks" 
                 :key="bookmark.id"
                 @click="focusOnCircle(bookmark.circle)"
-                style="padding: 0.75rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s;"
-                onmouseover="this.style.borderColor='#ff69b4'; this.style.backgroundColor='#fef3f2'"
-                onmouseout="this.style.borderColor='#e5e7eb'; this.style.backgroundColor='white'"
+                class="p-3 border border-gray-200 rounded-lg cursor-pointer transition-all duration-200 hover:border-pink-500 hover:bg-pink-50 active:scale-95"
               >
-                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-                  <span>{{ getCategoryIcon(bookmark.category) }}</span>
-                  <span style="font-weight: 600; font-size: 0.875rem; color: #111827;">
+                <div class="flex items-center gap-2 mb-1">
+                  <component :is="getCategoryIcon(bookmark.category)" class="h-4 w-4 text-gray-600" />
+                  <span class="font-semibold text-sm text-gray-900 truncate">
                     {{ bookmark.circle.circleName }}
                   </span>
                 </div>
-                <div style="font-size: 0.75rem; color: #6b7280;">
+                <div class="text-xs text-gray-600">
                   {{ formatPlacement(bookmark.circle.placement) }}
                 </div>
               </div>
               
-              <div v-if="filteredBookmarks.length === 0" style="text-align: center; padding: 2rem; color: #9ca3af;">
-                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📭</div>
-                <p style="margin: 0; font-size: 0.875rem;">
+              <div v-if="filteredBookmarks.length === 0" class="text-center py-8 text-gray-500">
+                <div class="text-2xl mb-2">📭</div>
+                <p class="text-sm">
                   表示するブックマークがありません
                 </p>
               </div>
@@ -151,16 +182,16 @@
       </div>
 
       <!-- マップエリア -->
-      <div style="flex: 1; position: relative; overflow: hidden;">
+      <div class="sm:ml-72 lg:ml-80 min-h-screen relative overflow-hidden" style="padding-top: 120px;">
         <!-- エラー表示 -->
-        <div v-if="initError" style="display: flex; align-items: center; justify-content: center; height: 100%; background: #fef2f2;">
-          <div style="text-align: center; padding: 2rem;">
-            <div style="font-size: 3rem; margin-bottom: 1rem; color: #dc2626;">⚠️</div>
-            <div style="font-size: 1.25rem; color: #dc2626; margin-bottom: 1rem;">マップの初期化に失敗しました</div>
-            <div style="font-size: 0.875rem; color: #6b7280;">{{ initError }}</div>
+        <div v-if="initError" class="flex items-center justify-center h-full bg-red-50 p-4">
+          <div class="text-center max-w-md">
+            <div class="text-4xl sm:text-5xl mb-4 text-red-600">⚠️</div>
+            <div class="text-lg sm:text-xl text-red-600 mb-4 font-semibold">マップの初期化に失敗しました</div>
+            <div class="text-sm text-gray-600 mb-6">{{ initError }}</div>
             <button 
               @click="initError = null; $router.go(0)" 
-              style="margin-top: 1rem; padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 0.375rem; cursor: pointer;"
+              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             >
               ページを再読み込み
             </button>
@@ -168,20 +199,21 @@
         </div>
         
         <!-- 正常時のマップ表示 -->
-        <div v-else-if="currentEvent">
+        <div v-else-if="currentEvent" class="h-full">
           <EventMap 
             :visible-bookmarks="visibleBookmarks"
             :event-id="currentEvent.id"
             @circle-select="handleCircleSelect"
             ref="eventMapRef"
+            class="w-full h-full"
           />
         </div>
         
         <!-- ローディング表示 -->
-        <div v-else style="display: flex; align-items: center; justify-content: center; height: 100%; background: #f8f9fa;">
-          <div style="text-align: center;">
-            <ClockIcon style="width: 3rem; height: 3rem; color: #6c757d; margin: 0 auto 1rem;" />
-            <div style="font-size: 1.25rem; color: #6c757d;">イベント情報を読み込み中...</div>
+        <div v-else class="flex items-center justify-center h-full bg-gray-50 p-4">
+          <div class="text-center">
+            <ClockIcon class="w-12 h-12 text-gray-400 mx-auto mb-4 animate-spin" />
+            <div class="text-lg text-gray-600">イベント情報を読み込み中...</div>
           </div>
         </div>
       </div>
@@ -198,7 +230,8 @@ import {
   ClockIcon,
   BookmarkIcon,
   StarIcon,
-  FireIcon
+  FireIcon,
+  XMarkIcon
 } from '@heroicons/vue/24/outline'
 import type { Circle, BookmarkCategory, BookmarkWithCircle } from '~/types'
 import EventMap from '~/components/map/EventMap.vue'
@@ -207,6 +240,7 @@ import EventMap from '~/components/map/EventMap.vue'
 const showAllCircles = ref(false)
 const visibleCategories = ref<BookmarkCategory[]>(['check', 'interested', 'priority'])
 const eventMapRef = ref<any>(null)
+const sidebarOpen = ref(false)
 
 // Composables
 const { bookmarks, getBookmarksByEventId, fetchBookmarksWithCircles } = useBookmarks()
@@ -285,6 +319,10 @@ const focusOnCircle = (circle: Circle) => {
   if (eventMapRef.value) {
     eventMapRef.value.focusOnCircle(circle)
   }
+  // モバイルでサークル選択時はサイドバーを閉じる
+  if (window.innerWidth < 640) {
+    sidebarOpen.value = false
+  }
 }
 
 const handleCircleSelect = (circle: Circle) => {
@@ -308,6 +346,15 @@ const resetZoom = () => {
   if (eventMapRef.value) {
     eventMapRef.value.resetZoom()
   }
+}
+
+// サイドバー制御
+const toggleSidebar = () => {
+  sidebarOpen.value = !sidebarOpen.value
+}
+
+const closeSidebar = () => {
+  sidebarOpen.value = false
 }
 
 // SEO
