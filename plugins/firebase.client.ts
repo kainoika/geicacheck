@@ -16,6 +16,16 @@ export default defineNuxtPlugin(() => {
     appId: config.public.firebaseAppId ? '✓' : '✗',
   });
 
+  // 値の詳細を表示（実際の値は表示しない）
+  console.log('Firebase config values:', {
+    apiKey: config.public.firebaseApiKey ? `${config.public.firebaseApiKey.substring(0, 10)}...` : 'undefined',
+    authDomain: config.public.firebaseAuthDomain || 'undefined',
+    projectId: config.public.firebaseProjectId || 'undefined',
+    storageBucket: config.public.firebaseStorageBucket || 'undefined',
+    messagingSenderId: config.public.firebaseMessagingSenderId || 'undefined',
+    appId: config.public.firebaseAppId ? `${config.public.firebaseAppId.substring(0, 10)}...` : 'undefined',
+  });
+
   const firebaseConfig = {
     apiKey: config.public.firebaseApiKey as string,
     authDomain: config.public.firebaseAuthDomain as string,
@@ -28,7 +38,8 @@ export default defineNuxtPlugin(() => {
   // 必須設定値の確認
   if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
     console.error('Firebase configuration is missing required values:', firebaseConfig);
-    throw new Error('Firebase configuration is incomplete');
+    console.error('Available environment variables:', Object.keys(process.env).filter(key => key.includes('FIREBASE')));
+    throw new Error('Firebase configuration is incomplete. Check environment variables.');
   }
 
   // Firebase アプリを初期化
