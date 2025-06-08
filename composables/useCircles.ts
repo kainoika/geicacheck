@@ -6,27 +6,40 @@ import {
   updateDoc,
   query,
   where,
-  orderBy,
-  limit,
-  startAfter,
-  type DocumentSnapshot,
+  onSnapshot,
+  type Unsubscribe,
 } from "firebase/firestore";
 import type { Circle, SearchParams, SearchResult, PlacementInfo } from "~/types";
 
 export const useCircles = () => {
   const { $firestore } = useNuxtApp() as any;
   const { currentEvent } = useEvents();
+  const { trackOperation } = useFirestoreMetrics();
 
   // State
   const circles = useState<Circle[]>("circles.list", () => []);
   const loading = useState<boolean>("circles.loading", () => false);
   const error = useState<string | null>("circles.error", () => null);
   
-  // キャッシュ用ステート
-  const circlesCache = useState<Record<string, { data: Circle[], timestamp: number }>>("circles.cache", () => ({}));
-  const CACHE_DURATION = 5 * 60 * 1000; // 5分間キャッシュ
+  // 強化されたキャッシュシステム
+  const circlesCache = useState<Record<string, {
+    data: Circle[],
+    timestamp: number,
+    lastSync: number,
+    unsubscribe?: Unsubscribe
+  }>>("circles.cache", () => ({}));
+  
+  const CACHE_DURATION = 10 * 60 * 1000; // 10分間キャッシュ
+  const SYNC_INTERVAL = 30 * 1000; // 30秒間隔でリアルタイム同期
 
-  // キャッシュチェック関数
+  // メモリ内検索用インデックス
+  const searchIndex = useState<Record<string, {
+    genres: Set<string>,
+    areas: Set<string>,
+    searchableText: Map<string, string>
+  }>>("circles.searchIndex", () => ({}));
+
+  // キャッシュの有効性チェック
   const isCacheValid = (eventId: string): boolean => {
     const cached = circlesCache.value[eventId];
     if (!cached) return false;
@@ -35,149 +48,194 @@ export const useCircles = () => {
     return (now - cached.timestamp) < CACHE_DURATION;
   };
 
-  // キャッシュからデータ取得
-  const getCachedCircles = (eventId: string): Circle[] | null => {
-    if (isCacheValid(eventId)) {
-      console.log('📋 Using cached data for event:', eventId);
-      return circlesCache.value[eventId].data;
+  // リアルタイム同期の設定
+  const setupRealtimeSync = (eventId: string) => {
+    const cached = circlesCache.value[eventId];
+    if (cached?.unsubscribe) {
+      return; // 既に設定済み
     }
-    return null;
+
+    const circlesRef = collection($firestore, "events", eventId, "circles");
+    const q = query(circlesRef, where("isPublic", "==", true));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      console.log('🔄 Realtime update received for event:', eventId);
+      
+      // メトリクスをトラッキング（リアルタイム更新）
+      trackOperation('read', `events/${eventId}/circles`, snapshot.size, 'realtime sync');
+      
+      const updatedCircles: Circle[] = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        updatedCircles.push(mapDocumentToCircle(doc.id, data, eventId));
+      });
+
+      // キャッシュとインデックスを更新
+      setCachedCircles(eventId, updatedCircles);
+      buildSearchIndex(eventId, updatedCircles);
+      
+      // 現在表示中のイベントの場合、stateも更新
+      if (currentEvent.value?.id === eventId) {
+        circles.value = updatedCircles;
+      }
+    }, (error) => {
+      console.error('Realtime sync error:', error);
+    });
+
+    // unsubscribe関数を保存
+    if (!circlesCache.value[eventId]) {
+      circlesCache.value[eventId] = {
+        data: [],
+        timestamp: 0,
+        lastSync: 0
+      };
+    }
+    circlesCache.value[eventId].unsubscribe = unsubscribe;
   };
 
-  // キャッシュにデータ保存
-  const setCachedCircles = (eventId: string, data: Circle[]) => {
-    circlesCache.value[eventId] = {
-      data,
-      timestamp: Date.now()
+  // ドキュメントをCircleオブジェクトにマッピング
+  const mapDocumentToCircle = (id: string, data: any, eventId: string): Circle => {
+    return {
+      id,
+      circleName: data.circleName,
+      circleKana: data.circleKana,
+      penName: data.penName,
+      penNameKana: data.penNameKana,
+      circleCutImageUrl: data.circleCutImageUrl,
+      menuImageUrl: data.menuImageUrl,
+      genre: data.genre || [],
+      items: data.items || [],
+      placement: data.placement,
+      description: data.description,
+      contact: data.contact || {},
+      isAdult: data.isAdult || false,
+      ownerId: data.ownerId,
+      isPublic: data.isPublic,
+      eventId,
+      createdAt: data.createdAt?.toDate() || new Date(),
+      updatedAt: data.updatedAt?.toDate() || new Date(),
     };
   };
 
-  // サークル一覧を取得
+  // 検索インデックスの構築
+  const buildSearchIndex = (eventId: string, circleList: Circle[]) => {
+    const genres = new Set<string>();
+    const areas = new Set<string>();
+    const searchableText = new Map<string, string>();
+
+    circleList.forEach((circle) => {
+      // ジャンルインデックス
+      if (circle.genre) {
+        circle.genre.forEach(g => genres.add(g));
+      }
+
+      // エリアインデックス
+      if (circle.placement?.block) {
+        areas.add(circle.placement.block);
+      }
+
+      // 検索用テキストインデックス
+      const searchText = [
+        circle.circleName,
+        circle.circleKana,
+        circle.penName,
+        circle.penNameKana,
+        ...(circle.genre || []),
+        circle.description,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      
+      searchableText.set(circle.id, searchText);
+    });
+
+    searchIndex.value[eventId] = {
+      genres,
+      areas,
+      searchableText
+    };
+  };
+
+  // キャッシュへのデータ保存
+  const setCachedCircles = (eventId: string, data: Circle[]) => {
+    circlesCache.value[eventId] = {
+      ...circlesCache.value[eventId],
+      data,
+      timestamp: Date.now(),
+      lastSync: Date.now()
+    };
+  };
+
+  // メイン取得関数（最適化版）
   const fetchCircles = async (
     params: SearchParams = {},
-    eventId?: string
+    eventId?: string,
+    forceRefresh: boolean = false
   ): Promise<SearchResult> => {
-    console.log('🔄 useCircles.fetchCircles called with:', { params, eventId });
-    console.log('🔄 currentEvent.value:', currentEvent.value);
+    console.log('🔄 useCircles.fetchCircles called (optimized version)');
     
-    loading.value = true;
-    error.value = null;
+    const targetEventId = eventId || currentEvent.value?.id;
+    if (!targetEventId) {
+      throw new Error("イベントIDが指定されていません");
+    }
 
-    try {
-      // イベントIDを取得
-      const targetEventId = eventId || currentEvent.value?.id;
-      if (!targetEventId) {
-        throw new Error("イベントIDが指定されていません");
-      }
-
-      console.log('📍 Target event ID:', targetEventId);
+    // キャッシュから取得可能かチェック
+    if (!forceRefresh && isCacheValid(targetEventId)) {
+      console.log('📋 Using cached data for event:', targetEventId);
+      const cachedData = circlesCache.value[targetEventId].data;
+      const filteredList = applyClientSideFilters(cachedData, params);
       
-      // キャッシュチェック
-      const cachedData = getCachedCircles(targetEventId);
-      if (cachedData) {
-        const filteredList = applyClientSideFilters(cachedData, params);
-        
-        const result: SearchResult = {
-          circles: filteredList,
-          total: filteredList.length,
-          page: params.page || 1,
-          limit: params.limit || 12,
-          hasMore: false,
-        };
-        
-        circles.value = filteredList;
-        loading.value = false;
-        return result;
-      }
-
-      // サブコレクション構造: events/{eventId}/circles
-      const circlesRef = collection($firestore, "events", targetEventId, "circles");
-      let q = query(circlesRef, where("isPublic", "==", true));
-      
-      console.log('🔍 Query path:', `events/${targetEventId}/circles`);
-
-
-      // 全データを取得してクライアントサイドでフィルタリング
-      // Firestoreの制限を回避
-
-      // 全データを取得（ページネーションはクライアントサイドで処理）
-      const snapshot = await getDocs(q);
-      console.log('📄 Snapshot size:', snapshot.size);
-      console.log('📄 Snapshot empty:', snapshot.empty);
-      
-      let circleList: Circle[] = [];
-
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        console.log('📄 Document:', doc.id, data);
-        circleList.push({
-          id: doc.id,
-          circleName: data.circleName,
-          circleKana: data.circleKana,
-          penName: data.penName,
-          penNameKana: data.penNameKana,
-          circleCutImageUrl: data.circleCutImageUrl,
-          menuImageUrl: data.menuImageUrl,
-          genre: data.genre || [],
-          items: data.items || [],
-          placement: data.placement,
-          description: data.description,
-          contact: data.contact || {},
-          isAdult: data.isAdult || false,
-          ownerId: data.ownerId,
-          isPublic: data.isPublic,
-          eventId: targetEventId,
-          createdAt: data.createdAt?.toDate() || new Date(),
-          updatedAt: data.updatedAt?.toDate() || new Date(),
-        });
-      });
-
-      // クライアントサイドでフィルタリング
-      circleList = applyClientSideFilters(circleList, params);
-
-      const result: SearchResult = {
-        circles: circleList,
-        total: circleList.length,
+      circles.value = filteredList;
+      return {
+        circles: filteredList,
+        total: filteredList.length,
         page: params.page || 1,
         limit: params.limit || 12,
         hasMore: false,
       };
+    }
 
-      console.log('📊 Final result:', result);
-      console.log('📊 Circle list length:', circleList.length);
+    // 初回読み込みまたは強制更新
+    loading.value = true;
+    error.value = null;
 
-      // キャッシュに保存（フィルター適用前の全データ）
-      const unfilteredList: Circle[] = [];
+    try {
+      const circlesRef = collection($firestore, "events", targetEventId, "circles");
+      const q = query(circlesRef, where("isPublic", "==", true));
+      
+      console.log('📡 Fetching from Firestore:', `events/${targetEventId}/circles`);
+      const snapshot = await getDocs(q);
+      
+      // メトリクスをトラッキング（初回取得）
+      trackOperation('read', `events/${targetEventId}/circles`, snapshot.size, 'initial fetch');
+      
+      let circleList: Circle[] = [];
       snapshot.forEach((doc) => {
         const data = doc.data();
-        unfilteredList.push({
-          id: doc.id,
-          circleName: data.circleName,
-          circleKana: data.circleKana,
-          penName: data.penName,
-          penNameKana: data.penNameKana,
-          circleCutImageUrl: data.circleCutImageUrl,
-          menuImageUrl: data.menuImageUrl,
-          genre: data.genre || [],
-          items: data.items || [],
-          placement: data.placement,
-          description: data.description,
-          contact: data.contact || {},
-          isAdult: data.isAdult || false,
-          ownerId: data.ownerId,
-          isPublic: data.isPublic,
-          eventId: targetEventId,
-          createdAt: data.createdAt?.toDate() || new Date(),
-          updatedAt: data.updatedAt?.toDate() || new Date(),
-        });
+        circleList.push(mapDocumentToCircle(doc.id, data, targetEventId));
       });
-      setCachedCircles(targetEventId, unfilteredList);
 
-      // 全データをstateに設定
-      circles.value = circleList;
-      console.log('✅ State updated, circles.value.length:', circles.value.length);
+      // キャッシュと検索インデックスを更新
+      setCachedCircles(targetEventId, circleList);
+      buildSearchIndex(targetEventId, circleList);
 
-      return result;
+      // リアルタイム同期を設定
+      setupRealtimeSync(targetEventId);
+
+      // フィルタリング
+      const filteredList = applyClientSideFilters(circleList, params);
+      circles.value = filteredList;
+
+      console.log('✅ Fetched and cached', circleList.length, 'circles');
+
+      return {
+        circles: filteredList,
+        total: filteredList.length,
+        page: params.page || 1,
+        limit: params.limit || 12,
+        hasMore: false,
+      };
     } catch (err) {
       console.error("Fetch circles error:", err);
       error.value = "サークル情報の取得に失敗しました";
@@ -187,41 +245,35 @@ export const useCircles = () => {
     }
   };
 
-  // サークル詳細を取得
+  // 個別サークル取得（キャッシュ優先）
   const fetchCircleById = async (circleId: string, eventId?: string): Promise<Circle | null> => {
-    try {
-      // イベントIDを取得
-      const targetEventId = eventId || currentEvent.value?.id;
-      if (!targetEventId) {
-        throw new Error("イベントIDが指定されていません");
-      }
+    const targetEventId = eventId || currentEvent.value?.id;
+    if (!targetEventId) {
+      throw new Error("イベントIDが指定されていません");
+    }
 
-      // サブコレクション構造: events/{eventId}/circles/{circleId}
+    // まずキャッシュから探す
+    const cached = circlesCache.value[targetEventId];
+    if (cached && isCacheValid(targetEventId)) {
+      const cachedCircle = cached.data.find(c => c.id === circleId);
+      if (cachedCircle) {
+        console.log('📋 Using cached circle data:', circleId);
+        return cachedCircle;
+      }
+    }
+
+    // キャッシュにない場合のみFirestoreから取得
+    console.log('📡 Fetching circle from Firestore:', circleId);
+    try {
       const circleRef = doc($firestore, "events", targetEventId, "circles", circleId);
       const circleDoc = await getDoc(circleRef);
+      
+      // メトリクスをトラッキング
+      trackOperation('read', `events/${targetEventId}/circles`, 1, `fetchCircleById: ${circleId}`);
 
       if (circleDoc.exists()) {
         const data = circleDoc.data();
-        return {
-          id: circleDoc.id,
-          circleName: data.circleName,
-          circleKana: data.circleKana,
-          penName: data.penName,
-          penNameKana: data.penNameKana,
-          circleCutImageUrl: data.circleCutImageUrl,
-          menuImageUrl: data.menuImageUrl,
-          genre: data.genre || [],
-          items: data.items || [],
-          placement: data.placement,
-          description: data.description,
-          contact: data.contact || {},
-          isAdult: data.isAdult || false,
-          ownerId: data.ownerId,
-          isPublic: data.isPublic,
-          eventId: targetEventId,
-          createdAt: data.createdAt?.toDate() || new Date(),
-          updatedAt: data.updatedAt?.toDate() || new Date(),
-        };
+        return mapDocumentToCircle(circleDoc.id, data, targetEventId);
       }
 
       return null;
@@ -231,273 +283,215 @@ export const useCircles = () => {
     }
   };
 
-  // 複数のサークルIDでサークル情報を取得
+  // 複数のサークルIDでサークル情報を取得（キャッシュ優先）
   const fetchCirclesByIds = async (circleIds: string[], eventId?: string): Promise<Circle[]> => {
     if (circleIds.length === 0) return [];
 
-    try {
-      // イベントIDを取得
-      const targetEventId = eventId || currentEvent.value?.id;
-      if (!targetEventId) {
-        throw new Error("イベントIDが指定されていません");
+    const targetEventId = eventId || currentEvent.value?.id;
+    if (!targetEventId) {
+      throw new Error("イベントIDが指定されていません");
+    }
+
+    // まずキャッシュから探す
+    const cached = circlesCache.value[targetEventId];
+    if (cached && isCacheValid(targetEventId)) {
+      const cachedCircles = cached.data.filter(c => circleIds.includes(c.id));
+      if (cachedCircles.length === circleIds.length) {
+        console.log('📋 Using cached circles data for all:', circleIds.length, 'circles');
+        return cachedCircles;
       }
+    }
 
-      const allCircles: Circle[] = [];
+    // 部分的にキャッシュされている場合の処理
+    const results: Circle[] = [];
+    const missingIds: string[] = [];
 
-      // サブコレクション構造ではdocumentReferenceを直接使用
+    if (cached && isCacheValid(targetEventId)) {
       for (const circleId of circleIds) {
-        const circleRef = doc($firestore, "events", targetEventId, "circles", circleId);
-        const circleDoc = await getDoc(circleRef);
-        
-        if (circleDoc.exists()) {
-          const data = circleDoc.data();
-          allCircles.push({
-            id: circleDoc.id,
-            circleName: data.circleName,
-            circleKana: data.circleKana,
-            penName: data.penName,
-            penNameKana: data.penNameKana,
-            circleCutImageUrl: data.circleCutImageUrl,
-            menuImageUrl: data.menuImageUrl,
-            genre: data.genre || [],
-            items: data.items || [],
-            placement: data.placement,
-            description: data.description,
-            contact: data.contact || {},
-            isAdult: data.isAdult || false,
-            ownerId: data.ownerId,
-            isPublic: data.isPublic,
-            eventId: targetEventId,
-            createdAt: data.createdAt?.toDate() || new Date(),
-            updatedAt: data.updatedAt?.toDate() || new Date(),
-          });
+        const cachedCircle = cached.data.find(c => c.id === circleId);
+        if (cachedCircle) {
+          results.push(cachedCircle);
+        } else {
+          missingIds.push(circleId);
         }
       }
-
-      return allCircles;
-    } catch (err) {
-      console.error("Fetch circles by IDs error:", err);
-      throw new Error("サークル情報の取得に失敗しました");
+    } else {
+      missingIds.push(...circleIds);
     }
+
+    // キャッシュにないものだけFirestoreから取得
+    if (missingIds.length > 0) {
+      console.log('📡 Fetching missing circles from Firestore:', missingIds.length);
+      
+      for (const circleId of missingIds) {
+        try {
+          const circleRef = doc($firestore, "events", targetEventId, "circles", circleId);
+          const circleDoc = await getDoc(circleRef);
+          
+          // メトリクスをトラッキング
+          trackOperation('read', `events/${targetEventId}/circles`, 1, `fetchCirclesByIds: ${circleId}`);
+          
+          if (circleDoc.exists()) {
+            const data = circleDoc.data();
+            results.push(mapDocumentToCircle(circleDoc.id, data, targetEventId));
+          }
+        } catch (err) {
+          console.error(`Fetch circle by ID error (${circleId}):`, err);
+        }
+      }
+    }
+
+    return results;
   };
 
-  // テキスト検索
+  // 高速検索（インデックス使用）
   const searchCircles = async (
     searchQuery: string,
     filters: SearchParams = {},
     eventId?: string
   ): Promise<SearchResult> => {
-    if (!searchQuery.trim()) {
-      return await fetchCircles(filters, eventId);
+    const targetEventId = eventId || currentEvent.value?.id;
+    if (!targetEventId) {
+      throw new Error("イベントIDが指定されていません");
     }
 
-    loading.value = true;
-    error.value = null;
-
-    try {
-      // イベントIDを取得
-      const targetEventId = eventId || currentEvent.value?.id;
-      if (!targetEventId) {
-        throw new Error("イベントIDが指定されていません");
-      }
-
-      // 簡易的な検索実装（実際の実装では全文検索サービスを使用することを推奨）
-      const circlesRef = collection($firestore, "events", targetEventId, "circles");
-      let q = query(circlesRef, where("isPublic", "==", true));
-
-
-      // 全データを取得してクライアントサイドでフィルタリング
-      // Firestoreの制限を回避
-
-      const snapshot = await getDocs(q);
-      let allCircles: Circle[] = [];
-
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        allCircles.push({
-          id: doc.id,
-          circleName: data.circleName,
-          circleKana: data.circleKana,
-          penName: data.penName,
-          penNameKana: data.penNameKana,
-          circleCutImageUrl: data.circleCutImageUrl,
-          menuImageUrl: data.menuImageUrl,
-          genre: data.genre || [],
-          items: data.items || [],
-          placement: data.placement,
-          description: data.description,
-          contact: data.contact || {},
-          isAdult: data.isAdult || false,
-          ownerId: data.ownerId,
-          isPublic: data.isPublic,
-          eventId: targetEventId,
-          createdAt: data.createdAt?.toDate() || new Date(),
-          updatedAt: data.updatedAt?.toDate() || new Date(),
-        });
-      });
-
-      // クライアントサイドでフィルタリング適用
-      allCircles = applyClientSideFilters(allCircles, filters);
-
-      // クライアントサイドでテキスト検索（サークル名、ペンネーム、ジャンル、説明文）
-      const searchTerms = searchQuery.toLowerCase().split(/\s+/);
-      const filteredCircles = allCircles.filter((circle) => {
-        const searchText = [
-          circle.circleName,
-          circle.circleKana,
-          circle.penName,
-          circle.penNameKana,
-          ...(circle.genre || []), // ジャンル配列を展開
-          circle.description, // サークル説明文
-        ]
-          .filter(Boolean) // undefined/nullを除外
-          .join(" ")
-          .toLowerCase();
-
-        return searchTerms.every((term) => searchText.includes(term));
-      });
-
-      const pageLimit = filters.limit || 20;
-      const page = filters.page || 1;
-      const startIndex = (page - 1) * pageLimit;
-      const endIndex = startIndex + pageLimit;
-
-      const paginatedCircles = filteredCircles.slice(startIndex, endIndex);
-
-      const result: SearchResult = {
-        circles: paginatedCircles,
-        total: filteredCircles.length,
-        page,
-        limit: pageLimit,
-        hasMore: endIndex < filteredCircles.length,
-      };
-
-      if (page === 1) {
-        circles.value = paginatedCircles;
-      }
-
-      return result;
-    } catch (err) {
-      console.error("Search circles error:", err);
-      error.value = "サークル検索に失敗しました";
-      throw err;
-    } finally {
-      loading.value = false;
+    // データがキャッシュされていない場合は先に取得
+    if (!isCacheValid(targetEventId)) {
+      await fetchCircles({}, targetEventId);
     }
+
+    const cached = circlesCache.value[targetEventId];
+    const index = searchIndex.value[targetEventId];
+    
+    if (!cached || !index) {
+      throw new Error("検索インデックスが構築されていません");
+    }
+
+    // 高速検索実行
+    const searchTerms = searchQuery.toLowerCase().split(/\s+/);
+    const filteredCircles = cached.data.filter((circle) => {
+      const searchText = index.searchableText.get(circle.id) || '';
+      return searchTerms.every((term) => searchText.includes(term));
+    });
+
+    // フィルター適用
+    const finalResults = applyClientSideFilters(filteredCircles, filters);
+
+    const pageLimit = filters.limit || 20;
+    const page = filters.page || 1;
+    const startIndex = (page - 1) * pageLimit;
+    const endIndex = startIndex + pageLimit;
+    const paginatedCircles = finalResults.slice(startIndex, endIndex);
+
+    // 検索結果をstateに反映
+    circles.value = finalResults;
+
+    return {
+      circles: paginatedCircles,
+      total: finalResults.length,
+      page,
+      limit: pageLimit,
+      hasMore: endIndex < finalResults.length,
+    };
   };
 
-  // 配置情報をフォーマット
-  // 例: { block: "A", number1: "01", number2: "02" } -> "A-01-02"
-  //     { block: "A", number1: "01", number2: null } -> "A-01"
+  // 高速ジャンル取得（インデックス使用）
+  const getAvailableGenres = async (eventId?: string): Promise<string[]> => {
+    const targetEventId = eventId || currentEvent.value?.id;
+    if (!targetEventId) return [];
+
+    // インデックスから取得
+    const index = searchIndex.value[targetEventId];
+    if (index) {
+      return Array.from(index.genres).sort();
+    }
+
+    // インデックスがない場合は構築
+    if (!isCacheValid(targetEventId)) {
+      await fetchCircles({}, targetEventId);
+    }
+    
+    const newIndex = searchIndex.value[targetEventId];
+    return newIndex ? Array.from(newIndex.genres).sort() : [];
+  };
+
+  // 人気ジャンル取得（キャッシュ使用）
+  const getPopularGenres = async (eventId?: string, limit: number = 10): Promise<string[]> => {
+    const targetEventId = eventId || currentEvent.value?.id;
+    if (!targetEventId) return [];
+
+    // キャッシュされたデータを使用
+    if (!isCacheValid(targetEventId)) {
+      await fetchCircles({}, targetEventId);
+    }
+
+    const cached = circlesCache.value[targetEventId];
+    if (!cached) return [];
+
+    const genreCount = new Map<string, number>();
+    cached.data.forEach((circle) => {
+      if (circle.genre) {
+        circle.genre.forEach((genre: string) => {
+          genreCount.set(genre, (genreCount.get(genre) || 0) + 1);
+        });
+      }
+    });
+
+    return Array.from(genreCount.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, limit)
+      .map(([genre]) => genre);
+  };
+
+  // クリーンアップ関数
+  const cleanup = () => {
+    Object.values(circlesCache.value).forEach(cache => {
+      if (cache.unsubscribe) {
+        cache.unsubscribe();
+      }
+    });
+  };
+
+  // その他の関数は元の実装を維持
   const formatPlacement = (placement: PlacementInfo): string => {
     if (!placement) return "";
     const number2 = placement.number2 ? placement.number2 : "";
-
+    
     if (number2 === "") {
       return `${placement.block}-${placement.number1}`;
     }
-
+    
     return `${placement.block}-${placement.number1}-${placement.number2}`;
   };
 
-  // ジャンル一覧を取得
-  const getAvailableGenres = async (eventId?: string): Promise<string[]> => {
-    try {
-      // イベントIDを取得
-      const targetEventId = eventId || currentEvent.value?.id;
-      if (!targetEventId) {
-        return [];
-      }
-      
-      const circlesRef = collection($firestore, "events", targetEventId, "circles");
-      let q = query(circlesRef, where("isPublic", "==", true));
-      
-      const snapshot = await getDocs(q);
-
-      const genreSet = new Set<string>();
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.genre && Array.isArray(data.genre)) {
-          data.genre.forEach((g: string) => genreSet.add(g));
-        }
-      });
-
-      return Array.from(genreSet).sort();
-    } catch (err) {
-      console.error("Get available genres error:", err);
-      return [];
-    }
-  };
-
-  // 人気ジャンルを使用頻度順で取得
-  const getPopularGenres = async (eventId?: string, limit: number = 10): Promise<string[]> => {
-    try {
-      // イベントIDを取得
-      const targetEventId = eventId || currentEvent.value?.id;
-      if (!targetEventId) {
-        return [];
-      }
-      
-      const circlesRef = collection($firestore, "events", targetEventId, "circles");
-      let q = query(circlesRef, where("isPublic", "==", true));
-      
-      const snapshot = await getDocs(q);
-
-      // ジャンル使用頻度をカウント
-      const genreCount = new Map<string, number>();
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.genre && Array.isArray(data.genre)) {
-          data.genre.forEach((genre: string) => {
-            genreCount.set(genre, (genreCount.get(genre) || 0) + 1);
-          });
-        }
-      });
-
-      // 使用頻度順でソートして上位を返す
-      return Array.from(genreCount.entries())
-        .sort((a, b) => b[1] - a[1]) // 使用頻度の降順
-        .slice(0, limit) // 上位N件
-        .map(([genre]) => genre); // ジャンル名のみ取得
-    } catch (err) {
-      console.error("Get popular genres error:", err);
-      return [];
-    }
-  };
-
-  // エリア一覧を取得
-  const getAvailableAreas = async (eventId?: string): Promise<string[]> => {
-    try {
-      // イベントIDを取得
-      const targetEventId = eventId || currentEvent.value?.id;
-      if (!targetEventId) {
-        return [];
-      }
-      
-      const circlesRef = collection($firestore, "events", targetEventId, "circles");
-      let q = query(circlesRef, where("isPublic", "==", true));
-      
-      const snapshot = await getDocs(q);
-
-      const areaSet = new Set<string>();
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.placement && data.placement.area) {
-          areaSet.add(data.placement.area);
-        }
-      });
-
-      return Array.from(areaSet).sort();
-    } catch (err) {
-      console.error("Get available areas error:", err);
-      return [];
-    }
-  };
-
-  // クライアントサイドフィルタリング共通関数（現在は不要だが将来の拡張のため残す）
   const applyClientSideFilters = (circleList: Circle[], filters: SearchParams): Circle[] => {
-    // 現在はフィルターなしで全データを返す
     return [...circleList];
+  };
+
+  const updateCircle = async (circleId: string, eventId: string, updates: Partial<Circle>) => {
+    if (!$firestore) {
+      throw new Error("Firestore is not initialized");
+    }
+
+    try {
+      const circleRef = doc($firestore, "events", eventId, "circles", circleId);
+      
+      const updateData = {
+        ...updates,
+        updatedAt: new Date()
+      };
+      
+      await updateDoc(circleRef, updateData);
+      console.log('✅ Circle updated:', circleId);
+      
+      // メトリクスをトラッキング
+      trackOperation('write', `events/${eventId}/circles`, 1, `updateCircle: ${circleId}`);
+      
+      // リアルタイム同期により自動的にキャッシュが更新される
+    } catch (err) {
+      console.error("Update circle error:", err);
+      throw new Error("サークル情報の更新に失敗しました");
+    }
   };
 
   // 統合検索・フィルター関数
@@ -509,28 +503,10 @@ export const useCircles = () => {
     }
   };
 
-  // サークル情報を更新
-  const updateCircle = async (circleId: string, eventId: string, updates: Partial<Circle>) => {
-    if (!$firestore) {
-      throw new Error("Firestore is not initialized");
-    }
-
-    try {
-      const circleRef = doc($firestore, "events", eventId, "circles", circleId);
-      
-      // updatedAtを追加
-      const updateData = {
-        ...updates,
-        updatedAt: new Date()
-      };
-      
-      await updateDoc(circleRef, updateData);
-      console.log('✅ Circle updated:', circleId);
-    } catch (err) {
-      console.error("Update circle error:", err);
-      throw new Error("サークル情報の更新に失敗しました");
-    }
-  };
+  // アンマウント時のクリーンアップ
+  onUnmounted(() => {
+    cleanup();
+  });
 
   return {
     circles: readonly(circles),
@@ -545,6 +521,6 @@ export const useCircles = () => {
     formatPlacement,
     getAvailableGenres,
     getPopularGenres,
-    getAvailableAreas,
+    cleanup,
   };
 };

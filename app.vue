@@ -10,12 +10,16 @@
     
     <!-- フッター -->
     <AppFooter />
+    
+    <!-- Firestore メトリクスパネル（開発用） -->
+    <FirestoreMetricsPanel />
   </div>
 </template>
 
 <script setup lang="ts">
 import AppHeader from '~/components/layout/AppHeader.vue'
 import AppFooter from '~/components/layout/AppFooter.vue'
+import FirestoreMetricsPanel from '~/components/debug/FirestoreMetricsPanel.vue'
 
 // TODO: イベントデータの初期化は各ページで行う
 // const { fetchEvents, currentEvent, loading } = useEvents()
