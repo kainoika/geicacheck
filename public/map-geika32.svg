@@ -1,345 +1,696 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <style>
       .area-border { fill: none; stroke: #333; stroke-width: 2; }
       .area-label { font-family: 'Noto Sans JP', sans-serif; font-size: 14px; font-weight: bold; text-anchor: middle; fill: #333; }
       .area-label-large { font-family: 'Noto Sans JP', sans-serif; font-size: 18px; font-weight: bold; text-anchor: middle; fill: #333; }
-      .circle-area { fill: #f8f9fa; stroke: #dee2e6; stroke-width: 1; }
-      .circle-number { font-family: 'Noto Sans JP', sans-serif; font-size: 10px; text-anchor: middle; fill: #495057; }
-      .special-area { fill: #e3f2fd; stroke: #1976d2; stroke-width: 2; }
-      .cosplay-area { fill: #fce4ec; stroke: #c2185b; stroke-width: 2; }
-      .staff-area { fill: #e8f5e8; stroke: #388e3c; stroke-width: 2; }
-      .facility { fill: #fff3e0; stroke: #f57c00; stroke-width: 2; }
-      .miki-area { fill: #e1f5fe; stroke: #0277bd; stroke-width: 2; }
-      .entrance { fill: #f3e5f5; stroke: #7b1fa2; stroke-width: 2; }
+      .circle-number { font-family: 'Noto Sans JP', sans-serif; font-size: 11px; text-anchor: middle; fill: #333; font-weight: bold; }
+      .circle-box { fill: #f8f9fa; stroke: #333; stroke-width: 1; }
+      .miki-label { font-family: 'Noto Sans JP', sans-serif; font-size: 12px; font-weight: bold; text-anchor: middle; fill: #333; }
+      .cosplay-area { fill: #f0f0f0; stroke: #333; stroke-width: 1; }
+      .facility { fill: #f0f0f0; stroke: #333; stroke-width: 1; }
+      .entrance { fill: #f0f0f0; stroke: #333; stroke-width: 2; }
     </style>
   </defs>
 
   <!-- 外枠 -->
-  <rect x="10" y="10" width="780" height="580" class="area-border"/>
+  <rect x="10" y="10" width="980" height="980" class="area-border"/>
 
   <!-- コスプレゾーン (上部) -->
-  <rect x="50" y="30" width="700" height="80" class="cosplay-area"/>
-  <text x="400" y="75" class="area-label-large">コスプレゾーン</text>
+  <rect x="150" y="40" width="400" height="60" class="cosplay-area"/>
+  <text x="350" y="75" class="area-label-large">コスプレゾーン</text>
 
-  <!-- 化粧室・TOILET -->
-  <rect x="620" y="30" width="120" height="35" class="facility"/>
-  <text x="680" y="50" class="area-label">化粧室・TOILET・更衣室</text>
+  <!-- 化粧室・TOILET・更衣室 (右上) -->
+  <rect x="650" y="40" width="200" height="80" class="facility"/>
+  <text x="750" y="60" class="area-label">化粧室</text>
+  <text x="750" y="80" class="area-label">TOILET</text>
+  <text x="750" y="100" class="area-label">更衣室</text>
+
+  <!-- コスプレゾーン (右側縦書き) -->
+  <rect x="880" y="150" width="80" height="400" class="cosplay-area"/>
+  <text x="920" y="350" class="area-label-large" transform="rotate(-90 920 350)">コスプレゾーン</text>
 
   <!-- みきエリア (左側) -->
-  <rect x="30" y="130" width="60" height="300" class="miki-area"/>
-  <text x="60" y="160" class="area-label" transform="rotate(-90 60 160)">みき記録保存何物展示販売所</text>
-  
-  <!-- みき番号 -->
-  <g>
-    <!-- カ行 -->
-    <text x="25" y="190" class="area-label">カ</text>
-    <rect x="35" y="200" width="20" height="15" class="circle-area"/>
-    <text x="45" y="210" class="circle-number">06</text>
-    <rect x="35" y="215" width="20" height="15" class="circle-area"/>
-    <text x="45" y="225" class="circle-number">05</text>
+  <g id="miki-area">
+    <!-- カ行ラベル -->
+    <text x="50" y="130" class="miki-label">カ</text>
     
-    <rect x="35" y="240" width="20" height="15" class="circle-area"/>
-    <text x="45" y="250" class="circle-number">04</text>
-    <rect x="35" y="255" width="20" height="15" class="circle-area"/>
-    <text x="45" y="265" class="circle-number">03</text>
-    <rect x="35" y="270" width="20" height="15" class="circle-area"/>
-    <text x="45" y="280" class="circle-number">02</text>
-    <rect x="35" y="285" width="20" height="15" class="circle-area"/>
-    <text x="45" y="295" class="circle-number">01</text>
+    <!-- カ-06 -->
+    <rect x="70" y="40" width="30" height="25" class="circle-box" data-block="カ" data-number="06"/>
+    <text x="85" y="57" class="circle-number">06</text>
+    
+    <!-- カ-05 -->
+    <rect x="70" y="70" width="30" height="25" class="circle-box" data-block="カ" data-number="05"/>
+    <text x="85" y="87" class="circle-number">05</text>
 
-    <!-- みき行 -->
-    <text x="25" y="320" class="area-label">み</text>
-    <rect x="35" y="330" width="20" height="15" class="circle-area"/>
-    <text x="45" y="340" class="circle-number">20</text>
-    <rect x="35" y="345" width="20" height="15" class="circle-area"/>
-    <text x="45" y="355" class="circle-number">19</text>
-    <rect x="35" y="360" width="20" height="15" class="circle-area"/>
-    <text x="45" y="370" class="circle-number">18</text>
-    <rect x="35" y="375" width="20" height="15" class="circle-area"/>
-    <text x="45" y="385" class="circle-number">17</text>
+    <!-- カ-04 -->
+    <rect x="70" y="140" width="30" height="25" class="circle-box" data-block="カ" data-number="04"/>
+    <text x="85" y="157" class="circle-number">04</text>
+    
+    <!-- カ-03 -->
+    <rect x="70" y="170" width="30" height="25" class="circle-box" data-block="カ" data-number="03"/>
+    <text x="85" y="187" class="circle-number">03</text>
+    
+    <text x="50" y="290" class="miki-label">カ</text>
+    
+    <!-- カ-02 -->
+    <rect x="70" y="200" width="30" height="25" class="circle-box" data-block="カ" data-number="02"/>
+    <text x="85" y="217" class="circle-number">02</text>
+    
+    <!-- カ-01 -->
+    <rect x="70" y="230" width="30" height="25" class="circle-box" data-block="カ" data-number="01"/>
+    <text x="85" y="247" class="circle-number">01</text>
 
-    <text x="25" y="405" class="area-label">み</text>
-    <rect x="35" y="415" width="20" height="15" class="circle-area"/>
-    <text x="45" y="425" class="circle-number">16</text>
-    <rect x="35" y="430" width="20" height="15" class="circle-area"/>
-    <text x="45" y="440" class="circle-number">15</text>
-    <rect x="35" y="445" width="20" height="15" class="circle-area"/>
-    <text x="45" y="455" class="circle-number">14</text>
-    <rect x="35" y="460" width="20" height="15" class="circle-area"/>
-    <text x="45" y="470" class="circle-number">13</text>
+    <!-- み-20 -->
+    <rect x="70" y="270" width="30" height="25" class="circle-box" data-block="み" data-number="20"/>
+    <text x="85" y="287" class="circle-number">20</text>
+    
+    <!-- み-19 -->
+    <rect x="70" y="300" width="30" height="25" class="circle-box" data-block="み" data-number="19"/>
+    <text x="85" y="317" class="circle-number">19</text>
+    
+    <!-- み-18 -->
+    <rect x="70" y="330" width="30" height="25" class="circle-box" data-block="み" data-number="18"/>
+    <text x="85" y="347" class="circle-number">18</text>
+       
+    <!-- み-17 -->
+    <rect x="70" y="360" width="30" height="25" class="circle-box" data-block="み" data-number="17"/>
+    <text x="85" y="377" class="circle-number">17</text>
 
-    <rect x="35" y="480" width="20" height="15" class="circle-area"/>
-    <text x="45" y="490" class="circle-number">12</text>
-    <rect x="35" y="495" width="20" height="15" class="circle-area"/>
-    <text x="45" y="505" class="circle-number">11</text>
-    <rect x="35" y="510" width="20" height="15" class="circle-area"/>
-    <text x="45" y="520" class="circle-number">10</text>
-    <rect x="35" y="525" width="20" height="15" class="circle-area"/>
-    <text x="45" y="535" class="circle-number">09</text>
+    <text x="50" y="400" class="miki-label">み</text>
+    
+    <!-- み-16 -->
+    <rect x="70" y="410" width="30" height="25" class="circle-box" data-block="み" data-number="16"/>
+    <text x="85" y="427" class="circle-number">16</text>
+    
+    <!-- み-15 -->
+    <rect x="70" y="440" width="30" height="25" class="circle-box" data-block="み" data-number="15"/>
+    <text x="85" y="457" class="circle-number">15</text>
+    
+    <!-- み-14 -->
+    <rect x="70" y="470" width="30" height="25" class="circle-box" data-block="み" data-number="14"/>
+    <text x="85" y="487" class="circle-number">14</text>
+    
+    <!-- み-13 -->
+    <rect x="70" y="500" width="30" height="25" class="circle-box" data-block="み" data-number="13"/>
+    <text x="85" y="517" class="circle-number">13</text>
 
-    <text x="25" y="555" class="area-label">み</text>
-    <rect x="35" y="565" width="20" height="15" class="circle-area"/>
-    <text x="45" y="575" class="circle-number">08</text>
-    <rect x="60" y="565" width="20" height="15" class="circle-area"/>
-    <text x="70" y="575" class="circle-number">07</text>
-    <rect x="85" y="565" width="20" height="15" class="circle-area"/>
-    <text x="95" y="575" class="circle-number">06</text>
-    <rect x="110" y="565" width="20" height="15" class="circle-area"/>
-    <text x="120" y="575" class="circle-number">05</text>
+    <!-- み-12 -->
+    <rect x="70" y="540" width="30" height="25" class="circle-box" data-block="み" data-number="12"/>
+    <text x="85" y="557" class="circle-number">12</text>
+        
+    <!-- み-11 -->
+    <rect x="70" y="570" width="30" height="25" class="circle-box" data-block="み" data-number="11"/>
+    <text x="85" y="587" class="circle-number">11</text>
+    
+    <!-- み-10 -->
+    <rect x="70" y="600" width="30" height="25" class="circle-box" data-block="み" data-number="11"/>
+    <text x="85" y="617" class="circle-number">10</text>
+    
+    <!-- み-09 -->
+    <rect x="70" y="630" width="30" height="25" class="circle-box" data-block="み" data-number="09"/>
+    <text x="85" y="647" class="circle-number">09</text>
 
-    <text x="25" y="540" class="area-label">み</text>
-    <rect x="35" y="545" width="20" height="15" class="circle-area"/>
-    <text x="45" y="555" class="circle-number">04</text>
-    <rect x="60" y="545" width="20" height="15" class="circle-area"/>
-    <text x="70" y="555" class="circle-number">03</text>
-    <rect x="85" y="545" width="20" height="15" class="circle-area"/>
-    <text x="95" y="555" class="circle-number">02</text>
-    <rect x="110" y="545" width="20" height="15" class="circle-area"/>
-    <text x="120" y="555" class="circle-number">01</text>
+    <!-- み-08 -->
+    <rect x="70" y="690" width="30" height="25" class="circle-box" data-block="み" data-number="08"/>
+    <text x="85" y="707" class="circle-number">08</text>
+    
+    <!-- み-07 -->
+    <rect x="70" y="720" width="30" height="25" class="circle-box" data-block="み" data-number="07"/>
+    <text x="85" y="737" class="circle-number">07</text>
+    
+    <!-- み-06 -->
+    <rect x="70" y="750" width="30" height="25" class="circle-box" data-block="み" data-number="06"/>
+    <text x="85" y="767" class="circle-number">06</text>
+    
+    <text x="50" y="820" class="miki-label">み</text>
+    
+    <!-- み-05 -->
+    <rect x="70" y="780" width="30" height="25" class="circle-box" data-block="み" data-number="05"/>
+    <text x="85" y="797" class="circle-number">05</text>
+
+    <!-- み-04 -->
+    <rect x="70" y="840" width="30" height="25" class="circle-box" data-block="み" data-number="04"/>
+    <text x="85" y="857" class="circle-number">04</text>
+    
+    <!-- み-03 -->
+    <rect x="70" y="870" width="30" height="25" class="circle-box" data-block="み" data-number="03"/>
+    <text x="85" y="887" class="circle-number">03</text>
+    
+    <!-- み-02 -->
+    <rect x="70" y="900" width="30" height="25" class="circle-box" data-block="み" data-number="02"/>
+    <text x="85" y="917" class="circle-number">02</text>
+    
+    <!-- み-01 -->
+    <rect x="70" y="930" width="30" height="25" class="circle-box" data-block="み" data-number="01"/>
+    <text x="85" y="947" class="circle-number">01</text>
   </g>
 
-  <!-- メインサークルエリア (中央) -->
-  <rect x="100" y="130" width="500" height="300" class="circle-area"/>
-  
-  <!-- サークル配置 (上段) -->
-  <g>
-    <!-- 1-24列 -->
-    <g transform="translate(120, 150)">
-      <!-- 01-12列 -->
-      <g id="col-1-12">
-        <rect x="0" y="0" width="100" height="120" class="circle-area"/>
-        <text x="50" y="-5" class="area-label">01-12</text>
-        
-        <!-- 個別番号 -->
-        <text x="10" y="15" class="circle-number">01</text>
-        <text x="30" y="15" class="circle-number">24</text>
-        <text x="10" y="30" class="circle-number">02</text>
-        <text x="30" y="30" class="circle-number">23</text>
-        <text x="10" y="45" class="circle-number">03</text>
-        <text x="30" y="45" class="circle-number">22</text>
-        <text x="10" y="60" class="circle-number">04</text>
-        <text x="30" y="60" class="circle-number">21</text>
-        <text x="10" y="75" class="circle-number">05</text>
-        <text x="30" y="75" class="circle-number">20</text>
-        <text x="10" y="90" class="circle-number">06</text>
-        <text x="30" y="90" class="circle-number">19</text>
-        <text x="10" y="105" class="circle-number">07</text>
-        <text x="30" y="105" class="circle-number">18</text>
-        <text x="10" y="120" class="circle-number">08</text>
-        <text x="30" y="120" class="circle-number">17</text>
-        
-        <text x="60" y="15" class="circle-number">09</text>
-        <text x="80" y="15" class="circle-number">16</text>
-        <text x="60" y="30" class="circle-number">10</text>
-        <text x="80" y="30" class="circle-number">15</text>
-        <text x="60" y="45" class="circle-number">11</text>
-        <text x="80" y="45" class="circle-number">14</text>
-        <text x="60" y="60" class="circle-number">12</text>
-        <text x="80" y="60" class="circle-number">13</text>
-      </g>
+  <!-- メインサークルエリア上段 (ア行) -->
+  <g id="a-area" transform="translate(250, 140)">
+    <!-- 01-24列 -->
+    <g>
+      <!-- ア-01 -->
+      <rect x="0" y="0" width="30" height="25" class="circle-box" data-block="ア" data-number="01"/>
+      <text x="15" y="17" class="circle-number">01</text>
+      <!-- ア-24 -->
+      <rect x="35" y="0" width="30" height="25" class="circle-box" data-block="ア" data-number="24"/>
+      <text x="50" y="17" class="circle-number">24</text>
       
-      <!-- 25-48列 -->
-      <g transform="translate(120, 0)" id="col-25-48">
-        <rect x="0" y="0" width="100" height="120" class="circle-area"/>
-        <text x="50" y="-5" class="area-label">25-48</text>
-        
-        <text x="10" y="15" class="circle-number">25</text>
-        <text x="30" y="15" class="circle-number">48</text>
-        <text x="10" y="30" class="circle-number">26</text>
-        <text x="30" y="30" class="circle-number">47</text>
-        <text x="10" y="45" class="circle-number">27</text>
-        <text x="30" y="45" class="circle-number">46</text>
-        <text x="10" y="60" class="circle-number">28</text>
-        <text x="30" y="60" class="circle-number">45</text>
-        <text x="10" y="75" class="circle-number">29</text>
-        <text x="30" y="75" class="circle-number">44</text>
-        <text x="10" y="90" class="circle-number">30</text>
-        <text x="30" y="90" class="circle-number">43</text>
-        <text x="10" y="105" class="circle-number">31</text>
-        <text x="30" y="105" class="circle-number">42</text>
-        <text x="10" y="120" class="circle-number">32</text>
-        <text x="30" y="120" class="circle-number">41</text>
-        
-        <text x="60" y="15" class="circle-number">33</text>
-        <text x="80" y="15" class="circle-number">40</text>
-        <text x="60" y="30" class="circle-number">34</text>
-        <text x="80" y="30" class="circle-number">39</text>
-        <text x="60" y="45" class="circle-number">35</text>
-        <text x="80" y="45" class="circle-number">38</text>
-        <text x="60" y="60" class="circle-number">36</text>
-        <text x="80" y="60" class="circle-number">37</text>
-      </g>
+      <!-- ア-02 -->
+      <rect x="0" y="30" width="30" height="25" class="circle-box" data-block="ア" data-number="02"/>
+      <text x="15" y="47" class="circle-number">02</text>
+      <!-- ア-23 -->
+      <rect x="35" y="30" width="30" height="25" class="circle-box" data-block="ア" data-number="23"/>
+      <text x="50" y="47" class="circle-number">23</text>
       
-      <!-- 49-72列 -->
-      <g transform="translate(240, 0)" id="col-49-72">
-        <rect x="0" y="0" width="100" height="120" class="circle-area"/>
-        <text x="50" y="-5" class="area-label">49-72</text>
-        
-        <text x="10" y="15" class="circle-number">49</text>
-        <text x="30" y="15" class="circle-number">72</text>
-        <text x="10" y="30" class="circle-number">50</text>
-        <text x="30" y="30" class="circle-number">71</text>
-        <text x="10" y="45" class="circle-number">51</text>
-        <text x="30" y="45" class="circle-number">70</text>
-        <text x="10" y="60" class="circle-number">52</text>
-        <text x="30" y="60" class="circle-number">69</text>
-        <text x="10" y="75" class="circle-number">53</text>
-        <text x="30" y="75" class="circle-number">68</text>
-        <text x="10" y="90" class="circle-number">54</text>
-        <text x="30" y="90" class="circle-number">67</text>
-        <text x="10" y="105" class="circle-number">55</text>
-        <text x="30" y="105" class="circle-number">66</text>
-        <text x="10" y="120" class="circle-number">56</text>
-        <text x="30" y="120" class="circle-number">65</text>
-        
-        <text x="60" y="15" class="circle-number">57</text>
-        <text x="80" y="15" class="circle-number">64</text>
-        <text x="60" y="30" class="circle-number">58</text>
-        <text x="80" y="30" class="circle-number">63</text>
-        <text x="60" y="45" class="circle-number">59</text>
-        <text x="80" y="45" class="circle-number">62</text>
-        <text x="60" y="60" class="circle-number">60</text>
-        <text x="80" y="60" class="circle-number">61</text>
-      </g>
+      <!-- ア-03 -->
+      <rect x="0" y="60" width="30" height="25" class="circle-box" data-block="ア" data-number="03"/>
+      <text x="15" y="77" class="circle-number">03</text>
+      <!-- ア-22 -->
+      <rect x="35" y="60" width="30" height="25" class="circle-box" data-block="ア" data-number="22"/>
+      <text x="50" y="77" class="circle-number">22</text>
+      
+      <!-- ア-04 -->
+      <rect x="0" y="90" width="30" height="25" class="circle-box" data-block="ア" data-number="04"/>
+      <text x="15" y="107" class="circle-number">04</text>
+      <!-- ア-21 -->
+      <rect x="35" y="90" width="30" height="25" class="circle-box" data-block="ア" data-number="21"/>
+      <text x="50" y="107" class="circle-number">21</text>
+      
+      <!-- ア-05 -->
+      <rect x="0" y="120" width="30" height="25" class="circle-box" data-block="ア" data-number="05"/>
+      <text x="15" y="137" class="circle-number">05</text>
+      <!-- ア-20 -->
+      <rect x="35" y="120" width="30" height="25" class="circle-box" data-block="ア" data-number="20"/>
+      <text x="50" y="137" class="circle-number">20</text>
+      
+      <!-- ア-06 -->
+      <rect x="0" y="150" width="30" height="25" class="circle-box" data-block="ア" data-number="06"/>
+      <text x="15" y="167" class="circle-number">06</text>
+      <!-- ア-19 -->
+      <rect x="35" y="150" width="30" height="25" class="circle-box" data-block="ア" data-number="19"/>
+      <text x="50" y="167" class="circle-number">19</text>
+      
+      <!-- ア-07 -->
+      <rect x="0" y="180" width="30" height="25" class="circle-box" data-block="ア" data-number="07"/>
+      <text x="15" y="197" class="circle-number">07</text>
+      <!-- ア-18 -->
+      <rect x="35" y="180" width="30" height="25" class="circle-box" data-block="ア" data-number="18"/>
+      <text x="50" y="197" class="circle-number">18</text>
+      
+      <!-- ア-08 -->
+      <rect x="0" y="210" width="30" height="25" class="circle-box" data-block="ア" data-number="08"/>
+      <text x="15" y="227" class="circle-number">08</text>
+      <!-- ア-17 -->
+      <rect x="35" y="210" width="30" height="25" class="circle-box" data-block="ア" data-number="17"/>
+      <text x="50" y="227" class="circle-number">17</text>
+      
+      <!-- ア-09 -->
+      <rect x="0" y="240" width="30" height="25" class="circle-box" data-block="ア" data-number="09"/>
+      <text x="15" y="257" class="circle-number">09</text>
+      <!-- ア-16 -->
+      <rect x="35" y="240" width="30" height="25" class="circle-box" data-block="ア" data-number="16"/>
+      <text x="50" y="257" class="circle-number">16</text>
+      
+      <!-- ア-10 -->
+      <rect x="0" y="270" width="30" height="25" class="circle-box" data-block="ア" data-number="10"/>
+      <text x="15" y="287" class="circle-number">10</text>
+      <!-- ア-15 -->
+      <rect x="35" y="270" width="30" height="25" class="circle-box" data-block="ア" data-number="15"/>
+      <text x="50" y="287" class="circle-number">15</text>
+      
+      <!-- ア-11 -->
+      <rect x="0" y="300" width="30" height="25" class="circle-box" data-block="ア" data-number="11"/>
+      <text x="15" y="317" class="circle-number">11</text>
+      <!-- ア-14 -->
+      <rect x="35" y="300" width="30" height="25" class="circle-box" data-block="ア" data-number="14"/>
+      <text x="50" y="317" class="circle-number">14</text>
+      
+      <!-- ア-12 -->
+      <rect x="0" y="330" width="30" height="25" class="circle-box" data-block="ア" data-number="12"/>
+      <text x="15" y="347" class="circle-number">12</text>
+      <!-- ア-13 -->
+      <rect x="35" y="330" width="30" height="25" class="circle-box" data-block="ア" data-number="13"/>
+      <text x="50" y="347" class="circle-number">13</text>
+      
+      <text x="85" y="180" class="area-label">ア</text>
     </g>
-
-    <!-- サークル配置 (下段) -->
-    <g transform="translate(120, 290)">
-      <!-- 01-12列 (下段) -->
-      <g id="col-1-12-bottom">
-        <rect x="0" y="0" width="100" height="120" class="special-area"/>
-        <text x="50" y="-5" class="area-label">01-12</text>
-        <text x="10" y="15" class="circle-number">01</text>
-        <text x="30" y="15" class="circle-number">24</text>
-        <text x="10" y="30" class="circle-number">02</text>
-        <text x="30" y="30" class="circle-number">23</text>
-        <text x="10" y="45" class="circle-number">03</text>
-        <text x="30" y="45" class="circle-number">22</text>
-        <text x="10" y="60" class="circle-number">04</text>
-        <text x="30" y="60" class="circle-number">21</text>
-        <text x="10" y="75" class="circle-number">05</text>
-        <text x="30" y="75" class="circle-number">20</text>
-        <text x="10" y="90" class="circle-number">06</text>
-        <text x="30" y="90" class="circle-number">19</text>
-        <text x="10" y="105" class="circle-number">07</text>
-        <text x="30" y="105" class="circle-number">18</text>
-        <text x="10" y="120" class="circle-number">08</text>
-        <text x="30" y="120" class="circle-number">17</text>
-        
-        <text x="60" y="15" class="circle-number">09</text>
-        <text x="80" y="15" class="circle-number">16</text>
-        <text x="60" y="30" class="circle-number">10</text>
-        <text x="80" y="30" class="circle-number">15</text>
-        <text x="60" y="45" class="circle-number">11</text>
-        <text x="80" y="45" class="circle-number">14</text>
-        <text x="60" y="60" class="circle-number">12</text>
-        <text x="80" y="60" class="circle-number">13</text>
-      </g>
+    
+    <!-- 25-48列 -->
+    <g transform="translate(200, 0)">
+      <!-- ア-25 -->
+      <rect x="0" y="0" width="30" height="25" class="circle-box" data-block="ア" data-number="25"/>
+      <text x="15" y="17" class="circle-number">25</text>
+      <!-- ア-48 -->
+      <rect x="35" y="0" width="30" height="25" class="circle-box" data-block="ア" data-number="48"/>
+      <text x="50" y="17" class="circle-number">48</text>
       
-      <!-- 25-48列 (下段) -->
-      <g transform="translate(120, 0)" id="col-25-48-bottom">
-        <rect x="0" y="0" width="100" height="120" class="circle-area"/>
-        <text x="50" y="-5" class="area-label">25-48</text>
-        
-        <text x="10" y="15" class="circle-number">25</text>
-        <text x="30" y="15" class="circle-number">48</text>
-        <text x="10" y="30" class="circle-number">26</text>
-        <text x="30" y="30" class="circle-number">47</text>
-        <text x="10" y="45" class="circle-number">27</text>
-        <text x="30" y="45" class="circle-number">46</text>
-        <text x="10" y="60" class="circle-number">28</text>
-        <text x="30" y="60" class="circle-number">45</text>
-        <text x="10" y="75" class="circle-number">29</text>
-        <text x="30" y="75" class="circle-number">44</text>
-        <text x="10" y="90" class="circle-number">30</text>
-        <text x="30" y="90" class="circle-number">43</text>
-        <text x="10" y="105" class="circle-number">31</text>
-        <text x="30" y="105" class="circle-number">42</text>
-        <text x="10" y="120" class="circle-number">32</text>
-        <text x="30" y="120" class="circle-number">41</text>
-        
-        <text x="60" y="15" class="circle-number">33</text>
-        <text x="80" y="15" class="circle-number">40</text>
-        <text x="60" y="30" class="circle-number">34</text>
-        <text x="80" y="30" class="circle-number">39</text>
-        <text x="60" y="45" class="circle-number">35</text>
-        <text x="80" y="45" class="circle-number">38</text>
-        <text x="60" y="60" class="circle-number">36</text>
-        <text x="80" y="60" class="circle-number">37</text>
-      </g>
+      <!-- ア-26 -->
+      <rect x="0" y="30" width="30" height="25" class="circle-box" data-block="ア" data-number="26"/>
+      <text x="15" y="47" class="circle-number">26</text>
+      <!-- ア-47 -->
+      <rect x="35" y="30" width="30" height="25" class="circle-box" data-block="ア" data-number="47"/>
+      <text x="50" y="47" class="circle-number">47</text>
       
-      <!-- 49-72列 (下段) -->
-      <g transform="translate(240, 0)" id="col-49-72-bottom">
-        <rect x="0" y="0" width="100" height="120" class="circle-area"/>
-        <text x="50" y="-5" class="area-label">49-72</text>
-        
-        <text x="10" y="15" class="circle-number">49</text>
-        <text x="30" y="15" class="circle-number">72</text>
-        <text x="10" y="30" class="circle-number">50</text>
-        <text x="30" y="30" class="circle-number">71</text>
-        <text x="10" y="45" class="circle-number">51</text>
-        <text x="30" y="45" class="circle-number">70</text>
-        <text x="10" y="60" class="circle-number">52</text>
-        <text x="30" y="60" class="circle-number">69</text>
-        <text x="10" y="75" class="circle-number">53</text>
-        <text x="30" y="75" class="circle-number">68</text>
-        <text x="10" y="90" class="circle-number">54</text>
-        <text x="30" y="90" class="circle-number">67</text>
-        <text x="10" y="105" class="circle-number">55</text>
-        <text x="30" y="105" class="circle-number">66</text>
-        <text x="10" y="120" class="circle-number">56</text>
-        <text x="30" y="120" class="circle-number">65</text>
-        
-        <text x="60" y="15" class="circle-number">57</text>
-        <text x="80" y="15" class="circle-number">64</text>
-        <text x="60" y="30" class="circle-number">58</text>
-        <text x="80" y="30" class="circle-number">63</text>
-        <text x="60" y="45" class="circle-number">59</text>
-        <text x="80" y="45" class="circle-number">62</text>
-        <text x="60" y="60" class="circle-number">60</text>
-        <text x="80" y="60" class="circle-number">61</text>
-      </g>
+      <!-- ア-27 -->
+      <rect x="0" y="60" width="30" height="25" class="circle-box" data-block="ア" data-number="27"/>
+      <text x="15" y="77" class="circle-number">27</text>
+      <!-- ア-46 -->
+      <rect x="35" y="60" width="30" height="25" class="circle-box" data-block="ア" data-number="46"/>
+      <text x="50" y="77" class="circle-number">46</text>
+      
+      <!-- ア-28 -->
+      <rect x="0" y="90" width="30" height="25" class="circle-box" data-block="ア" data-number="28"/>
+      <text x="15" y="107" class="circle-number">28</text>
+      <!-- ア-45 -->
+      <rect x="35" y="90" width="30" height="25" class="circle-box" data-block="ア" data-number="45"/>
+      <text x="50" y="107" class="circle-number">45</text>
+      
+      <!-- ア-29 -->
+      <rect x="0" y="120" width="30" height="25" class="circle-box" data-block="ア" data-number="29"/>
+      <text x="15" y="137" class="circle-number">29</text>
+      <!-- ア-44 -->
+      <rect x="35" y="120" width="30" height="25" class="circle-box" data-block="ア" data-number="44"/>
+      <text x="50" y="137" class="circle-number">44</text>
+      
+      <!-- ア-30 -->
+      <rect x="0" y="150" width="30" height="25" class="circle-box" data-block="ア" data-number="30"/>
+      <text x="15" y="167" class="circle-number">30</text>
+      <!-- ア-43 -->
+      <rect x="35" y="150" width="30" height="25" class="circle-box" data-block="ア" data-number="43"/>
+      <text x="50" y="167" class="circle-number">43</text>
+      
+      <!-- ア-31 -->
+      <rect x="0" y="180" width="30" height="25" class="circle-box" data-block="ア" data-number="31"/>
+      <text x="15" y="197" class="circle-number">31</text>
+      <!-- ア-42 -->
+      <rect x="35" y="180" width="30" height="25" class="circle-box" data-block="ア" data-number="42"/>
+      <text x="50" y="197" class="circle-number">42</text>
+      
+      <!-- ア-32 -->
+      <rect x="0" y="210" width="30" height="25" class="circle-box" data-block="ア" data-number="32"/>
+      <text x="15" y="227" class="circle-number">32</text>
+      <!-- ア-41 -->
+      <rect x="35" y="210" width="30" height="25" class="circle-box" data-block="ア" data-number="41"/>
+      <text x="50" y="227" class="circle-number">41</text>
+      
+      <!-- ア-33 -->
+      <rect x="0" y="240" width="30" height="25" class="circle-box" data-block="ア" data-number="33"/>
+      <text x="15" y="257" class="circle-number">33</text>
+      <!-- ア-40 -->
+      <rect x="35" y="240" width="30" height="25" class="circle-box" data-block="ア" data-number="40"/>
+      <text x="50" y="257" class="circle-number">40</text>
+      
+      <!-- ア-34 -->
+      <rect x="0" y="270" width="30" height="25" class="circle-box" data-block="ア" data-number="34"/>
+      <text x="15" y="287" class="circle-number">34</text>
+      <!-- ア-39 -->
+      <rect x="35" y="270" width="30" height="25" class="circle-box" data-block="ア" data-number="39"/>
+      <text x="50" y="287" class="circle-number">39</text>
+      
+      <!-- ア-35 -->
+      <rect x="0" y="300" width="30" height="25" class="circle-box" data-block="ア" data-number="35"/>
+      <text x="15" y="317" class="circle-number">35</text>
+      <!-- ア-38 -->
+      <rect x="35" y="300" width="30" height="25" class="circle-box" data-block="ア" data-number="38"/>
+      <text x="50" y="317" class="circle-number">38</text>
+      
+      <!-- ア-36 -->
+      <rect x="0" y="330" width="30" height="25" class="circle-box" data-block="ア" data-number="36"/>
+      <text x="15" y="347" class="circle-number">36</text>
+      <!-- ア-37 -->
+      <rect x="35" y="330" width="30" height="25" class="circle-box" data-block="ア" data-number="37"/>
+      <text x="50" y="347" class="circle-number">37</text>
+      
+      <text x="85" y="180" class="area-label">ア</text>
+    </g>
+    
+    <!-- 49-72列 -->
+    <g transform="translate(400, 0)">
+      <!-- ア-49 -->
+      <rect x="0" y="0" width="30" height="25" class="circle-box" data-block="ア" data-number="49"/>
+      <text x="15" y="17" class="circle-number">49</text>
+      <!-- ア-72 -->
+      <rect x="35" y="0" width="30" height="25" class="circle-box" data-block="ア" data-number="72"/>
+      <text x="50" y="17" class="circle-number">72</text>
+      
+      <!-- ア-50 -->
+      <rect x="0" y="30" width="30" height="25" class="circle-box" data-block="ア" data-number="50"/>
+      <text x="15" y="47" class="circle-number">50</text>
+      <!-- ア-71 -->
+      <rect x="35" y="30" width="30" height="25" class="circle-box" data-block="ア" data-number="71"/>
+      <text x="50" y="47" class="circle-number">71</text>
+      
+      <!-- ア-51 -->
+      <rect x="0" y="60" width="30" height="25" class="circle-box" data-block="ア" data-number="51"/>
+      <text x="15" y="77" class="circle-number">51</text>
+      <!-- ア-70 -->
+      <rect x="35" y="60" width="30" height="25" class="circle-box" data-block="ア" data-number="70"/>
+      <text x="50" y="77" class="circle-number">70</text>
+      
+      <!-- ア-52 -->
+      <rect x="0" y="90" width="30" height="25" class="circle-box" data-block="ア" data-number="52"/>
+      <text x="15" y="107" class="circle-number">52</text>
+      <!-- ア-69 -->
+      <rect x="35" y="90" width="30" height="25" class="circle-box" data-block="ア" data-number="69"/>
+      <text x="50" y="107" class="circle-number">69</text>
+      
+      <!-- ア-53 -->
+      <rect x="0" y="120" width="30" height="25" class="circle-box" data-block="ア" data-number="53"/>
+      <text x="15" y="137" class="circle-number">53</text>
+      <!-- ア-68 -->
+      <rect x="35" y="120" width="30" height="25" class="circle-box" data-block="ア" data-number="68"/>
+      <text x="50" y="137" class="circle-number">68</text>
+      
+      <!-- ア-54 -->
+      <rect x="0" y="150" width="30" height="25" class="circle-box" data-block="ア" data-number="54"/>
+      <text x="15" y="167" class="circle-number">54</text>
+      <!-- ア-67 -->
+      <rect x="35" y="150" width="30" height="25" class="circle-box" data-block="ア" data-number="67"/>
+      <text x="50" y="167" class="circle-number">67</text>
+      
+      <!-- ア-55 -->
+      <rect x="0" y="180" width="30" height="25" class="circle-box" data-block="ア" data-number="55"/>
+      <text x="15" y="197" class="circle-number">55</text>
+      <!-- ア-66 -->
+      <rect x="35" y="180" width="30" height="25" class="circle-box" data-block="ア" data-number="66"/>
+      <text x="50" y="197" class="circle-number">66</text>
+      
+      <!-- ア-56 -->
+      <rect x="0" y="210" width="30" height="25" class="circle-box" data-block="ア" data-number="56"/>
+      <text x="15" y="227" class="circle-number">56</text>
+      <!-- ア-65 -->
+      <rect x="35" y="210" width="30" height="25" class="circle-box" data-block="ア" data-number="65"/>
+      <text x="50" y="227" class="circle-number">65</text>
+      
+      <!-- ア-57 -->
+      <rect x="0" y="240" width="30" height="25" class="circle-box" data-block="ア" data-number="57"/>
+      <text x="15" y="257" class="circle-number">57</text>
+      <!-- ア-64 -->
+      <rect x="35" y="240" width="30" height="25" class="circle-box" data-block="ア" data-number="64"/>
+      <text x="50" y="257" class="circle-number">64</text>
+      
+      <!-- ア-58 -->
+      <rect x="0" y="270" width="30" height="25" class="circle-box" data-block="ア" data-number="58"/>
+      <text x="15" y="287" class="circle-number">58</text>
+      <!-- ア-63 -->
+      <rect x="35" y="270" width="30" height="25" class="circle-box" data-block="ア" data-number="63"/>
+      <text x="50" y="287" class="circle-number">63</text>
+      
+      <!-- ア-59 -->
+      <rect x="0" y="300" width="30" height="25" class="circle-box" data-block="ア" data-number="59"/>
+      <text x="15" y="317" class="circle-number">59</text>
+      <!-- ア-62 -->
+      <rect x="35" y="300" width="30" height="25" class="circle-box" data-block="ア" data-number="62"/>
+      <text x="50" y="317" class="circle-number">62</text>
+      
+      <!-- ア-60 -->
+      <rect x="0" y="330" width="30" height="25" class="circle-box" data-block="ア" data-number="60"/>
+      <text x="15" y="347" class="circle-number">60</text>
+      <!-- ア-61 -->
+      <rect x="35" y="330" width="30" height="25" class="circle-box" data-block="ア" data-number="61"/>
+      <text x="50" y="347" class="circle-number">61</text>
+      
+      <text x="85" y="180" class="area-label">ア</text>
     </g>
   </g>
 
-  <!-- コスプレゾーン (右側) -->
-  <rect x="620" y="130" width="120" height="300" class="cosplay-area"/>
-  <text x="680" y="280" class="area-label-large" transform="rotate(-90 680 280)">コスプレゾーン</text>
+  <!-- メインサークルエリア下段 (ド行) -->
+  <g id="do-area" transform="translate(250, 540)">
+    <!-- 01-24列 -->
+    <g>
+      <!-- ド-01 -->
+      <rect x="0" y="0" width="30" height="25" class="circle-box" data-block="ド" data-number="01"/>
+      <text x="15" y="17" class="circle-number">01</text>
+      <!-- ド-24 -->
+      <rect x="35" y="0" width="30" height="25" class="circle-box" data-block="ド" data-number="24"/>
+      <text x="50" y="17" class="circle-number">24</text>
+      
+      <!-- ド-02 -->
+      <rect x="0" y="30" width="30" height="25" class="circle-box" data-block="ド" data-number="02"/>
+      <text x="15" y="47" class="circle-number">02</text>
+      <!-- ド-23 -->
+      <rect x="35" y="30" width="30" height="25" class="circle-box" data-block="ド" data-number="23"/>
+      <text x="50" y="47" class="circle-number">23</text>
+      
+      <!-- ド-03 -->
+      <rect x="0" y="60" width="30" height="25" class="circle-box" data-block="ド" data-number="03"/>
+      <text x="15" y="77" class="circle-number">03</text>
+      <!-- ド-22 -->
+      <rect x="35" y="60" width="30" height="25" class="circle-box" data-block="ド" data-number="22"/>
+      <text x="50" y="77" class="circle-number">22</text>
+      
+      <!-- ド-04 -->
+      <rect x="0" y="90" width="30" height="25" class="circle-box" data-block="ド" data-number="04"/>
+      <text x="15" y="107" class="circle-number">04</text>
+      <!-- ド-21 -->
+      <rect x="35" y="90" width="30" height="25" class="circle-box" data-block="ド" data-number="21"/>
+      <text x="50" y="107" class="circle-number">21</text>
+      
+      <!-- ド-05 -->
+      <rect x="0" y="120" width="30" height="25" class="circle-box" data-block="ド" data-number="05"/>
+      <text x="15" y="137" class="circle-number">05</text>
+      <!-- ド-20 -->
+      <rect x="35" y="120" width="30" height="25" class="circle-box" data-block="ド" data-number="20"/>
+      <text x="50" y="137" class="circle-number">20</text>
+      
+      <!-- ド-06 -->
+      <rect x="0" y="150" width="30" height="25" class="circle-box" data-block="ド" data-number="06"/>
+      <text x="15" y="167" class="circle-number">06</text>
+      <!-- ド-19 -->
+      <rect x="35" y="150" width="30" height="25" class="circle-box" data-block="ド" data-number="19"/>
+      <text x="50" y="167" class="circle-number">19</text>
+      
+      <!-- ド-07 -->
+      <rect x="0" y="180" width="30" height="25" class="circle-box" data-block="ド" data-number="07"/>
+      <text x="15" y="197" class="circle-number">07</text>
+      <!-- ド-18 -->
+      <rect x="35" y="180" width="30" height="25" class="circle-box" data-block="ド" data-number="18"/>
+      <text x="50" y="197" class="circle-number">18</text>
+      
+      <!-- ド-08 -->
+      <rect x="0" y="210" width="30" height="25" class="circle-box" data-block="ド" data-number="08"/>
+      <text x="15" y="227" class="circle-number">08</text>
+      <!-- ド-17 -->
+      <rect x="35" y="210" width="30" height="25" class="circle-box" data-block="ド" data-number="17"/>
+      <text x="50" y="227" class="circle-number">17</text>
+      
+      <!-- ド-09 -->
+      <rect x="0" y="240" width="30" height="25" class="circle-box" data-block="ド" data-number="09"/>
+      <text x="15" y="257" class="circle-number">09</text>
+      <!-- ド-16 -->
+      <rect x="35" y="240" width="30" height="25" class="circle-box" data-block="ド" data-number="16"/>
+      <text x="50" y="257" class="circle-number">16</text>
+      
+      <!-- ド-10 -->
+      <rect x="0" y="270" width="30" height="25" class="circle-box" data-block="ド" data-number="10"/>
+      <text x="15" y="287" class="circle-number">10</text>
+      <!-- ド-15 -->
+      <rect x="35" y="270" width="30" height="25" class="circle-box" data-block="ド" data-number="15"/>
+      <text x="50" y="287" class="circle-number">15</text>
+      
+      <!-- ド-11 -->
+      <rect x="0" y="300" width="30" height="25" class="circle-box" data-block="ド" data-number="11"/>
+      <text x="15" y="317" class="circle-number">11</text>
+      <!-- ド-14 -->
+      <rect x="35" y="300" width="30" height="25" class="circle-box" data-block="ド" data-number="14"/>
+      <text x="50" y="317" class="circle-number">14</text>
+      
+      <!-- ド-12 -->
+      <rect x="0" y="330" width="30" height="25" class="circle-box" data-block="ド" data-number="12"/>
+      <text x="15" y="347" class="circle-number">12</text>
+      <!-- ド-13 -->
+      <rect x="35" y="330" width="30" height="25" class="circle-box" data-block="ド" data-number="13"/>
+      <text x="50" y="347" class="circle-number">13</text>
+      
+      <text x="85" y="180" class="area-label">ド</text>
+    </g>
+    
+    <!-- 25-48列 -->
+    <g transform="translate(200, 0)">
+      <!-- ド-25 -->
+      <rect x="0" y="0" width="30" height="25" class="circle-box" data-block="ド" data-number="25"/>
+      <text x="15" y="17" class="circle-number">25</text>
+      <!-- ド-48 -->
+      <rect x="35" y="0" width="30" height="25" class="circle-box" data-block="ド" data-number="48"/>
+      <text x="50" y="17" class="circle-number">48</text>
+      
+      <!-- ド-26 -->
+      <rect x="0" y="30" width="30" height="25" class="circle-box" data-block="ド" data-number="26"/>
+      <text x="15" y="47" class="circle-number">26</text>
+      <!-- ド-47 -->
+      <rect x="35" y="30" width="30" height="25" class="circle-box" data-block="ド" data-number="47"/>
+      <text x="50" y="47" class="circle-number">47</text>
+      
+      <!-- ド-27 -->
+      <rect x="0" y="60" width="30" height="25" class="circle-box" data-block="ド" data-number="27"/>
+      <text x="15" y="77" class="circle-number">27</text>
+      <!-- ド-46 -->
+      <rect x="35" y="60" width="30" height="25" class="circle-box" data-block="ド" data-number="46"/>
+      <text x="50" y="77" class="circle-number">46</text>
+      
+      <!-- ド-28 -->
+      <rect x="0" y="90" width="30" height="25" class="circle-box" data-block="ド" data-number="28"/>
+      <text x="15" y="107" class="circle-number">28</text>
+      <!-- ド-45 -->
+      <rect x="35" y="90" width="30" height="25" class="circle-box" data-block="ド" data-number="45"/>
+      <text x="50" y="107" class="circle-number">45</text>
+      
+      <!-- ド-29 -->
+      <rect x="0" y="120" width="30" height="25" class="circle-box" data-block="ド" data-number="29"/>
+      <text x="15" y="137" class="circle-number">29</text>
+      <!-- ド-44 -->
+      <rect x="35" y="120" width="30" height="25" class="circle-box" data-block="ド" data-number="44"/>
+      <text x="50" y="137" class="circle-number">44</text>
+      
+      <!-- ド-30 -->
+      <rect x="0" y="150" width="30" height="25" class="circle-box" data-block="ド" data-number="30"/>
+      <text x="15" y="167" class="circle-number">30</text>
+      <!-- ド-43 -->
+      <rect x="35" y="150" width="30" height="25" class="circle-box" data-block="ド" data-number="43"/>
+      <text x="50" y="167" class="circle-number">43</text>
+      
+      <!-- ド-31 -->
+      <rect x="0" y="180" width="30" height="25" class="circle-box" data-block="ド" data-number="31"/>
+      <text x="15" y="197" class="circle-number">31</text>
+      <!-- ド-42 -->
+      <rect x="35" y="180" width="30" height="25" class="circle-box" data-block="ド" data-number="42"/>
+      <text x="50" y="197" class="circle-number">42</text>
+      
+      <!-- ド-32 -->
+      <rect x="0" y="210" width="30" height="25" class="circle-box" data-block="ド" data-number="32"/>
+      <text x="15" y="227" class="circle-number">32</text>
+      <!-- ド-41 -->
+      <rect x="35" y="210" width="30" height="25" class="circle-box" data-block="ド" data-number="41"/>
+      <text x="50" y="227" class="circle-number">41</text>
+      
+      <!-- ド-33 -->
+      <rect x="0" y="240" width="30" height="25" class="circle-box" data-block="ド" data-number="33"/>
+      <text x="15" y="257" class="circle-number">33</text>
+      <!-- ド-40 -->
+      <rect x="35" y="240" width="30" height="25" class="circle-box" data-block="ド" data-number="40"/>
+      <text x="50" y="257" class="circle-number">40</text>
+      
+      <!-- ド-34 -->
+      <rect x="0" y="270" width="30" height="25" class="circle-box" data-block="ド" data-number="34"/>
+      <text x="15" y="287" class="circle-number">34</text>
+      <!-- ド-39 -->
+      <rect x="35" y="270" width="30" height="25" class="circle-box" data-block="ド" data-number="39"/>
+      <text x="50" y="287" class="circle-number">39</text>
+      
+      <!-- ド-35 -->
+      <rect x="0" y="300" width="30" height="25" class="circle-box" data-block="ド" data-number="35"/>
+      <text x="15" y="317" class="circle-number">35</text>
+      <!-- ド-38 -->
+      <rect x="35" y="300" width="30" height="25" class="circle-box" data-block="ド" data-number="38"/>
+      <text x="50" y="317" class="circle-number">38</text>
+      
+      <!-- ド-36 -->
+      <rect x="0" y="330" width="30" height="25" class="circle-box" data-block="ド" data-number="36"/>
+      <text x="15" y="347" class="circle-number">36</text>
+      <!-- ド-37 -->
+      <rect x="35" y="330" width="30" height="25" class="circle-box" data-block="ド" data-number="37"/>
+      <text x="50" y="347" class="circle-number">37</text>
+      
+      <text x="85" y="180" class="area-label">ド</text>
+    </g>
+    
+    <!-- 49-72列 -->
+    <g transform="translate(400, 0)">
+      <!-- ド-49 -->
+      <rect x="0" y="0" width="30" height="25" class="circle-box" data-block="ド" data-number="49"/>
+      <text x="15" y="17" class="circle-number">49</text>
+      <!-- ド-72 -->
+      <rect x="35" y="0" width="30" height="25" class="circle-box" data-block="ド" data-number="72"/>
+      <text x="50" y="17" class="circle-number">72</text>
+      
+      <!-- ド-50 -->
+      <rect x="0" y="30" width="30" height="25" class="circle-box" data-block="ド" data-number="50"/>
+      <text x="15" y="47" class="circle-number">50</text>
+      <!-- ド-71 -->
+      <rect x="35" y="30" width="30" height="25" class="circle-box" data-block="ド" data-number="71"/>
+      <text x="50" y="47" class="circle-number">71</text>
+      
+      <!-- ド-51 -->
+      <rect x="0" y="60" width="30" height="25" class="circle-box" data-block="ド" data-number="51"/>
+      <text x="15" y="77" class="circle-number">51</text>
+      <!-- ド-70 -->
+      <rect x="35" y="60" width="30" height="25" class="circle-box" data-block="ド" data-number="70"/>
+      <text x="50" y="77" class="circle-number">70</text>
+      
+      <!-- ド-52 -->
+      <rect x="0" y="90" width="30" height="25" class="circle-box" data-block="ド" data-number="52"/>
+      <text x="15" y="107" class="circle-number">52</text>
+      <!-- ド-69 -->
+      <rect x="35" y="90" width="30" height="25" class="circle-box" data-block="ド" data-number="69"/>
+      <text x="50" y="107" class="circle-number">69</text>
+      
+      <!-- ド-53 -->
+      <rect x="0" y="120" width="30" height="25" class="circle-box" data-block="ド" data-number="53"/>
+      <text x="15" y="137" class="circle-number">53</text>
+      <!-- ド-68 -->
+      <rect x="35" y="120" width="30" height="25" class="circle-box" data-block="ド" data-number="68"/>
+      <text x="50" y="137" class="circle-number">68</text>
+      
+      <!-- ド-54 -->
+      <rect x="0" y="150" width="30" height="25" class="circle-box" data-block="ド" data-number="54"/>
+      <text x="15" y="167" class="circle-number">54</text>
+      <!-- ド-67 -->
+      <rect x="35" y="150" width="30" height="25" class="circle-box" data-block="ド" data-number="67"/>
+      <text x="50" y="167" class="circle-number">67</text>
+      
+      <!-- ド-55 -->
+      <rect x="0" y="180" width="30" height="25" class="circle-box" data-block="ド" data-number="55"/>
+      <text x="15" y="197" class="circle-number">55</text>
+      <!-- ド-66 -->
+      <rect x="35" y="180" width="30" height="25" class="circle-box" data-block="ド" data-number="66"/>
+      <text x="50" y="197" class="circle-number">66</text>
+      
+      <!-- ド-56 -->
+      <rect x="0" y="210" width="30" height="25" class="circle-box" data-block="ド" data-number="56"/>
+      <text x="15" y="227" class="circle-number">56</text>
+      <!-- ド-65 -->
+      <rect x="35" y="210" width="30" height="25" class="circle-box" data-block="ド" data-number="65"/>
+      <text x="50" y="227" class="circle-number">65</text>
+      
+      <!-- ド-57 -->
+      <rect x="0" y="240" width="30" height="25" class="circle-box" data-block="ド" data-number="57"/>
+      <text x="15" y="257" class="circle-number">57</text>
+      <!-- ド-64 -->
+      <rect x="35" y="240" width="30" height="25" class="circle-box" data-block="ド" data-number="64"/>
+      <text x="50" y="257" class="circle-number">64</text>
+      
+      <!-- ド-58 -->
+      <rect x="0" y="270" width="30" height="25" class="circle-box" data-block="ド" data-number="58"/>
+      <text x="15" y="287" class="circle-number">58</text>
+      <!-- ド-63 -->
+      <rect x="35" y="270" width="30" height="25" class="circle-box" data-block="ド" data-number="63"/>
+      <text x="50" y="287" class="circle-number">63</text>
+      
+      <!-- ド-59 -->
+      <rect x="0" y="300" width="30" height="25" class="circle-box" data-block="ド" data-number="59"/>
+      <text x="15" y="317" class="circle-number">59</text>
+      <!-- ド-62 -->
+      <rect x="35" y="300" width="30" height="25" class="circle-box" data-block="ド" data-number="62"/>
+      <text x="50" y="317" class="circle-number">62</text>
+      
+      <!-- ド-60 -->
+      <rect x="0" y="330" width="30" height="25" class="circle-box" data-block="ド" data-number="60"/>
+      <text x="15" y="347" class="circle-number">60</text>
+      <!-- ド-61 -->
+      <rect x="35" y="330" width="30" height="25" class="circle-box" data-block="ド" data-number="61"/>
+      <text x="50" y="347" class="circle-number">61</text>
+      
+      <text x="85" y="180" class="area-label">ド</text>
+    </g>
+  </g>
 
-  <!-- 企業ブース -->
-  <rect x="100" y="450" width="120" height="60" class="facility"/>
-  <text x="160" y="485" class="area-label">企01</text>
-  <text x="110" y="500" class="circle-number">makoBook</text>
+  <!-- 出入口GATE -->
+  <rect x="600" y="920" width="200" height="60" class="entrance"/>
+  <text x="700" y="945" class="area-label-large">出入口</text>
+  <text x="700" y="965" class="area-label-large">GATE</text>
 
-  <rect x="250" y="450" width="120" height="60" class="facility"/>
-  <text x="310" y="485" class="area-label">企02</text>
-  <text x="250" y="500" class="circle-number">メロンブックス</text>
-  <text x="290" y="510" class="circle-number">サークル委託対象店舗</text>
 
-  <!-- チラシ沢場 -->
-  <rect x="390" y="450" width="80" height="30" class="facility"/>
-  <text x="430" y="470" class="area-label">チラシ沢場</text>
-
-  <!-- MAIN GATE -->
-  <rect x="390" y="490" width="80" height="40" class="entrance"/>
-  <text x="430" y="515" class="area-label">MAIN GATE</text>
-
-  <!-- 入場券 -->
-  <rect x="300" y="530" width="60" height="30" class="facility"/>
-  <text x="330" y="550" class="area-label">入場券</text>
-
-  <!-- 本部・色紙受付・サークル受付 -->
-  <rect x="500" y="450" width="80" height="100" class="staff-area"/>
-  <text x="540" y="470" class="area-label">色紙受付</text>
-  <text x="540" y="490" class="area-label">本部</text>
-  <text x="540" y="530" class="area-label">サークル受付</text>
-
-  <!-- 入口矢印 -->
-  <polygon points="430,560 440,570 430,580 420,570" fill="#7b1fa2"/>
-  <text x="430" y="555" class="area-label">↑</text>
-  
-  <polygon points="430,540 420,530 430,520 440,530" fill="#7b1fa2"/>
-  <text x="430" y="565" class="area-label">↓</text>
 </svg>

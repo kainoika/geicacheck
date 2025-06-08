@@ -205,38 +205,20 @@ const isMapLoaded = ref(false)
 // マップSVGを読み込み
 const loadMapSvg = async () => {
   try {
-    console.log('🗺️ Loading map SVG...')
-    const response = await fetch('/map-geika32.svg')
-    console.log('📡 Response status:', response.status)
+    console.log('🗺️ Loading map from public/map-geika32.svg...')
     
+    // 外部SVGファイルを読み込み
+    const response = await fetch('/map-geika32.svg')
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      throw new Error(`Failed to fetch SVG: ${response.status}`)
     }
     
-    const svgText = await response.text()
-    console.log('📄 SVG content length:', svgText.length)
-    console.log('📄 SVG preview:', svgText.substring(0, 200) + '...')
-    
-    mapSvgContent.value = svgText
+    mapSvgContent.value = await response.text()
     isMapLoaded.value = true
-    console.log('✅ Map SVG loaded successfully')
+    console.log('✅ Map loaded successfully from external SVG file')
   } catch (error) {
     console.error('❌ Failed to load map SVG:', error)
-    // フォールバック用の簡単なSVG
-    mapSvgContent.value = `
-      <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
-        <rect x="10" y="10" width="780" height="580" fill="#f8f9fa" stroke="#333" stroke-width="2"/>
-        <text x="400" y="100" text-anchor="middle" font-size="24" fill="#333">マップデータの読み込みに失敗しました</text>
-        <text x="400" y="140" text-anchor="middle" font-size="16" fill="#666">代替マップを表示中</text>
-        <!-- 簡易的なエリア表示 -->
-        <rect x="100" y="200" width="200" height="150" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="8"/>
-        <text x="200" y="230" text-anchor="middle" font-size="16" font-weight="bold" fill="#1976d2">みきエリア</text>
-        <rect x="350" y="200" width="350" height="150" fill="#f8f9fa" stroke="#dee2e6" stroke-width="2" rx="8"/>
-        <text x="525" y="230" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">メインサークルエリア</text>
-        <text x="525" y="250" text-anchor="middle" font-size="12" fill="#666">01-72番</text>
-      </svg>
-    `
-    isMapLoaded.value = true
+    isMapLoaded.value = false
   }
 }
 
@@ -377,6 +359,12 @@ defineExpose({
   resetZoom,
   focusOnCircle
 })
+
+// プロパティの変更を監視してマップを再読み込み
+watch(() => props.eventId, () => {
+  console.log('🔄 Event ID changed, reloading map...')
+  loadMapSvg()
+}, { immediate: true })
 
 // 初期化
 onMounted(() => {
