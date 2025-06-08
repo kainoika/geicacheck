@@ -6,6 +6,16 @@ import { getStorage, connectStorageEmulator } from "firebase/storage";
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig();
 
+  // 環境変数の確認
+  console.log('Firebase config check:', {
+    apiKey: config.public.firebaseApiKey ? '✓' : '✗',
+    authDomain: config.public.firebaseAuthDomain ? '✓' : '✗',
+    projectId: config.public.firebaseProjectId ? '✓' : '✗',
+    storageBucket: config.public.firebaseStorageBucket ? '✓' : '✗',
+    messagingSenderId: config.public.firebaseMessagingSenderId ? '✓' : '✗',
+    appId: config.public.firebaseAppId ? '✓' : '✗',
+  });
+
   const firebaseConfig = {
     apiKey: config.public.firebaseApiKey as string,
     authDomain: config.public.firebaseAuthDomain as string,
@@ -14,6 +24,12 @@ export default defineNuxtPlugin(() => {
     messagingSenderId: config.public.firebaseMessagingSenderId as string,
     appId: config.public.firebaseAppId as string,
   };
+
+  // 必須設定値の確認
+  if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+    console.error('Firebase configuration is missing required values:', firebaseConfig);
+    throw new Error('Firebase configuration is incomplete');
+  }
 
   // Firebase アプリを初期化
   const app = initializeApp(firebaseConfig);

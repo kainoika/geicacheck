@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .area-border { fill: none; stroke: #333; stroke-width: 2; }
+      .area-label { font-family: 'Noto Sans JP', sans-serif; font-size: 14px; font-weight: bold; text-anchor: middle; fill: #333; }
+      .area-label-large { font-family: 'Noto Sans JP', sans-serif; font-size: 18px; font-weight: bold; text-anchor: middle; fill: #333; }
+      .circle-area { fill: #f8f9fa; stroke: #dee2e6; stroke-width: 1; }
+      .circle-number { font-family: 'Noto Sans JP', sans-serif; font-size: 10px; text-anchor: middle; fill: #495057; }
+      .r18-area { fill: #fce4ec; stroke: #e91e63; stroke-width: 2; }
+      .a-area { fill: #e8f5e8; stroke: #4caf50; stroke-width: 2; }
+      .i-area { fill: #e3f2fd; stroke: #2196f3; stroke-width: 2; }
+      .ka-area { fill: #fff3e0; stroke: #ff9800; stroke-width: 2; }
+      .tsu-area { fill: #f3e5f5; stroke: #9c27b0; stroke-width: 2; }
+      .facility { fill: #fff3e0; stroke: #f57c00; stroke-width: 2; }
+      .entrance { fill: #f3e5f5; stroke: #7b1fa2; stroke-width: 2; }
+      .cosplay-area { fill: #e1f5fe; stroke: #00bcd4; stroke-width: 2; }
+    </style>
+  </defs>
+
+  <!-- 外枠 -->
+  <rect x="10" y="10" width="780" height="580" class="area-border"/>
+
+  <!-- 出入口 GATE (上部中央) -->
+  <rect x="350" y="15" width="100" height="25" class="entrance"/>
+  <text x="400" y="30" class="area-label">出入口 GATE</text>
+
+  <!-- R18エリア (左上) -->
+  <rect x="30" y="50" width="140" height="80" class="r18-area"/>
+  <text x="100" y="95" class="area-label-large">R18</text>
+  
+  <!-- R18サークル番号 -->
+  <g>
+    <rect x="35" y="60" width="25" height="15" class="circle-area"/>
+    <text x="47" y="70" class="circle-number">24-23</text>
+    <rect x="60" y="60" width="25" height="15" class="circle-area"/>
+    <text x="72" y="70" class="circle-number">22-21</text>
+    <rect x="85" y="60" width="25" height="15" class="circle-area"/>
+    <text x="97" y="70" class="circle-number">20-19</text>
+    <rect x="110" y="60" width="25" height="15" class="circle-area"/>
+    <text x="122" y="70" class="circle-number">18-17</text>
+    <rect x="135" y="60" width="25" height="15" class="circle-area"/>
+    <text x="147" y="70" class="circle-number">16-15</text>
+    
+    <rect x="35" y="75" width="25" height="15" class="circle-area"/>
+    <text x="47" y="85" class="circle-number">14-13</text>
+    <rect x="60" y="75" width="25" height="15" class="circle-area"/>
+    <text x="72" y="85" class="circle-number">25-26</text>
+    <rect x="85" y="75" width="25" height="15" class="circle-area"/>
+    <text x="97" y="85" class="circle-number">27-28</text>
+    <rect x="110" y="75" width="25" height="15" class="circle-area"/>
+    <text x="122" y="85" class="circle-number">29-30</text>
+  </g>
+
+  <!-- あエリア (右上) -->
+  <rect x="600" y="50" width="160" height="80" class="a-area"/>
+  <text x="680" y="95" class="area-label-large">あ</text>
+  
+  <!-- あエリア サークル番号 -->
+  <g>
+    <rect x="605" y="60" width="20" height="15" class="circle-area"/>
+    <text x="615" y="70" class="circle-number">12</text>
+    <rect x="625" y="60" width="20" height="15" class="circle-area"/>
+    <text x="635" y="70" class="circle-number">11</text>
+    <rect x="645" y="60" width="20" height="15" class="circle-area"/>
+    <text x="655" y="70" class="circle-number">10</text>
+    <rect x="665" y="60" width="20" height="15" class="circle-area"/>
+    <text x="675" y="70" class="circle-number">09</text>
+    <rect x="685" y="60" width="20" height="15" class="circle-area"/>
+    <text x="695" y="70" class="circle-number">08</text>
+    <rect x="705" y="60" width="20" height="15" class="circle-area"/>
+    <text x="715" y="70" class="circle-number">07</text>
+    <rect x="725" y="60" width="20" height="15" class="circle-area"/>
+    <text x="735" y="70" class="circle-number">06</text>
+    
+    <rect x="605" y="75" width="20" height="15" class="circle-area"/>
+    <text x="615" y="85" class="circle-number">05</text>
+    <rect x="625" y="75" width="20" height="15" class="circle-area"/>
+    <text x="635" y="85" class="circle-number">04</text>
+    <rect x="645" y="75" width="20" height="15" class="circle-area"/>
+    <text x="655" y="85" class="circle-number">03</text>
+    <rect x="665" y="75" width="20" height="15" class="circle-area"/>
+    <text x="675" y="85" class="circle-number">02</text>
+    <rect x="685" y="75" width="20" height="15" class="circle-area"/>
+    <text x="695" y="85" class="circle-number">01</text>
+    
+    <rect x="705" y="75" width="40" height="15" class="circle-area"/>
+    <text x="725" y="85" class="circle-number">35-36</text>
+    <rect x="705" y="90" width="40" height="15" class="circle-area"/>
+    <text x="725" y="100" class="circle-number">37-38</text>
+    
+    <rect x="605" y="105" width="40" height="15" class="circle-area"/>
+    <text x="625" y="115" class="circle-number">39-40</text>
+    <rect x="645" y="105" width="40" height="15" class="circle-area"/>
+    <text x="665" y="115" class="circle-number">41-42</text>
+    <rect x="685" y="105" width="40" height="15" class="circle-area"/>
+    <text x="705" y="115" class="circle-number">43-44</text>
+  </g>
+
+  <!-- あエリア (左側) -->
+  <rect x="180" y="50" width="160" height="80" class="a-area"/>
+  <text x="260" y="95" class="area-label-large">あ</text>
+  
+  <!-- あエリア左側 サークル番号 -->
+  <g>
+    <rect x="280" y="60" width="25" height="15" class="circle-area"/>
+    <text x="292" y="70" class="circle-number">31-32</text>
+    <rect x="305" y="60" width="25" height="15" class="circle-area"/>
+    <text x="317" y="70" class="circle-number">33-34</text>
+  </g>
+
+  <!-- いエリア (右側) -->
+  <rect x="600" y="150" width="160" height="80" class="i-area"/>
+  <text x="680" y="195" class="area-label-large">い</text>
+  
+  <!-- いエリア右側 サークル番号 -->
+  <g>
+    <rect x="605" y="160" width="20" height="15" class="circle-area"/>
+    <text x="615" y="170" class="circle-number">12</text>
+    <rect x="625" y="160" width="20" height="15" class="circle-area"/>
+    <text x="635" y="170" class="circle-number">11</text>
+    <rect x="645" y="160" width="20" height="15" class="circle-area"/>
+    <text x="655" y="170" class="circle-number">10</text>
+    <rect x="665" y="160" width="20" height="15" class="circle-area"/>
+    <text x="675" y="170" class="circle-number">09</text>
+    <rect x="685" y="160" width="20" height="15" class="circle-area"/>
+    <text x="695" y="170" class="circle-number">08</text>
+    <rect x="705" y="160" width="20" height="15" class="circle-area"/>
+    <text x="715" y="170" class="circle-number">07</text>
+    <rect x="725" y="160" width="20" height="15" class="circle-area"/>
+    <text x="735" y="170" class="circle-number">06</text>
+    
+    <rect x="605" y="175" width="20" height="15" class="circle-area"/>
+    <text x="615" y="185" class="circle-number">05</text>
+    <rect x="625" y="175" width="20" height="15" class="circle-area"/>
+    <text x="635" y="185" class="circle-number">04</text>
+    <rect x="645" y="175" width="20" height="15" class="circle-area"/>
+    <text x="655" y="185" class="circle-number">03</text>
+    <rect x="665" y="175" width="20" height="15" class="circle-area"/>
+    <text x="675" y="185" class="circle-number">02</text>
+    <rect x="685" y="175" width="20" height="15" class="circle-area"/>
+    <text x="695" y="185" class="circle-number">01</text>
+    
+    <rect x="705" y="175" width="40" height="15" class="circle-area"/>
+    <text x="725" y="185" class="circle-number">35-36</text>
+    <rect x="705" y="190" width="40" height="15" class="circle-area"/>
+    <text x="725" y="200" class="circle-number">37-38</text>
+    
+    <rect x="605" y="205" width="40" height="15" class="circle-area"/>
+    <text x="625" y="215" class="circle-number">39-40</text>
+    <rect x="645" y="205" width="40" height="15" class="circle-area"/>
+    <text x="665" y="215" class="circle-number">41-42</text>
+    <rect x="685" y="205" width="40" height="15" class="circle-area"/>
+    <text x="705" y="215" class="circle-number">43-44</text>
+  </g>
+
+  <!-- いエリア (左側) -->
+  <rect x="30" y="150" width="160" height="80" class="i-area"/>
+  <text x="110" y="195" class="area-label-large">い</text>
+  
+  <!-- いエリア左側 サークル番号 -->
+  <g>
+    <rect x="35" y="160" width="25" height="15" class="circle-area"/>
+    <text x="47" y="170" class="circle-number">24-23</text>
+    <rect x="60" y="160" width="25" height="15" class="circle-area"/>
+    <text x="72" y="170" class="circle-number">22-21</text>
+    <rect x="85" y="160" width="25" height="15" class="circle-area"/>
+    <text x="97" y="170" class="circle-number">20-19</text>
+    <rect x="110" y="160" width="25" height="15" class="circle-area"/>
+    <text x="122" y="170" class="circle-number">18-17</text>
+    <rect x="135" y="160" width="25" height="15" class="circle-area"/>
+    <text x="147" y="170" class="circle-number">16-15</text>
+    <rect x="160" y="160" width="25" height="15" class="circle-area"/>
+    <text x="172" y="170" class="circle-number">14-13</text>
+    
+    <rect x="35" y="175" width="25" height="15" class="circle-area"/>
+    <text x="47" y="185" class="circle-number">25-26</text>
+    <rect x="60" y="175" width="25" height="15" class="circle-area"/>
+    <text x="72" y="185" class="circle-number">27-28</text>
+    <rect x="85" y="175" width="25" height="15" class="circle-area"/>
+    <text x="97" y="185" class="circle-number">29-30</text>
+    
+    <rect x="280" y="160" width="25" height="15" class="circle-area"/>
+    <text x="292" y="170" class="circle-number">31-32</text>
+    <rect x="305" y="160" width="25" height="15" class="circle-area"/>
+    <text x="317" y="170" class="circle-number">33-34</text>
+  </g>
+
+  <!-- かエリア (右側) -->
+  <rect x="600" y="250" width="160" height="80" class="ka-area"/>
+  <text x="680" y="295" class="area-label-large">か</text>
+  
+  <!-- かエリア右側 サークル番号 -->
+  <g>
+    <rect x="605" y="260" width="20" height="15" class="circle-area"/>
+    <text x="615" y="270" class="circle-number">12</text>
+    <rect x="625" y="260" width="20" height="15" class="circle-area"/>
+    <text x="635" y="270" class="circle-number">11</text>
+    <rect x="645" y="260" width="20" height="15" class="circle-area"/>
+    <text x="655" y="270" class="circle-number">10</text>
+    <rect x="665" y="260" width="20" height="15" class="circle-area"/>
+    <text x="675" y="270" class="circle-number">09</text>
+    <rect x="685" y="260" width="20" height="15" class="circle-area"/>
+    <text x="695" y="270" class="circle-number">08</text>
+    <rect x="705" y="260" width="20" height="15" class="circle-area"/>
+    <text x="715" y="270" class="circle-number">07</text>
+    <rect x="725" y="260" width="20" height="15" class="circle-area"/>
+    <text x="735" y="270" class="circle-number">06</text>
+    
+    <rect x="605" y="275" width="20" height="15" class="circle-area"/>
+    <text x="615" y="285" class="circle-number">05</text>
+    <rect x="625" y="275" width="20" height="15" class="circle-area"/>
+    <text x="635" y="285" class="circle-number">04</text>
+    <rect x="645" y="275" width="20" height="15" class="circle-area"/>
+    <text x="655" y="285" class="circle-number">03</text>
+    <rect x="665" y="275" width="20" height="15" class="circle-area"/>
+    <text x="675" y="285" class="circle-number">02</text>
+    <rect x="685" y="275" width="20" height="15" class="circle-area"/>
+    <text x="695" y="285" class="circle-number">01</text>
+    
+    <rect x="705" y="275" width="40" height="15" class="circle-area"/>
+    <text x="725" y="285" class="circle-number">35-36</text>
+    <rect x="705" y="290" width="40" height="15" class="circle-area"/>
+    <text x="725" y="300" class="circle-number">37-38</text>
+    
+    <rect x="605" y="305" width="40" height="15" class="circle-area"/>
+    <text x="625" y="315" class="circle-number">39-40</text>
+    <rect x="645" y="305" width="40" height="15" class="circle-area"/>
+    <text x="665" y="315" class="circle-number">41-42</text>
+    <rect x="685" y="305" width="40" height="15" class="circle-area"/>
+    <text x="705" y="315" class="circle-number">43-44</text>
+  </g>
+
+  <!-- かエリア (左側) -->
+  <rect x="30" y="250" width="160" height="80" class="ka-area"/>
+  <text x="110" y="295" class="area-label-large">か</text>
+  
+  <!-- かエリア左側 サークル番号 -->
+  <g>
+    <rect x="35" y="260" width="25" height="15" class="circle-area"/>
+    <text x="47" y="270" class="circle-number">24-23</text>
+    <rect x="60" y="260" width="25" height="15" class="circle-area"/>
+    <text x="72" y="270" class="circle-number">22-21</text>
+    <rect x="85" y="260" width="25" height="15" class="circle-area"/>
+    <text x="97" y="270" class="circle-number">20-19</text>
+    <rect x="110" y="260" width="25" height="15" class="circle-area"/>
+    <text x="122" y="270" class="circle-number">18-17</text>
+    <rect x="135" y="260" width="25" height="15" class="circle-area"/>
+    <text x="147" y="270" class="circle-number">16-15</text>
+    <rect x="160" y="260" width="25" height="15" class="circle-area"/>
+    <text x="172" y="270" class="circle-number">14-13</text>
+    
+    <rect x="35" y="275" width="25" height="15" class="circle-area"/>
+    <text x="47" y="285" class="circle-number">25-26</text>
+    <rect x="60" y="275" width="25" height="15" class="circle-area"/>
+    <text x="72" y="285" class="circle-number">27-28</text>
+    <rect x="85" y="275" width="25" height="15" class="circle-area"/>
+    <text x="97" y="285" class="circle-number">29-30</text>
+    
+    <rect x="280" y="260" width="25" height="15" class="circle-area"/>
+    <text x="292" y="270" class="circle-number">31-32</text>
+    <rect x="305" y="260" width="25" height="15" class="circle-area"/>
+    <text x="317" y="270" class="circle-number">33-34</text>
+  </g>
+
+  <!-- つエリア (中央下部) -->
+  <rect x="200" y="400" width="400" height="80" class="tsu-area"/>
+  <text x="400" y="445" class="area-label-large">つ</text>
+  
+  <!-- つエリア サークル番号 -->
+  <g>
+    <rect x="220" y="420" width="25" height="15" class="circle-area"/>
+    <text x="232" y="430" class="circle-number">14-13</text>
+    <rect x="245" y="420" width="25" height="15" class="circle-area"/>
+    <text x="257" y="430" class="circle-number">12-11</text>
+    <rect x="270" y="420" width="25" height="15" class="circle-area"/>
+    <text x="282" y="430" class="circle-number">10-09</text>
+    <rect x="295" y="420" width="25" height="15" class="circle-area"/>
+    <text x="307" y="430" class="circle-number">08-07</text>
+    <rect x="320" y="420" width="25" height="15" class="circle-area"/>
+    <text x="332" y="430" class="circle-number">06-05</text>
+    <rect x="345" y="420" width="25" height="15" class="circle-area"/>
+    <text x="357" y="430" class="circle-number">04-03</text>
+    <rect x="370" y="420" width="25" height="15" class="circle-area"/>
+    <text x="382" y="430" class="circle-number">02-01</text>
+    
+    <rect x="470" y="420" width="25" height="15" class="circle-area"/>
+    <text x="482" y="430" class="circle-number">15-16</text>
+    <rect x="495" y="420" width="25" height="15" class="circle-area"/>
+    <text x="507" y="430" class="circle-number">17-18</text>
+    <rect x="520" y="420" width="25" height="15" class="circle-area"/>
+    <text x="532" y="430" class="circle-number">19-20</text>
+    <rect x="545" y="420" width="25" height="15" class="circle-area"/>
+    <text x="557" y="430" class="circle-number">21-22</text>
+    <rect x="570" y="420" width="25" height="15" class="circle-area"/>
+    <text x="582" y="430" class="circle-number">23-24</text>
+  </g>
+
+  <!-- コスプレゾーン (下部) -->
+  <rect x="200" y="520" width="400" height="50" class="cosplay-area"/>
+  <text x="400" y="550" class="area-label-large">コスプレゾーン</text>
+
+  <!-- 一般窓口案内所 (左側中央) -->
+  <rect x="30" y="350" width="60" height="40" class="facility"/>
+  <text x="60" y="375" class="area-label" transform="rotate(-90 60 375)">一般窓口案内所</text>
+
+</svg>
