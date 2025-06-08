@@ -292,9 +292,10 @@ import {
 } from '@heroicons/vue/24/outline'
 import type { Event, EventVenue } from '~/types'
 
-// メタデータ設定
+// ミドルウェアで管理者権限をチェック
 definePageMeta({
-  title: '新規イベント作成 - geika check!'
+  title: '新規イベント作成 - geika check!',
+  middleware: 'admin'
 })
 
 // イベント管理

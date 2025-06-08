@@ -1,5 +1,20 @@
 <template>
   <div style="min-height: 100vh; background: #f9fafb;">
+    <!-- 認証チェック中のローディング -->
+    <div v-if="!isAuthenticated" style="min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+      <div style="text-align: center;">
+        <div style="font-size: 2rem; margin-bottom: 1rem;">🔐</div>
+        <div style="font-size: 1.125rem; font-weight: 600; color: #111827; margin-bottom: 0.5rem;">
+          認証を確認しています...
+        </div>
+        <div style="color: #6b7280;">
+          管理者権限を確認中です
+        </div>
+      </div>
+    </div>
+
+    <!-- メインコンテンツ（認証済みの場合のみ表示） -->
+    <div v-else>
     <!-- ヘッダー -->
     <div style="background: white; border-bottom: 1px solid #e5e7eb; padding: 2rem 0;">
       <div style="max-width: 1280px; margin: 0 auto; padding: 0 1rem;">
@@ -284,6 +299,7 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
 </template>
 
@@ -295,12 +311,25 @@ import {
   XCircleIcon
 } from '@heroicons/vue/24/outline'
 
+// ミドルウェアで管理者権限をチェック
+definePageMeta({
+  middleware: 'admin'
+})
+
+// 認証と管理者権限チェック
+const { user, userType } = useAuth()
+
 // State
 const activeStatus = ref('pending')
 const showApproveModal = ref(false)
 const showRejectModal = ref(false)
 const selectedRequestId = ref(null)
 const rejectNote = ref('')
+
+// 認証状態の computed
+const isAuthenticated = computed(() => {
+  return user.value !== null && userType.value === 'admin'
+})
 
 // サンプルデータ
 const editRequests = ref([
@@ -496,11 +525,47 @@ const confirmReject = () => {
   rejectNote.value = ''
 }
 
-// 認証チェック（管理者のみアクセス可能）
+// 管理者権限チェック
+const checkAdminAccess = () => {
+  if (!user.value) {
+    console.log('🚫 User not authenticated, redirecting to login')
+    navigateTo('/auth/login')
+    return false
+  }
+  
+  if (userType.value !== 'admin') {
+    console.log('🚫 User is not admin, redirecting to home')
+    navigateTo('/')
+    return false
+  }
+  
+  console.log('✅ Admin access granted')
+  return true
+}
+
+// 初期認証チェック
 onMounted(() => {
-  // 実際の実装では管理者権限をチェック
-  const isAdmin = true // サンプル
-  if (!isAdmin) {
+  nextTick(() => {
+    if (user.value !== undefined) {
+      checkAdminAccess()
+    }
+  })
+})
+
+// ユーザー状態が変更された時の監視
+watch(() => user.value, (newUser) => {
+  if (newUser === null) {
+    // ログアウトされた場合
+    navigateTo('/auth/login')
+  } else if (newUser !== undefined) {
+    // ログインされた場合、管理者権限を再チェック
+    checkAdminAccess()
+  }
+})
+
+watch(() => userType.value, (newUserType) => {
+  if (newUserType && newUserType !== 'admin') {
+    // 管理者以外の権限に変更された場合
     navigateTo('/')
   }
 })

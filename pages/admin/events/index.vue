@@ -325,12 +325,13 @@ import {
   TransitionChild, 
   TransitionRoot 
 } from '@headlessui/vue'
+
 import type { Event, EventStats } from '~/types'
 
-// メタデータ設定
+// ミドルウェアで管理者権限をチェック
 definePageMeta({
-  title: 'イベント管理 - geika check!'
-  // TODO: 管理者認証ミドルウェアを実装
+  title: 'イベント管理 - geika check!',
+  middleware: 'admin'
 })
 
 // イベント管理

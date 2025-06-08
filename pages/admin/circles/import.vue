@@ -355,9 +355,10 @@ import {
 } from '@heroicons/vue/24/outline'
 import type { Event, EventStats, Circle } from '~/types'
 
-// メタデータ設定
+// ミドルウェアで管理者権限をチェック
 definePageMeta({
-  title: 'サークルインポート - geika check!'
+  title: 'サークルインポート - geika check!',
+  middleware: 'admin'
 })
 
 // Composables
