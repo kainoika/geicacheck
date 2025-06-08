@@ -14,7 +14,6 @@ import type { Circle, SearchParams, SearchResult, PlacementInfo } from "~/types"
 export const useCircles = () => {
   const { $firestore } = useNuxtApp() as any;
   const { currentEvent } = useEvents();
-  const { trackOperation } = useFirestoreMetrics();
 
   // State
   const circles = useState<Circle[]>("circles.list", () => []);
@@ -60,9 +59,6 @@ export const useCircles = () => {
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       console.log('🔄 Realtime update received for event:', eventId);
-      
-      // メトリクスをトラッキング（リアルタイム更新）
-      trackOperation('read', `events/${eventId}/circles`, snapshot.size, 'realtime sync');
       
       const updatedCircles: Circle[] = [];
       snapshot.forEach((doc) => {
@@ -207,9 +203,6 @@ export const useCircles = () => {
       console.log('📡 Fetching from Firestore:', `events/${targetEventId}/circles`);
       const snapshot = await getDocs(q);
       
-      // メトリクスをトラッキング（初回取得）
-      trackOperation('read', `events/${targetEventId}/circles`, snapshot.size, 'initial fetch');
-      
       let circleList: Circle[] = [];
       snapshot.forEach((doc) => {
         const data = doc.data();
@@ -267,9 +260,6 @@ export const useCircles = () => {
     try {
       const circleRef = doc($firestore, "events", targetEventId, "circles", circleId);
       const circleDoc = await getDoc(circleRef);
-      
-      // メトリクスをトラッキング
-      trackOperation('read', `events/${targetEventId}/circles`, 1, `fetchCircleById: ${circleId}`);
 
       if (circleDoc.exists()) {
         const data = circleDoc.data();
@@ -327,9 +317,6 @@ export const useCircles = () => {
         try {
           const circleRef = doc($firestore, "events", targetEventId, "circles", circleId);
           const circleDoc = await getDoc(circleRef);
-          
-          // メトリクスをトラッキング
-          trackOperation('read', `events/${targetEventId}/circles`, 1, `fetchCirclesByIds: ${circleId}`);
           
           if (circleDoc.exists()) {
             const data = circleDoc.data();
@@ -483,9 +470,6 @@ export const useCircles = () => {
       
       await updateDoc(circleRef, updateData);
       console.log('✅ Circle updated:', circleId);
-      
-      // メトリクスをトラッキング
-      trackOperation('write', `events/${eventId}/circles`, 1, `updateCircle: ${circleId}`);
       
       // リアルタイム同期により自動的にキャッシュが更新される
     } catch (err) {
