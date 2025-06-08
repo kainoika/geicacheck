@@ -5,7 +5,6 @@
                 <!-- ロゴ・タイトル -->
                 <div class="flex items-center space-x-4">
                     <NuxtLink to="/" class="flex items-center space-x-2">
-                        <StarIcon class="h-8 w-8 text-pink-500" />
                         <h1 class="text-xl font-bold text-pink-500">
                             geika check!
                         </h1>

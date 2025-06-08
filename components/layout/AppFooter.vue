@@ -70,13 +70,6 @@
                             </NuxtLink>
                         </li>
                         <li>
-                            <NuxtLink to="/admin/edit-requests"
-                                class="flex items-center text-sm text-gray-600 hover:text-pink-600 transition-colors">
-                                <WrenchScrewdriverIcon class="h-4 w-4 mr-2" />
-                                管理者ダッシュボード
-                            </NuxtLink>
-                        </li>
-                        <li>
                             <NuxtLink to="/about"
                                 class="flex items-center text-sm text-gray-600 hover:text-pink-600 transition-colors">
                                 <InformationCircleIcon class="h-4 w-4 mr-2" />
