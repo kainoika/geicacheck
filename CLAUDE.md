@@ -200,6 +200,8 @@ circle_permissions/        # Granted permissions
     - 例: `feat: 新しい機能を追加`、`fix: バグを修正`、`docs: ドキュメントの更新`
 - コミットメッセージは日本語で書くこと
 - コミットメッセージは簡潔に、何をしたかがわかるように書くこと
+- コミットは論理的な単位で分ける
+  - 変更をリファクタリング、機能追加、テスト追加の3つのコミットに分けて
 
 ### Documentation & Code Quality Requirements
 - **YOU MUST: Generate comprehensive documentation for every function**
