@@ -87,21 +87,34 @@ export const useEditPermissions = () => {
     const targetUserId = userId || user.value?.uid
     if (!targetUserId) return []
 
-    const requestsRef = collection($firestore, 'edit_permission_requests')
-    const q = query(
-      requestsRef,
-      where('userId', '==', targetUserId),
-      orderBy('createdAt', 'desc')
-    )
+    try {
+      const requestsRef = collection($firestore, 'edit_permission_requests')
+      // インデックスエラーを回避するため、orderByなしでuserIdのみでフィルタ
+      const q = query(
+        requestsRef,
+        where('userId', '==', targetUserId)
+      )
 
-    const snapshot = await getDocs(q)
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      createdAt: doc.data().createdAt?.toDate(),
-      updatedAt: doc.data().updatedAt?.toDate(),
-      approvedAt: doc.data().approvedAt?.toDate()
-    })) as EditPermissionRequest[]
+      const snapshot = await getDocs(q)
+      const requests = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate(),
+        updatedAt: doc.data().updatedAt?.toDate(),
+        approvedAt: doc.data().approvedAt?.toDate()
+      })) as EditPermissionRequest[]
+
+      // クライアントサイドでソートを実行
+      return requests.sort((a, b) => {
+        const aDate = a.createdAt || new Date(0)
+        const bDate = b.createdAt || new Date(0)
+        return bDate.getTime() - aDate.getTime()
+      })
+    } catch (error) {
+      console.error('getUserEditPermissionRequests error:', error)
+      // エラーの場合は空配列を返す
+      return []
+    }
   }
 
   // 全ての編集権限申請を取得（管理者用）
@@ -191,16 +204,26 @@ export const useEditPermissions = () => {
   const hasCircleEditPermission = async (userId: string, circleId: string) => {
     if (!$firestore) return false
 
-    const permissionsRef = collection($firestore, 'circle_permissions')
-    const q = query(
-      permissionsRef,
-      where('userId', '==', userId),
-      where('circleId', '==', circleId),
-      where('isActive', '==', true)
-    )
+    try {
+      const permissionsRef = collection($firestore, 'circle_permissions')
+      // インデックスエラーを回避するため、userIdのみでフィルタしてクライアントサイドで絞り込み
+      const q = query(
+        permissionsRef,
+        where('userId', '==', userId)
+      )
 
-    const snapshot = await getDocs(q)
-    return !snapshot.empty
+      const snapshot = await getDocs(q)
+      // クライアントサイドで circleId と isActive をフィルタ
+      const activePermissions = snapshot.docs.filter(doc => {
+        const data = doc.data()
+        return data.circleId === circleId && data.isActive === true
+      })
+      
+      return activePermissions.length > 0
+    } catch (error) {
+      console.error('hasCircleEditPermission error:', error)
+      return false
+    }
   }
 
   // ユーザーの編集権限一覧を取得
@@ -210,35 +233,51 @@ export const useEditPermissions = () => {
     const targetUserId = userId || user.value?.uid
     if (!targetUserId) return []
 
-    const permissionsRef = collection($firestore, 'circle_permissions')
-    const q = query(
-      permissionsRef,
-      where('userId', '==', targetUserId),
-      where('isActive', '==', true)
-    )
+    try {
+      const permissionsRef = collection($firestore, 'circle_permissions')
+      const q = query(
+        permissionsRef,
+        where('userId', '==', targetUserId),
+        where('isActive', '==', true)
+      )
 
-    const snapshot = await getDocs(q)
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      grantedAt: doc.data().grantedAt?.toDate()
-    }))
+      const snapshot = await getDocs(q)
+      return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        grantedAt: doc.data().grantedAt?.toDate()
+      }))
+    } catch (error) {
+      console.error('getUserCirclePermissions error:', error)
+      // エラーの場合は空配列を返す
+      return []
+    }
   }
 
   // 特定サークルに対する申請が既に存在するかチェック（申請中のみ）
   const hasExistingRequest = async (userId: string, circleId: string) => {
     if (!$firestore) return false
 
-    const requestsRef = collection($firestore, 'edit_permission_requests')
-    const q = query(
-      requestsRef,
-      where('userId', '==', userId),
-      where('circleId', '==', circleId),
-      where('status', '==', 'pending')
-    )
+    try {
+      const requestsRef = collection($firestore, 'edit_permission_requests')
+      // インデックスエラーを回避するため、userIdのみでフィルタしてクライアントサイドで絞り込み
+      const q = query(
+        requestsRef,
+        where('userId', '==', userId)
+      )
 
-    const snapshot = await getDocs(q)
-    return !snapshot.empty
+      const snapshot = await getDocs(q)
+      // クライアントサイドで circleId と status をフィルタ
+      const pendingRequests = snapshot.docs.filter(doc => {
+        const data = doc.data()
+        return data.circleId === circleId && data.status === 'pending'
+      })
+      
+      return pendingRequests.length > 0
+    } catch (error) {
+      console.error('hasExistingRequest error:', error)
+      return false
+    }
   }
 
   return {
