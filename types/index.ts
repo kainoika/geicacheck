@@ -120,6 +120,7 @@ export interface EditPermissionRequest {
   evidenceUrls?: string[];
   adminNote?: string;
   rejectionReason?: string;
+  user?: User; // ユーザー情報（管理者画面用）
   createdAt: Date;
   updatedAt: Date;
   approvedAt?: Date;

@@ -1,5 +1,5 @@
 export default defineNuxtRouteMiddleware((to, from) => {
-  const { user, userType } = useAuth()
+  const { user, isAdmin } = useAuth()
   
   // ユーザーが未認証の場合
   if (!user.value) {
@@ -8,7 +8,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   }
   
   // 管理者権限がない場合
-  if (userType.value !== 'admin') {
+  if (!isAdmin.value) {
     console.log('🚫 Middleware: User is not admin, redirecting to home')
     return navigateTo('/')
   }

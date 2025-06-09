@@ -123,19 +123,20 @@
                     </div>
                 </NuxtLink>
 
-                <!-- 編集権限申請 -->
-                <NuxtLink to="/edit-permission/apply" class="card" style="text-decoration: none; color: inherit; transition: transform 0.2s, box-shadow 0.2s;"
+                <!-- サークル情報編集 -->
+                <NuxtLink to="/circles" class="card" style="text-decoration: none; color: inherit; transition: transform 0.2s, box-shadow 0.2s;"
                     onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(255, 105, 180, 0.15)'"
                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 10px rgba(0, 0, 0, 0.1)'">
                     <div style="font-size: 2rem; margin-bottom: 1rem;"><PencilIcon style="width: 2rem; height: 2rem; color: #ff69b4; margin: 0 auto;" /></div>
-                    <h3 style="color: #ff69b4; margin-bottom: 0.5rem;">編集権限申請</h3>
+                    <h3 style="color: #ff69b4; margin-bottom: 0.5rem;">サークル参加者の方へ</h3>
                     <p class="text-muted" style="margin-bottom: 1rem;">
-                        サークル情報の編集権限を申請して、コミュニティに貢献できます。
+                        ご自身のサークル情報を編集したい場合は、サークル詳細ページから編集権限を申請できます。
                     </p>
                     <div style="color: #ff69b4; font-weight: 500; font-size: 0.9rem;">
-                        → 編集権限を申請
+                        → サークル一覧へ
                     </div>
                 </NuxtLink>
+
             </div>
         </section>
 

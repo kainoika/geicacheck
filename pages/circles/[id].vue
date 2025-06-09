@@ -245,6 +245,28 @@
                 アクション
               </h2>
               <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <!-- 編集権限申請ボタン -->
+                <button
+                  v-if="isAuthenticated && !permissions.canEdit && !hasEditPermissionRequest"
+                  @click="showEditPermissionModal = true"
+                  style="padding: 0.75rem; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; border-radius: 0.5rem; cursor: pointer; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;"
+                  onmouseover="this.style.backgroundColor='#dcfce7'"
+                  onmouseout="this.style.backgroundColor='#f0fdf4'"
+                >
+                  <PencilIcon class="h-4 w-4" />
+                  編集権限を申請
+                </button>
+
+                <!-- 申請中表示 -->
+                <div
+                  v-if="isAuthenticated && hasEditPermissionRequest"
+                  style="padding: 0.75rem; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; border-radius: 0.5rem; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 0.5rem;"
+                >
+                  <ClockIcon class="h-4 w-4" />
+                  編集権限申請中
+                </div>
+
+                <!-- Twitterでシェア -->
                 <button
                   @click="shareToTwitter"
                   style="padding: 0.75rem; background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; border-radius: 0.5rem; cursor: pointer; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;"
@@ -261,6 +283,14 @@
           </div>
         </div>
       </div>
+
+      <!-- 編集権限申請モーダル -->
+      <EditPermissionModal
+        v-if="showEditPermissionModal"
+        :circle="circle"
+        @close="showEditPermissionModal = false"
+        @success="handlePermissionRequestSuccess"
+      />
     </div>
   </div>
 </template>
@@ -273,7 +303,9 @@ import {
   DocumentTextIcon,
   PhoneIcon,
   BoltIcon,
-  PhotoIcon
+  PhotoIcon,
+  PencilIcon,
+  ClockIcon
 } from '@heroicons/vue/24/outline'
 import type { Circle, BookmarkCategory, CircleItem, CircleItemFormData } from '~/types'
 
@@ -287,13 +319,16 @@ const loading = ref(true)
 const error = ref<string | null>(null)
 const saving = ref(false)
 const uploadError = ref('')
+const showEditPermissionModal = ref(false)
+const hasEditPermissionRequest = ref(false)
 
 // Composables
 const { isAuthenticated, user } = useAuth()
 const { fetchCircleById, formatPlacement, updateCircle, getPopularGenres } = useCircles()
 const { currentEvent } = useEvents()
 const { addBookmark, toggleBookmark, getBookmarkByCircleId } = useBookmarks()
-const { canEditCircle, canUploadImages, canManageItems, canEditGenres } = useCirclePermissions()
+const { canEditCircle, canUploadImages, canManageItems, canEditGenres, refreshPermissions } = useCirclePermissions()
+const { hasExistingRequest } = useEditPermissions()
 
 // 権限チェック
 const permissions = computed(() => {
@@ -349,6 +384,23 @@ const shareToTwitter = () => {
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}&hashtags=${encodeURIComponent(hashtags)}`
   
   window.open(twitterUrl, '_blank', 'width=550,height=420')
+}
+
+const handlePermissionRequestSuccess = () => {
+  hasEditPermissionRequest.value = true
+  showEditPermissionModal.value = false
+}
+
+// 編集権限申請状態をチェック
+const checkPermissionRequestStatus = async () => {
+  if (!user.value || !circle.value) return
+  
+  try {
+    const hasRequest = await hasExistingRequest(user.value.uid, circle.value.id)
+    hasEditPermissionRequest.value = hasRequest
+  } catch (error) {
+    console.error('編集権限申請状態確認エラー:', error)
+  }
 }
 
 // 画像アップロード処理
@@ -500,12 +552,26 @@ onMounted(async () => {
   
   await fetchCircle()
   await loadPopularGenres()
+  
+  // 認証済みユーザーの場合、権限を更新してから申請状態をチェック
+  if (user.value) {
+    await refreshPermissions()
+  }
+  await checkPermissionRequestStatus()
 })
 
 // イベント変更時にデータを再読み込み
 watch(currentEvent, async () => {
   if (currentEvent.value) {
     await fetchCircle()
+  }
+})
+
+// ユーザー変更時に権限と申請状態を再チェック
+watch(user, async () => {
+  if (user.value) {
+    await refreshPermissions()
+    await checkPermissionRequestStatus()
   }
 })
 

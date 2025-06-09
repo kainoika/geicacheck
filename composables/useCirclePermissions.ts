@@ -1,16 +1,50 @@
 import { computed, ref } from 'vue'
+import {
+  collection,
+  query,
+  where,
+  getDocs
+} from 'firebase/firestore'
 import { useAuth } from './useAuth'
+import type { Circle } from '~/types'
 
 export const useCirclePermissions = () => {
   const { user, isAuthenticated, isAdmin } = useAuth()
+  const { $firestore } = useNuxtApp()
   
   const loading = ref(false)
   const error = ref<string | null>(null)
+  
+  // ユーザーの編集権限をキャッシュ
+  const userPermissions = useState<string[]>('userPermissions', () => [])
+
+  // ユーザーの編集権限を取得
+  const loadUserPermissions = async () => {
+    if (!user.value || !$firestore) {
+      userPermissions.value = []
+      return
+    }
+
+    try {
+      const permissionsRef = collection($firestore, 'circle_permissions')
+      const q = query(
+        permissionsRef,
+        where('userId', '==', user.value.uid),
+        where('isActive', '==', true)
+      )
+
+      const snapshot = await getDocs(q)
+      userPermissions.value = snapshot.docs.map(doc => doc.data().circleId)
+    } catch (error) {
+      console.error('編集権限取得エラー:', error)
+      userPermissions.value = []
+    }
+  }
 
   /**
    * ユーザーが特定のサークルを編集する権限があるかチェック
    */
-  const canEditCircle = (circle: any): boolean => {
+  const canEditCircle = (circle: Circle): boolean => {
     // 認証状態チェック
     if (!isAuthenticated.value || !user.value) {
       return false
@@ -26,29 +60,36 @@ export const useCirclePermissions = () => {
       return true
     }
 
-    // その他のユーザーには編集権限なし
-    return false
+    // 編集権限を持っているかチェック
+    return userPermissions.value.includes(circle.id)
   }
 
   /**
    * ユーザーが画像をアップロードする権限があるかチェック
    */
-  const canUploadImages = (circle: any): boolean => {
+  const canUploadImages = (circle: Circle): boolean => {
     return canEditCircle(circle)
   }
 
   /**
    * ユーザーが頒布物を管理する権限があるかチェック
    */
-  const canManageItems = (circle: any): boolean => {
+  const canManageItems = (circle: Circle): boolean => {
     return canEditCircle(circle)
   }
 
   /**
    * ユーザーがジャンルを編集する権限があるかチェック
    */
-  const canEditGenres = (circle: any): boolean => {
+  const canEditGenres = (circle: Circle): boolean => {
     return canEditCircle(circle)
+  }
+
+  /**
+   * 権限の再読み込み
+   */
+  const refreshPermissions = async () => {
+    await loadUserPermissions()
   }
 
   /**
@@ -123,10 +164,24 @@ export const useCirclePermissions = () => {
     }
   }
 
+  // ユーザーがログインした時に権限を読み込み
+  watch(() => user.value, async (newUser) => {
+    if (newUser) {
+      await loadUserPermissions()
+    } else {
+      userPermissions.value = []
+    }
+  }, { immediate: true })
+
   return {
     // リアクティブな状態
     loading: readonly(loading),
     error: readonly(error),
+    userPermissions: readonly(userPermissions),
+    
+    // 権限管理
+    loadUserPermissions,
+    refreshPermissions,
     
     // 権限チェック関数
     canEditCircle,

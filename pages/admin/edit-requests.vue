@@ -106,7 +106,7 @@
             <!-- 申請者情報 -->
             <div style="display: flex; align-items: center; gap: 1rem;">
               <div 
-                v-if="request.user.photoURL"
+                v-if="request.user?.photoURL"
                 style="width: 3rem; height: 3rem; border-radius: 50%; background-size: cover; background-position: center;"
                 :style="{ backgroundImage: `url(${request.user.photoURL})` }"
               ></div>
@@ -114,16 +114,15 @@
                 v-else
                 style="width: 3rem; height: 3rem; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; font-weight: 600; color: #6b7280;"
               >
-                {{ request.user.displayName?.charAt(0) || 'U' }}
+                {{ request.user?.displayName?.charAt(0) || 'U' }}
               </div>
               
               <div>
                 <h3 style="font-size: 1.125rem; font-weight: 600; color: #111827; margin: 0 0 0.25rem 0;">
-                  {{ request.user.displayName || 'ユーザー' }}
+                  {{ request.user?.displayName || 'ユーザー' }}
                 </h3>
                 <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.875rem; color: #6b7280;">
-                  <span>{{ request.user.email }}</span>
-                  <span v-if="request.user.twitterHandle">@{{ request.user.twitterHandle }}</span>
+                  <span v-if="request.user?.twitterScreenName">@{{ request.user.twitterScreenName }}</span>
                   <span>{{ formatDate(request.createdAt) }}</span>
                 </div>
               </div>
@@ -150,7 +149,7 @@
               申請理由
             </h4>
             <p style="color: #4b5563; line-height: 1.5; margin: 0; background: #f9fafb; padding: 1rem; border-radius: 0.5rem;">
-              {{ request.reason }}
+              {{ request.adminNote || '申請理由なし' }}
             </p>
           </div>
 
@@ -208,7 +207,7 @@
               {{ formatDate(request.processedAt) }} に{{ getStatusLabel(request.status) }}
             </div>
             <div v-if="request.processedBy" style="font-size: 0.875rem; color: #6b7280;">
-              処理者: {{ request.processedBy.displayName }}
+              処理者: {{ request.processedBy?.displayName || request.processedBy }}
             </div>
             <div v-if="request.note" style="font-size: 0.875rem; color: #4b5563; margin-top: 0.5rem;">
               備考: {{ request.note }}
@@ -317,7 +316,7 @@ definePageMeta({
 })
 
 // 認証と管理者権限チェック
-const { user, userType } = useAuth()
+const { user, isAdmin } = useAuth()
 
 // State
 const activeStatus = ref('pending')
@@ -328,78 +327,16 @@ const rejectNote = ref('')
 
 // 認証状態の computed
 const isAuthenticated = computed(() => {
-  return user.value !== null && userType.value === 'admin'
+  return user.value !== null && isAdmin.value
 })
 
-// サンプルデータ
-const editRequests = ref([
-  {
-    id: '1',
-    user: {
-      uid: 'user1',
-      displayName: 'アイカツファン',
-      email: 'aikatsu@example.com',
-      photoURL: null,
-      twitterHandle: 'aikatsu_fan'
-    },
-    reason: 'アイカツ！の同人活動を5年以上続けており、多くのサークル情報に詳しいです。正確な情報提供でコミュニティに貢献したいと思います。',
-    status: 'pending',
-    autoChecks: [
-      { name: 'アカウント作成日', description: '7日以上経過', passed: true },
-      { name: 'Twitter連携', description: 'アカウント連携済み', passed: true },
-      { name: 'ブックマーク数', description: '5件以上', passed: true },
-      { name: 'アクティビティ', description: '最近の活動あり', passed: false }
-    ],
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2時間前
-    processedAt: null,
-    processedBy: null,
-    note: null
-  },
-  {
-    id: '2',
-    user: {
-      uid: 'user2',
-      displayName: 'いちごちゃん推し',
-      email: 'ichigo@example.com',
-      photoURL: null,
-      twitterHandle: 'ichigo_oshi'
-    },
-    reason: 'いちごちゃんの情報を正確に管理したいです。',
-    status: 'approved',
-    autoChecks: [
-      { name: 'アカウント作成日', description: '7日以上経過', passed: true },
-      { name: 'Twitter連携', description: 'アカウント連携済み', passed: true },
-      { name: 'ブックマーク数', description: '5件以上', passed: true },
-      { name: 'アクティビティ', description: '最近の活動あり', passed: true }
-    ],
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1日前
-    processedAt: new Date(Date.now() - 1000 * 60 * 60 * 12), // 12時間前
-    processedBy: { displayName: '管理者' },
-    note: null
-  },
-  {
-    id: '3',
-    user: {
-      uid: 'user3',
-      displayName: '新規ユーザー',
-      email: 'newuser@example.com',
-      photoURL: null,
-      twitterHandle: null
-    },
-    reason: '編集したいです。',
-    status: 'rejected',
-    autoChecks: [
-      { name: 'アカウント作成日', description: '7日以上経過', passed: false },
-      { name: 'Twitter連携', description: 'アカウント連携済み', passed: false },
-      { name: 'ブックマーク数', description: '5件以上', passed: false },
-      { name: 'アクティビティ', description: '最近の活動あり', passed: false }
-    ],
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 6), // 6時間前
-    processedAt: new Date(Date.now() - 1000 * 60 * 60 * 4), // 4時間前
-    processedBy: { displayName: '管理者' },
-    note: 'アカウント作成から日が浅く、活動実績が不足しています。'
-  }
-])
+// Composables
+const { getAllEditPermissionRequests, approveEditPermissionRequest, rejectEditPermissionRequest } = useEditPermissions()
+
+// データ
+const editRequests = ref([])
+const loading = ref(true)
+const error = ref(null)
 
 const statusFilters = ref([
   { key: 'all', label: 'すべて', color: '#6b7280' },
@@ -501,28 +438,69 @@ const rejectRequest = (requestId) => {
   showRejectModal.value = true
 }
 
-const confirmApprove = () => {
-  const request = editRequests.value.find(r => r.id === selectedRequestId.value)
-  if (request) {
-    request.status = 'approved'
-    request.processedAt = new Date()
-    request.processedBy = { displayName: '管理者' }
+const confirmApprove = async () => {
+  try {
+    await approveEditPermissionRequest(selectedRequestId.value)
+    await loadEditRequests() // データを再読み込み
+    showApproveModal.value = false
+    selectedRequestId.value = null
+  } catch (error) {
+    console.error('承認エラー:', error)
+    alert('承認処理に失敗しました')
   }
-  showApproveModal.value = false
-  selectedRequestId.value = null
 }
 
-const confirmReject = () => {
-  const request = editRequests.value.find(r => r.id === selectedRequestId.value)
-  if (request) {
-    request.status = 'rejected'
-    request.processedAt = new Date()
-    request.processedBy = { displayName: '管理者' }
-    request.note = rejectNote.value || null
+const confirmReject = async () => {
+  try {
+    await rejectEditPermissionRequest(selectedRequestId.value, rejectNote.value || undefined)
+    await loadEditRequests() // データを再読み込み
+    showRejectModal.value = false
+    selectedRequestId.value = null
+    rejectNote.value = ''
+  } catch (error) {
+    console.error('却下エラー:', error)
+    alert('却下処理に失敗しました')
   }
-  showRejectModal.value = false
-  selectedRequestId.value = null
-  rejectNote.value = ''
+}
+
+// データ取得
+const loadEditRequests = async () => {
+  loading.value = true
+  error.value = null
+  
+  try {
+    const requests = await getAllEditPermissionRequests()
+    editRequests.value = requests.map(request => ({
+      ...request,
+      autoChecks: generateAutoChecks(request)
+    }))
+  } catch (err) {
+    console.error('編集権限申請取得エラー:', err)
+    error.value = '申請データの取得に失敗しました'
+  } finally {
+    loading.value = false
+  }
+}
+
+// 自動チェック項目生成
+const generateAutoChecks = (request) => {
+  return [
+    {
+      name: 'Twitter連携',
+      description: 'Twitterアカウント連携済み',
+      passed: !!request.applicantTwitterId
+    },
+    {
+      name: 'スクリーンネーム一致',
+      description: 'サークルTwitterと一致',
+      passed: request.isAutoApproved
+    },
+    {
+      name: '申請理由',
+      description: '申請理由が記入済み',
+      passed: !!request.adminNote
+    }
+  ]
 }
 
 // 管理者権限チェック
@@ -533,7 +511,7 @@ const checkAdminAccess = () => {
     return false
   }
   
-  if (userType.value !== 'admin') {
+  if (!isAdmin.value) {
     console.log('🚫 User is not admin, redirecting to home')
     navigateTo('/')
     return false
@@ -544,10 +522,12 @@ const checkAdminAccess = () => {
 }
 
 // 初期認証チェック
-onMounted(() => {
-  nextTick(() => {
+onMounted(async () => {
+  nextTick(async () => {
     if (user.value !== undefined) {
-      checkAdminAccess()
+      if (checkAdminAccess()) {
+        await loadEditRequests()
+      }
     }
   })
 })
@@ -563,9 +543,9 @@ watch(() => user.value, (newUser) => {
   }
 })
 
-watch(() => userType.value, (newUserType) => {
-  if (newUserType && newUserType !== 'admin') {
-    // 管理者以外の権限に変更された場合
+watch(() => isAdmin.value, (newIsAdmin) => {
+  if (newIsAdmin === false) {
+    // 管理者権限が失われた場合
     navigateTo('/')
   }
 })

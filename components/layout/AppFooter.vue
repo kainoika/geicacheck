@@ -63,13 +63,6 @@
                             </NuxtLink>
                         </li>
                         <li>
-                            <NuxtLink to="/edit-permission/apply"
-                                class="flex items-center text-sm text-gray-600 hover:text-pink-600 transition-colors">
-                                <PencilIcon class="h-4 w-4 mr-2" />
-                                編集権限申請
-                            </NuxtLink>
-                        </li>
-                        <li>
                             <NuxtLink to="/about"
                                 class="flex items-center text-sm text-gray-600 hover:text-pink-600 transition-colors">
                                 <InformationCircleIcon class="h-4 w-4 mr-2" />

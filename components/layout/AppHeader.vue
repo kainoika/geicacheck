@@ -138,12 +138,6 @@
                                         <UserIcon class="h-4 w-4 mr-2" />
                                         プロフィール
                                     </NuxtLink>
-                                    <NuxtLink to="/edit-permission/apply"
-                                        class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                        @click="showUserMenu = false">
-                                        <PencilIcon class="h-4 w-4 mr-2" />
-                                        編集権限申請
-                                    </NuxtLink>
                                     <NuxtLink v-if="isAdmin" to="/admin/edit-requests"
                                         class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                         @click="showUserMenu = false">
@@ -329,13 +323,6 @@
                         @click="showMobileMenu = false">
                         <UserIcon class="h-5 w-5 mr-2" />
                         プロフィール
-                    </NuxtLink>
-                    <NuxtLink to="/edit-permission/apply"
-                        class="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
-                        :class="{ 'text-pink-600 bg-pink-50': $route.path === '/edit-permission/apply' }"
-                        @click="showMobileMenu = false">
-                        <PencilIcon class="h-5 w-5 mr-2" />
-                        編集権限申請
                     </NuxtLink>
                     
                     <!-- その他 -->
