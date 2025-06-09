@@ -154,6 +154,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 // Composables
+const { user, isAuthenticated } = useAuth()
 const { getBudgetSummary, getBudgetStatistics, exportBudgetAsCSV } = useBudget()
 const { getUserPurchasePlans } = usePurchasePlans()
 
@@ -173,20 +174,34 @@ const statistics = ref({
 
 // 予算情報を取得
 const loadBudget = async () => {
+  if (!isAuthenticated.value) {
+    console.warn('⚠️ ユーザーが認証されていません')
+    error.value = 'ログインが必要です'
+    return
+  }
+
   try {
     loading.value = true
     error.value = null
 
+    console.log('💰 予算情報取得開始:', {
+      eventId: props.eventId,
+      userId: user.value?.uid
+    })
+
     // 購入予定を取得
     const plans = await getUserPurchasePlans(props.eventId)
+    console.log('📊 購入予定取得完了:', plans.length, '件')
     
     // 統計を計算
     statistics.value = getBudgetStatistics(plans)
+    console.log('📈 統計計算完了:', statistics.value)
     
     // サマリーを取得
     budgetSummary.value = await getBudgetSummary(props.eventId)
+    console.log('📋 サマリー取得完了')
   } catch (err) {
-    console.error('予算情報取得エラー:', err)
+    console.error('🚨 予算情報取得エラー:', err)
     error.value = '予算情報の取得に失敗しました'
   } finally {
     loading.value = false

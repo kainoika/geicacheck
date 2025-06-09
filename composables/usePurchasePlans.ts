@@ -34,8 +34,12 @@ export const usePurchasePlans = () => {
     circleName?: string,
     itemName?: string
   ): Promise<string> => {
-    if (!user.value || !$firestore) {
-      throw new Error('ユーザーまたはFirestoreが初期化されていません')
+    if (!user.value) {
+      throw new Error('ユーザーが認証されていません')
+    }
+    
+    if (!$firestore) {
+      throw new Error('Firestoreが初期化されていません')
     }
 
     try {
@@ -75,8 +79,12 @@ export const usePurchasePlans = () => {
    * 購入予定から削除
    */
   const removeFromPurchasePlan = async (planId: string): Promise<void> => {
-    if (!user.value || !$firestore) {
-      throw new Error('ユーザーまたはFirestoreが初期化されていません')
+    if (!user.value) {
+      throw new Error('ユーザーが認証されていません')
+    }
+    
+    if (!$firestore) {
+      throw new Error('Firestoreが初期化されていません')
     }
 
     try {
@@ -92,8 +100,12 @@ export const usePurchasePlans = () => {
    * 購入数量を更新
    */
   const updatePurchaseQuantity = async (planId: string, quantity: number): Promise<void> => {
-    if (!user.value || !$firestore) {
-      throw new Error('ユーザーまたはFirestoreが初期化されていません')
+    if (!user.value) {
+      throw new Error('ユーザーが認証されていません')
+    }
+    
+    if (!$firestore) {
+      throw new Error('Firestoreが初期化されていません')
     }
 
     if (quantity <= 0) {
@@ -118,12 +130,22 @@ export const usePurchasePlans = () => {
    * ユーザーの購入予定一覧を取得
    */
   const getUserPurchasePlans = async (eventId?: string): Promise<PurchasePlan[]> => {
-    if (!user.value || !$firestore) return []
+    if (!user.value) {
+      console.warn('ユーザーが認証されていません')
+      return []
+    }
+    
+    if (!$firestore) {
+      console.warn('Firestoreが初期化されていません')
+      return []
+    }
 
     try {
       loading.value = true
       error.value = null
 
+      console.log('🔍 購入予定取得開始:', { userId: user.value.uid, eventId })
+      
       const plansRef = collection($firestore, 'users', user.value.uid, 'purchase_plans')
       let q = query(plansRef)
       
@@ -131,7 +153,9 @@ export const usePurchasePlans = () => {
         q = query(plansRef, where('eventId', '==', eventId))
       }
 
+      console.log('📊 Firestoreクエリ実行中...')
       const snapshot = await getDocs(q)
+      console.log('📊 クエリ結果:', snapshot.size, '件のドキュメント')
       const plans = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -141,9 +165,22 @@ export const usePurchasePlans = () => {
 
       purchasePlans.value = plans
       return plans
-    } catch (err) {
-      console.error('購入予定取得エラー:', err)
-      error.value = '購入予定の取得に失敗しました'
+    } catch (err: any) {
+      console.error('🚨 購入予定取得エラー:', err)
+      console.error('🚨 エラー詳細:', {
+        code: err.code,
+        message: err.message,
+        userId: user.value?.uid,
+        eventId
+      })
+      
+      if (err.code === 'permission-denied') {
+        error.value = 'アクセス権限がありません。ログイン状態を確認してください。'
+      } else if (err.code === 'unauthenticated') {
+        error.value = '認証が必要です。ログインしてください。'
+      } else {
+        error.value = `購入予定の取得に失敗しました: ${err.message}`
+      }
       return []
     } finally {
       loading.value = false
@@ -158,7 +195,15 @@ export const usePurchasePlans = () => {
     itemId: string,
     eventId: string
   ): Promise<PurchasePlan | null> => {
-    if (!user.value || !$firestore) return null
+    if (!user.value) {
+      console.warn('ユーザーが認証されていません')
+      return null
+    }
+    
+    if (!$firestore) {
+      console.warn('Firestoreが初期化されていません')
+      return null
+    }
 
     try {
       const plansRef = collection($firestore, 'users', user.value.uid, 'purchase_plans')
@@ -225,7 +270,13 @@ export const usePurchasePlans = () => {
     eventId: string,
     callback: (plans: PurchasePlan[]) => void
   ): (() => void) => {
-    if (!user.value || !$firestore) {
+    if (!user.value) {
+      console.warn('ユーザーが認証されていません')
+      return () => {}
+    }
+    
+    if (!$firestore) {
+      console.warn('Firestoreが初期化されていません')
       return () => {}
     }
 
@@ -254,7 +305,15 @@ export const usePurchasePlans = () => {
    * 購入予定のクリア（イベント単位）
    */
   const clearPurchasePlans = async (eventId: string): Promise<void> => {
-    if (!user.value || !$firestore) return
+    if (!user.value) {
+      console.warn('ユーザーが認証されていません')
+      return
+    }
+    
+    if (!$firestore) {
+      console.warn('Firestoreが初期化されていません')
+      return
+    }
 
     try {
       const plans = await getUserPurchasePlans(eventId)

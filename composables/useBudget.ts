@@ -21,7 +21,15 @@ export const useBudget = () => {
    * 予算サマリーを取得
    */
   const getBudgetSummary = async (eventId: string): Promise<BudgetSummary | null> => {
-    if (!user.value || !$firestore) return null
+    if (!user.value) {
+      console.warn('ユーザーが認証されていません')
+      return null
+    }
+    
+    if (!$firestore) {
+      console.warn('Firestoreが初期化されていません')
+      return null
+    }
 
     try {
       loading.value = true
@@ -96,7 +104,15 @@ export const useBudget = () => {
    * 予算サマリーを保存
    */
   const saveBudgetSummary = async (summary: BudgetSummary): Promise<void> => {
-    if (!user.value || !$firestore) return
+    if (!user.value) {
+      console.warn('ユーザーが認証されていません')
+      return
+    }
+    
+    if (!$firestore) {
+      console.warn('Firestoreが初期化されていません')
+      return
+    }
 
     try {
       const summaryRef = doc(
@@ -111,8 +127,14 @@ export const useBudget = () => {
         ...summary,
         updatedAt: serverTimestamp()
       })
-    } catch (err) {
-      console.error('予算サマリー保存エラー:', err)
+    } catch (err: any) {
+      console.error('🚨 予算サマリー保存エラー:', err)
+      console.error('🚨 エラー詳細:', {
+        code: err.code,
+        message: err.message,
+        userId: user.value?.uid,
+        eventId: summary.eventId
+      })
     }
   }
 
@@ -202,7 +224,15 @@ export const useBudget = () => {
    * キャッシュされた予算サマリーを取得
    */
   const getCachedBudgetSummary = async (eventId: string): Promise<BudgetSummary | null> => {
-    if (!user.value || !$firestore) return null
+    if (!user.value) {
+      console.warn('ユーザーが認証されていません')
+      return null
+    }
+    
+    if (!$firestore) {
+      console.warn('Firestoreが初期化されていません')
+      return null
+    }
 
     try {
       const summaryRef = doc(
