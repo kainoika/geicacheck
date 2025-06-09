@@ -281,22 +281,31 @@
                 <div 
                   v-for="request in editPermissionRequests.slice(0, 5)" 
                   :key="request.id"
-                  style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; background: #f9fafb; border-radius: 0.375rem; border-left: 3px solid;" 
+                  style="display: flex; flex-direction: column; gap: 0.5rem; padding: 0.75rem; background: #f9fafb; border-radius: 0.375rem; border-left: 3px solid;" 
                   :style="{ borderLeftColor: getRequestStatusColor(request.status) }"
                 >
-                  <div>
-                    <div style="font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.25rem;">
-                      サークルID: {{ request.circleId }}
+                  <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                      <div style="font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.25rem;">
+                        サークルID: {{ request.circleId }}
+                      </div>
+                      <div style="font-size: 0.75rem; color: #6b7280;">
+                        {{ formatDate(request.createdAt) }}
+                      </div>
                     </div>
-                    <div style="font-size: 0.75rem; color: #6b7280;">
-                      {{ formatDate(request.createdAt) }}
+                    <div 
+                      style="padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 600; color: white;"
+                      :style="{ backgroundColor: getRequestStatusColor(request.status) }"
+                    >
+                      {{ getRequestStatusLabel(request.status) }}
                     </div>
                   </div>
-                  <div 
-                    style="padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 600; color: white;"
-                    :style="{ backgroundColor: getRequestStatusColor(request.status) }"
-                  >
-                    {{ getRequestStatusLabel(request.status) }}
+                  <div v-if="request.status === 'rejected' && request.rejectionReason" style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.25rem; padding: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.25rem; margin-bottom: 0.25rem;">
+                      <ExclamationTriangleIcon class="h-4 w-4 text-red-600" />
+                      <span style="font-size: 0.75rem; font-weight: 600; color: #dc2626;">却下理由</span>
+                    </div>
+                    <p style="font-size: 0.75rem; color: #991b1b; margin: 0;">{{ request.rejectionReason }}</p>
                   </div>
                 </div>
                 <div v-if="editPermissionRequests.length > 5" style="text-align: center; padding: 0.5rem; color: #6b7280; font-size: 0.75rem;">
