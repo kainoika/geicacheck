@@ -69,7 +69,8 @@ export const useAuth = () => {
 
       if (result.user && credential) {
         // ユーザー情報をFirestoreに保存
-        await saveUserToFirestore(result.user, credential);
+        // resultオブジェクト全体を渡してadditionalUserInfoにアクセス
+        await saveUserToFirestore(result.user, credential, result);
 
         // アプリユーザーに変換
         const appUser = await convertFirebaseUserToAppUser(result.user);
@@ -160,6 +161,7 @@ export const useAuth = () => {
         userType: userData.userType || "general",
         twitterId: userData.twitterId,
         twitterUsername: userData.twitterUsername,
+        twitterScreenName: userData.twitterScreenName,
         settings: userData.settings || {
           emailNotifications: true,
           adultContent: false,
@@ -197,7 +199,8 @@ export const useAuth = () => {
   // ユーザー情報をFirestoreに保存
   const saveUserToFirestore = async (
     firebaseUser: FirebaseUser,
-    credential: any
+    credential: any,
+    authResult?: any
   ) => {
     const { $firestore } = useNuxtApp();
     const userRef = doc($firestore, "users", firebaseUser.uid);
@@ -209,11 +212,27 @@ export const useAuth = () => {
 
     let twitterId: string | undefined;
     let twitterUsername: string | undefined;
+    let twitterScreenName: string | undefined;
 
     if (twitterProvider) {
       twitterId = twitterProvider.uid;
-      // displayNameからTwitter usernameを抽出（@を除去）
       twitterUsername = twitterProvider.displayName || firebaseUser.displayName;
+    }
+
+    // authResultからadditionalUserInfoを取得
+    if (authResult && authResult._tokenResponse) {
+      // _tokenResponseにscreen_nameが含まれている場合
+      if (authResult._tokenResponse.screenName) {
+        twitterScreenName = authResult._tokenResponse.screenName;
+      }
+    }
+    
+    // 別の方法: additionalUserInfoから取得
+    if (!twitterScreenName && authResult && (authResult as any).additionalUserInfo?.profile) {
+      const profile = (authResult as any).additionalUserInfo.profile;
+      if (profile.screen_name) {
+        twitterScreenName = profile.screen_name;
+      }
     }
 
     const userData = {
@@ -222,6 +241,7 @@ export const useAuth = () => {
       photoURL: firebaseUser.photoURL,
       twitterId,
       twitterUsername,
+      twitterScreenName,
       updatedAt: serverTimestamp(),
     };
 

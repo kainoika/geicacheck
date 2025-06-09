@@ -7,6 +7,7 @@ export interface User {
   userType: "general" | "circle" | "admin";
   twitterId?: string;
   twitterUsername?: string;
+  twitterScreenName?: string;
   settings: UserSettings;
   createdAt: Date;
   updatedAt: Date;
