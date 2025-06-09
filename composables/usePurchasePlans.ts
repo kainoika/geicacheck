@@ -70,35 +70,6 @@ export const usePurchasePlans = () => {
       throw new Error('Firestoreが初期化されていません')
     }
 
-    console.log('🔐 認証状態確認:', {
-      isAuthenticated: isAuthenticated.value,
-      userId: user.value!.uid,
-      hasFirestore: !!$firestore,
-      firebaseApp: $firestore.app?.name,
-      projectId: $firestore._delegate?._settings?.projectId || 'unknown'
-    })
-
-    // Firebase Auth tokenの確認
-    try {
-      const { $auth } = useNuxtApp()
-      if ($auth?.currentUser) {
-        const token = await $auth.currentUser.getIdToken(true)
-        console.log('🎫 Firebase Auth Token取得成功:', token ? 'あり' : 'なし')
-        
-        const tokenClaims = await $auth.currentUser.getIdTokenResult()
-        console.log('🎫 Token Claims:', {
-          uid: tokenClaims.claims.sub,
-          email: tokenClaims.claims.email,
-          authTime: new Date(tokenClaims.claims.auth_time * 1000),
-          issuedAt: new Date(tokenClaims.claims.iat * 1000),
-          expiration: new Date(tokenClaims.claims.exp * 1000)
-        })
-      } else {
-        console.warn('⚠️ Firebase Auth currentUser is null')
-      }
-    } catch (tokenError) {
-      console.error('🚨 Token取得エラー:', tokenError)
-    }
 
     try {
       // 既存の購入予定をチェック
@@ -123,37 +94,12 @@ export const usePurchasePlans = () => {
         updatedAt: serverTimestamp()
       }
 
-      console.log('📝 購入予定データ準備完了:', planData)
-      console.log('🔗 Firestoreパス:', `users/${user.value.uid}/purchase_plans`)
-
       const plansRef = collection($firestore, 'users', user.value.uid, 'purchase_plans')
-      console.log('📋 コレクション参照作成完了')
-      
-      console.log('💾 Firestoreに保存開始...')
-      
-      // 現在のFirestoreの認証コンテキストを確認
-      console.log('🎫 Firestore認証コンテキスト:', {
-        appName: $firestore.app.name,
-        currentUser: $firestore._delegate?._authCredentials?.currentUser?.uid,
-        settings: $firestore._settings
-      })
-      
       const docRef = await addDoc(plansRef, planData)
-      console.log('✅ Firestore保存成功:', docRef.id)
 
       return docRef.id
     } catch (err: any) {
-      console.error('🚨 購入予定追加エラー:', err)
-      console.error('🚨 エラー詳細:', {
-        code: err.code,
-        message: err.message,
-        userId: user.value?.uid,
-        circleId,
-        itemId,
-        eventId,
-        price,
-        quantity
-      })
+      console.error('購入予定追加エラー:', err)
       throw err
     }
   }
@@ -227,8 +173,6 @@ export const usePurchasePlans = () => {
       loading.value = true
       error.value = null
 
-      console.log('🔍 購入予定取得開始:', { userId: user.value.uid, eventId })
-      
       const plansRef = collection($firestore, 'users', user.value.uid, 'purchase_plans')
       let q = query(plansRef)
       
@@ -236,9 +180,7 @@ export const usePurchasePlans = () => {
         q = query(plansRef, where('eventId', '==', eventId))
       }
 
-      console.log('📊 Firestoreクエリ実行中...')
       const snapshot = await getDocs(q)
-      console.log('📊 クエリ結果:', snapshot.size, '件のドキュメント')
       const plans = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -249,13 +191,7 @@ export const usePurchasePlans = () => {
       purchasePlans.value = plans
       return plans
     } catch (err: any) {
-      console.error('🚨 購入予定取得エラー:', err)
-      console.error('🚨 エラー詳細:', {
-        code: err.code,
-        message: err.message,
-        userId: user.value?.uid,
-        eventId
-      })
+      console.error('購入予定取得エラー:', err)
       
       if (err.code === 'permission-denied') {
         error.value = 'アクセス権限がありません。ログイン状態を確認してください。'
@@ -407,44 +343,6 @@ export const usePurchasePlans = () => {
     }
   }
 
-  /**
-   * Firestoreテスト用関数
-   */
-  const testFirestoreConnection = async (): Promise<boolean> => {
-    const authReady = await waitForAuth()
-    if (!authReady) {
-      console.error('🚨 認証が完了していません')
-      return false
-    }
-
-    try {
-      console.log('🧪 Firestore接続テスト開始')
-      const testData = {
-        test: true,
-        timestamp: new Date(),
-        userId: user.value!.uid
-      }
-
-      const testRef = collection($firestore, 'users', user.value!.uid, 'purchase_plans')
-      console.log('📝 テストデータ準備:', testData)
-      
-      const docRef = await addDoc(testRef, testData)
-      console.log('✅ テストデータ追加成功:', docRef.id)
-      
-      // テストデータを削除
-      await deleteDoc(doc($firestore, 'users', user.value!.uid, 'purchase_plans', docRef.id))
-      console.log('🗑️ テストデータ削除完了')
-      
-      return true
-    } catch (err: any) {
-      console.error('🚨 Firestore接続テスト失敗:', err)
-      console.error('🚨 エラー詳細:', {
-        code: err.code,
-        message: err.message
-      })
-      return false
-    }
-  }
 
   return {
     // State
@@ -462,7 +360,6 @@ export const usePurchasePlans = () => {
     calculateTotal,
     groupByCircle,
     watchPurchasePlans,
-    clearPurchasePlans,
-    testFirestoreConnection
+    clearPurchasePlans
   }
 }

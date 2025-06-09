@@ -97,8 +97,7 @@ const {
   addToPurchasePlan,
   removeFromPurchasePlan,
   updatePurchaseQuantity,
-  getPurchasePlanByItem,
-  testFirestoreConnection
+  getPurchasePlanByItem
 } = usePurchasePlans()
 
 // State
@@ -109,24 +108,11 @@ const planId = ref<string | null>(null)
 
 // 購入予定の状態を確認
 const checkPlanStatus = async () => {
-  if (!currentEvent.value) {
-    console.warn('⚠️ 現在のイベント情報がありません')
-    return
-  }
-
-  if (!isAuthenticated.value) {
-    console.warn('⚠️ ユーザーが認証されていません')
+  if (!currentEvent.value || !isAuthenticated.value) {
     return
   }
 
   try {
-    console.log('🔍 購入予定状態確認:', {
-      circleId: props.circleId,
-      itemId: props.itemId,
-      eventId: currentEvent.value.id,
-      userId: user.value?.uid
-    })
-
     const plan = await getPurchasePlanByItem(
       props.circleId,
       props.itemId,
@@ -134,18 +120,16 @@ const checkPlanStatus = async () => {
     )
 
     if (plan) {
-      console.log('✅ 購入予定が見つかりました:', plan)
       isPlanned.value = true
       quantity.value = plan.quantity
       planId.value = plan.id
     } else {
-      console.log('📝 購入予定が見つかりませんでした')
       isPlanned.value = false
       quantity.value = 1
       planId.value = null
     }
   } catch (error) {
-    console.error('🚨 購入予定状態確認エラー:', error)
+    console.error('購入予定状態確認エラー:', error)
   }
 }
 
@@ -161,14 +145,6 @@ const handleAdd = async () => {
   try {
     loading.value = true
 
-    console.log('➕ 購入予定追加開始:', {
-      circleId: props.circleId,
-      itemId: props.itemId,
-      eventId: currentEvent.value.id,
-      price: props.price,
-      userId: user.value?.uid
-    })
-
     const id = await addToPurchasePlan(
       props.circleId,
       props.itemId,
@@ -179,7 +155,6 @@ const handleAdd = async () => {
       props.itemName
     )
 
-    console.log('✅ 購入予定追加成功:', id)
     planId.value = id
     isPlanned.value = true
     quantity.value = 1
@@ -191,7 +166,7 @@ const handleAdd = async () => {
     )
     emit('updated', plan)
   } catch (error) {
-    console.error('🚨 購入予定追加エラー:', error)
+    console.error('購入予定追加エラー:', error)
     alert('購入予定の追加に失敗しました')
   } finally {
     loading.value = false
@@ -269,33 +244,17 @@ const handleDecrease = async () => {
 }
 
 // 初期化
-onMounted(async () => {
-  console.log('🚀 PurchasePlanButton マウント:', {
-    circleId: props.circleId,
-    itemId: props.itemId,
-    isAuthenticated: isAuthenticated.value,
-    currentEvent: currentEvent.value?.id
-  })
-  
-  // Firestore接続テスト（開発環境のみ）
-  if (process.dev && isAuthenticated.value) {
-    console.log('🧪 Firestore接続テスト実行...')
-    const testResult = await testFirestoreConnection()
-    console.log('🧪 テスト結果:', testResult ? '成功' : '失敗')
-  }
-  
+onMounted(() => {
   checkPlanStatus()
 })
 
 // イベント変更時に再チェック
 watch(() => currentEvent.value?.id, () => {
-  console.log('📅 イベント変更:', currentEvent.value?.id)
   checkPlanStatus()
 })
 
 // 認証状態変更時に再チェック
-watch(() => isAuthenticated.value, (newAuth, oldAuth) => {
-  console.log('🔐 認証状態変更:', { old: oldAuth, new: newAuth })
+watch(() => isAuthenticated.value, (newAuth) => {
   if (newAuth) {
     checkPlanStatus()
   } else {

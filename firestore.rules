@@ -95,9 +95,15 @@ service cloud.firestore {
                            request.auth.uid == resource.data.userId;
     }
     
-    // 購入予定（テスト用に完全開放）
+    // 購入予定
     match /users/{userId}/purchase_plans/{planId} {
-      allow read, write: if true;
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && 
+                      request.auth.uid == userId &&
+                      request.resource.data.userId == request.auth.uid;
+      allow update, delete: if request.auth != null && 
+                              request.auth.uid == userId &&
+                              resource.data.userId == request.auth.uid;
     }
     
     // 予算サマリー

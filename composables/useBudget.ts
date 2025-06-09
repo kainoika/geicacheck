@@ -128,13 +128,7 @@ export const useBudget = () => {
         updatedAt: serverTimestamp()
       })
     } catch (err: any) {
-      console.error('🚨 予算サマリー保存エラー:', err)
-      console.error('🚨 エラー詳細:', {
-        code: err.code,
-        message: err.message,
-        userId: user.value?.uid,
-        eventId: summary.eventId
-      })
+      console.error('予算サマリー保存エラー:', err)
     }
   }
 
