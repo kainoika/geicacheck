@@ -15,12 +15,38 @@ import type { PurchasePlan } from '~/types'
 
 export const usePurchasePlans = () => {
   const { $firestore } = useNuxtApp()
-  const { user } = useAuth()
+  const { user, isAuthenticated } = useAuth()
   
   // 購入予定の状態管理
   const purchasePlans = useState<PurchasePlan[]>('purchasePlans', () => [])
   const loading = useState('purchasePlansLoading', () => false)
   const error = useState<string | null>('purchasePlansError', () => null)
+
+  /**
+   * Firebase認証状態を待つ
+   */
+  const waitForAuth = async (maxWait = 5000): Promise<boolean> => {
+    if (isAuthenticated.value && user.value) {
+      return true
+    }
+
+    console.log('⏳ Firebase認証状態を待機中...')
+    let waited = 0
+    const interval = 100
+
+    while (waited < maxWait) {
+      if (isAuthenticated.value && user.value) {
+        console.log('✅ Firebase認証完了')
+        return true
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, interval))
+      waited += interval
+    }
+
+    console.warn('⚠️ Firebase認証タイムアウト')
+    return false
+  }
 
   /**
    * 購入予定に追加
@@ -34,13 +60,23 @@ export const usePurchasePlans = () => {
     circleName?: string,
     itemName?: string
   ): Promise<string> => {
-    if (!user.value) {
-      throw new Error('ユーザーが認証されていません')
+    // Firebase認証を待つ
+    const authReady = await waitForAuth()
+    if (!authReady) {
+      throw new Error('認証に失敗しました。ログインしてください。')
     }
     
     if (!$firestore) {
       throw new Error('Firestoreが初期化されていません')
     }
+
+    console.log('🔐 認証状態確認:', {
+      isAuthenticated: isAuthenticated.value,
+      userId: user.value!.uid,
+      hasFirestore: !!$firestore,
+      firebaseApp: $firestore.app?.name,
+      projectId: $firestore._delegate?._settings?.projectId || 'unknown'
+    })
 
     try {
       // 既存の購入予定をチェック
@@ -65,12 +101,29 @@ export const usePurchasePlans = () => {
         updatedAt: serverTimestamp()
       }
 
+      console.log('📝 購入予定データ準備完了:', planData)
+      console.log('🔗 Firestoreパス:', `users/${user.value.uid}/purchase_plans`)
+
       const plansRef = collection($firestore, 'users', user.value.uid, 'purchase_plans')
+      console.log('📋 コレクション参照作成完了')
+      
+      console.log('💾 Firestoreに保存開始...')
       const docRef = await addDoc(plansRef, planData)
+      console.log('✅ Firestore保存成功:', docRef.id)
 
       return docRef.id
-    } catch (err) {
-      console.error('購入予定追加エラー:', err)
+    } catch (err: any) {
+      console.error('🚨 購入予定追加エラー:', err)
+      console.error('🚨 エラー詳細:', {
+        code: err.code,
+        message: err.message,
+        userId: user.value?.uid,
+        circleId,
+        itemId,
+        eventId,
+        price,
+        quantity
+      })
       throw err
     }
   }
@@ -324,6 +377,45 @@ export const usePurchasePlans = () => {
     }
   }
 
+  /**
+   * Firestoreテスト用関数
+   */
+  const testFirestoreConnection = async (): Promise<boolean> => {
+    const authReady = await waitForAuth()
+    if (!authReady) {
+      console.error('🚨 認証が完了していません')
+      return false
+    }
+
+    try {
+      console.log('🧪 Firestore接続テスト開始')
+      const testData = {
+        test: true,
+        timestamp: new Date(),
+        userId: user.value!.uid
+      }
+
+      const testRef = collection($firestore, 'users', user.value!.uid, 'purchase_plans')
+      console.log('📝 テストデータ準備:', testData)
+      
+      const docRef = await addDoc(testRef, testData)
+      console.log('✅ テストデータ追加成功:', docRef.id)
+      
+      // テストデータを削除
+      await deleteDoc(doc($firestore, 'users', user.value!.uid, 'purchase_plans', docRef.id))
+      console.log('🗑️ テストデータ削除完了')
+      
+      return true
+    } catch (err: any) {
+      console.error('🚨 Firestore接続テスト失敗:', err)
+      console.error('🚨 エラー詳細:', {
+        code: err.code,
+        message: err.message
+      })
+      return false
+    }
+  }
+
   return {
     // State
     purchasePlans: readonly(purchasePlans),
@@ -340,6 +432,7 @@ export const usePurchasePlans = () => {
     calculateTotal,
     groupByCircle,
     watchPurchasePlans,
-    clearPurchasePlans
+    clearPurchasePlans,
+    testFirestoreConnection
   }
 }

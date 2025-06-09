@@ -97,7 +97,8 @@ const {
   addToPurchasePlan,
   removeFromPurchasePlan,
   updatePurchaseQuantity,
-  getPurchasePlanByItem
+  getPurchasePlanByItem,
+  testFirestoreConnection
 } = usePurchasePlans()
 
 // State
@@ -268,13 +269,21 @@ const handleDecrease = async () => {
 }
 
 // 初期化
-onMounted(() => {
+onMounted(async () => {
   console.log('🚀 PurchasePlanButton マウント:', {
     circleId: props.circleId,
     itemId: props.itemId,
     isAuthenticated: isAuthenticated.value,
     currentEvent: currentEvent.value?.id
   })
+  
+  // Firestore接続テスト（開発環境のみ）
+  if (process.dev && isAuthenticated.value) {
+    console.log('🧪 Firestore接続テスト実行...')
+    const testResult = await testFirestoreConnection()
+    console.log('🧪 テスト結果:', testResult ? '成功' : '失敗')
+  }
+  
   checkPlanStatus()
 })
 
