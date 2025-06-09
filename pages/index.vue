@@ -1,5 +1,16 @@
 <template>
     <div>
+        <!-- ログイン済みユーザーのローディング画面 -->
+        <div v-if="user && isRedirecting" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-400 to-blue-400">
+            <div class="text-center text-white">
+                <SparklesIcon class="h-16 w-16 mx-auto mb-4 animate-pulse" />
+                <div class="text-xl font-semibold mb-2">サークル一覧ページに移動中...</div>
+                <div class="text-lg opacity-90">しばらくお待ちください</div>
+            </div>
+        </div>
+
+        <!-- 未ログインユーザー向けランディングページ -->
+        <div v-else>
         <!-- ヒーローセクション -->
         <section class="text-center mt-4">
             <div
@@ -16,6 +27,14 @@
                 <button class="btn" style="background: white; color: #ff69b4;" @click="startApp">
                 サークル一覧を見る
                 </button>
+                <NuxtLink 
+                    to="/auth/login" 
+                    class="btn" 
+                    style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;"
+                >
+                    <LockClosedIcon style="width: 1.25rem; height: 1.25rem;" />
+                    ログインしてはじめる
+                </NuxtLink>
             </div>
             </div>
         </section>
@@ -159,6 +178,7 @@
                 </NuxtLink>
             </div>
         </section>
+        </div>
     </div>
 </template>
 
@@ -175,8 +195,47 @@ import {
     InformationCircleIcon,
     ComputerDesktopIcon,
     DevicePhoneMobileIcon,
-    DocumentArrowDownIcon
+    DocumentArrowDownIcon,
+    SparklesIcon
 } from '@heroicons/vue/24/outline'
+
+// 認証状態の確認とリダイレクト
+const { user } = useAuth()
+
+// リダイレクト状態管理
+const isRedirecting = ref(false)
+
+// ログイン済みユーザーはサークル一覧ページにリダイレクト
+const checkAuthAndRedirect = () => {
+  if (user.value) {
+    console.log('User is authenticated, redirecting to circles page')
+    isRedirecting.value = true
+    // 少し遅延を入れてスムーズなUXを提供
+    setTimeout(() => {
+      navigateTo('/circles')
+    }, 500)
+  }
+}
+
+// 初期チェック
+onMounted(() => {
+  // 認証状態が確定するまで少し待つ
+  setTimeout(() => {
+    checkAuthAndRedirect()
+  }, 100)
+})
+
+// ユーザー状態が変更された時の監視
+watch(() => user.value, (newUser, oldUser) => {
+  // undefinedから実際の値に変わった時のみ処理
+  if (oldUser === undefined && newUser) {
+    console.log('User logged in, redirecting to circles page')
+    isRedirecting.value = true
+    setTimeout(() => {
+      navigateTo('/circles')
+    }, 500)
+  }
+}, { immediate: true })
 
 // State
 const bookmarkedCircles = ref([])

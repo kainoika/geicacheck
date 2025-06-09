@@ -5,9 +5,9 @@
                 <!-- ロゴ・タイトル -->
                 <div class="flex items-center space-x-4">
                     <NuxtLink to="/" class="flex items-center space-x-2">
-                        <h1 class="text-xl font-bold text-pink-500">
-                            geika check!
-                        </h1>
+                            <h1 class="text-xl font-bold text-pink-500">
+                                geika check!
+                            </h1>
                     </NuxtLink>
                     
                     <!-- イベント選択ドロップダウン -->
@@ -193,8 +193,91 @@
             leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 -translate-y-2">
             <div v-if="showMobileMenu" class="md:hidden border-t border-gray-200 bg-white">
                 <div class="px-2 pt-2 pb-3 space-y-1">
-                    <!-- 主要機能 -->
+                    <!-- イベント選択 -->
                     <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        イベント選択
+                    </div>
+                    <div class="px-3 py-2">
+                        <button 
+                            @click="toggleMobileEventMenu"
+                            class="w-full flex items-center justify-between px-3 py-2 text-base font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                        >
+                            <span>{{ currentEvent?.shortName || 'イベント選択' }}</span>
+                            <ChevronDownIcon 
+                                class="h-4 w-4 transition-transform duration-200" 
+                                :class="{ 'rotate-180': showMobileEventMenu }"
+                            />
+                        </button>
+                        
+                        <!-- モバイル用イベントメニュー -->
+                        <Transition 
+                            enter-active-class="transition ease-out duration-100"
+                            enter-from-class="transform opacity-0 scale-95"
+                            enter-to-class="transform opacity-100 scale-100"
+                            leave-active-class="transition ease-in duration-75"
+                            leave-from-class="transform opacity-100 scale-100"
+                            leave-to-class="transform opacity-0 scale-95"
+                        >
+                            <div v-if="showMobileEventMenu" class="mt-2 space-y-1">
+                                <!-- アクティブイベント -->
+                                <div v-if="activeEvents.length > 0">
+                                    <div class="px-3 py-1 text-xs font-semibold text-gray-500">開催中</div>
+                                    <button 
+                                        v-for="event in activeEvents" 
+                                        :key="event.id"
+                                        @click="selectEventMobile(event.id)"
+                                        class="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100"
+                                        :class="{ 'bg-pink-50 text-pink-600': currentEvent?.id === event.id }"
+                                    >
+                                        <div class="font-medium">{{ event.shortName }}</div>
+                                        <div class="text-xs text-gray-500">{{ formatEventDate(event.eventDate) }}</div>
+                                    </button>
+                                </div>
+                                
+                                <!-- 今後のイベント -->
+                                <div v-if="upcomingEvents.length > 0">
+                                    <div class="px-3 py-1 text-xs font-semibold text-gray-500">今後</div>
+                                    <button 
+                                        v-for="event in upcomingEvents" 
+                                        :key="event.id"
+                                        @click="selectEventMobile(event.id)"
+                                        class="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100"
+                                        :class="{ 'bg-pink-50 text-pink-600': currentEvent?.id === event.id }"
+                                    >
+                                        <div class="font-medium">{{ event.shortName }}</div>
+                                        <div class="text-xs text-gray-500">{{ formatEventDate(event.eventDate) }}</div>
+                                    </button>
+                                </div>
+                                
+                                <!-- 過去のイベント -->
+                                <div v-if="completedEvents.length > 0">
+                                    <div class="px-3 py-1 text-xs font-semibold text-gray-500">過去</div>
+                                    <button 
+                                        v-for="event in completedEvents.slice(0, 3)" 
+                                        :key="event.id"
+                                        @click="selectEventMobile(event.id)"
+                                        class="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100"
+                                        :class="{ 'bg-pink-50 text-pink-600': currentEvent?.id === event.id }"
+                                    >
+                                        <div class="font-medium">{{ event.shortName }}</div>
+                                        <div class="text-xs text-gray-500">{{ formatEventDate(event.eventDate) }}</div>
+                                    </button>
+                                    
+                                    <!-- 全イベント一覧へのリンク -->
+                                    <NuxtLink 
+                                        to="/events"
+                                        class="block px-3 py-2 text-sm text-pink-600 rounded-md hover:bg-gray-100"
+                                        @click="showMobileMenu = false"
+                                    >
+                                        すべてのイベントを見る →
+                                    </NuxtLink>
+                                </div>
+                            </div>
+                        </Transition>
+                    </div>
+                    
+                    <!-- 主要機能 -->
+                    <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-4">
                         主要機能
                     </div>
                     <NuxtLink to="/circles"
@@ -220,6 +303,13 @@
                         <span v-if="bookmarkCount > 0" class="ml-2 bg-pink-500 text-white px-2 py-1 rounded-full text-xs">
                             {{ bookmarkCount }}
                         </span>
+                    </NuxtLink>
+                    <NuxtLink to="/events"
+                        class="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50"
+                        :class="{ 'text-pink-600 bg-pink-50': $route.path === '/events' }"
+                        @click="showMobileMenu = false">
+                        <CalendarIcon class="h-5 w-5 mr-2" />
+                        イベント一覧
                     </NuxtLink>
                     
                     <!-- ユーザー機能 -->
@@ -288,7 +378,8 @@ import {
     LockClosedIcon,
     BookOpenIcon,
     MapIcon,
-    HomeIcon
+    HomeIcon,
+    CalendarIcon
 } from '@heroicons/vue/24/outline'
 
 // Composables
@@ -310,6 +401,7 @@ const {
 const showMobileMenu = ref(false)
 const showUserMenu = ref(false)
 const showEventMenu = ref(false)
+const showMobileEventMenu = ref(false)
 
 // Methods
 const toggleMobileMenu = () => {
@@ -356,11 +448,23 @@ const formatEventDate = (date: Date) => {
     }).format(date)
 }
 
+// モバイル用メソッド
+const toggleMobileEventMenu = () => {
+    showMobileEventMenu.value = !showMobileEventMenu.value
+}
+
+const selectEventMobile = (eventId: string) => {
+    setCurrentEvent(eventId)
+    showMobileEventMenu.value = false
+    showMobileMenu.value = false
+}
+
 // Close menus when route changes
 watch(() => router.currentRoute.value.path, () => {
     showMobileMenu.value = false
     showUserMenu.value = false
     showEventMenu.value = false
+    showMobileEventMenu.value = false
 })
 
 // 初期化とイベントリスナー
