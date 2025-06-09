@@ -202,18 +202,38 @@
           </div>
 
           <!-- 処理済み情報 -->
-          <div v-else-if="request.processedAt" style="background: #f9fafb; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #6b7280;">
-            <div style="font-size: 0.875rem; color: #6b7280;">
-              {{ formatDate(request.processedAt) }} に{{ getStatusLabel(request.status) }}
+          <div v-else-if="request.processedAt || request.approvedAt" 
+               style="padding: 1rem; border-radius: 0.5rem; border-left: 4px solid;"
+               :style="{ 
+                 backgroundColor: request.status === 'rejected' ? '#fef2f2' : '#f0fdf4',
+                 borderLeftColor: getStatusColor(request.status)
+               }">
+            <div style="font-size: 0.875rem;" 
+                 :style="{ color: request.status === 'rejected' ? '#991b1b' : '#166534' }">
+              {{ formatDate(request.processedAt || request.approvedAt) }} に{{ getStatusLabel(request.status) }}
             </div>
-            <div v-if="request.processedBy" style="font-size: 0.875rem; color: #6b7280;">
-              処理者: {{ request.processedBy?.displayName || request.processedBy }}
+            <div v-if="request.processedBy || request.approvedBy" 
+                 style="font-size: 0.875rem; margin-top: 0.25rem;"
+                 :style="{ color: request.status === 'rejected' ? '#7f1d1d' : '#15803d' }">
+              処理者: {{ (request.processedBy?.displayName || request.processedBy || request.approvedBy) }}
             </div>
-            <div v-if="request.note" style="font-size: 0.875rem; color: #4b5563; margin-top: 0.5rem;">
+            <div v-if="request.note" 
+                 style="font-size: 0.875rem; margin-top: 0.5rem; padding: 0.5rem; border-radius: 0.25rem;"
+                 :style="{ 
+                   color: request.status === 'rejected' ? '#7f1d1d' : '#15803d',
+                   backgroundColor: request.status === 'rejected' ? '#fecaca' : '#bbf7d0'
+                 }">
               備考: {{ request.note }}
             </div>
-            <div v-if="request.rejectionReason && request.status === 'rejected'" style="font-size: 0.875rem; color: #dc2626; margin-top: 0.5rem;">
-              却下理由: {{ request.rejectionReason }}
+            
+            <!-- 却下理由を強調表示 -->
+            <div v-if="request.rejectionReason && request.status === 'rejected'" 
+                 style="margin-top: 0.75rem; padding: 0.75rem; background: #dc2626; color: white; border-radius: 0.375rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <XCircleIcon class="h-4 w-4" />
+                <span style="font-size: 0.875rem; font-weight: 600;">却下理由</span>
+              </div>
+              <p style="font-size: 0.875rem; margin: 0; line-height: 1.4;">{{ request.rejectionReason }}</p>
             </div>
           </div>
         </div>
@@ -280,10 +300,30 @@
         <p style="color: #6b7280; margin: 0 0 1rem 0; line-height: 1.5;">
           この申請を却下します。却下理由を入力してください。
         </p>
+        
+        <!-- デフォルトメッセージ選択 -->
+        <div style="margin-bottom: 1rem;">
+          <h4 style="font-size: 0.875rem; font-weight: 600; color: #111827; margin: 0 0 0.5rem 0;">
+            よく使用される却下理由
+          </h4>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+            <button
+              v-for="template in rejectReasonTemplates"
+              :key="template.id"
+              @click="selectRejectTemplate(template.message)"
+              style="padding: 0.5rem 0.75rem; background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; border-radius: 0.375rem; cursor: pointer; font-size: 0.75rem; transition: all 0.2s;"
+              onmouseover="this.style.backgroundColor='#e5e7eb'"
+              onmouseout="this.style.backgroundColor='#f3f4f6'"
+            >
+              {{ template.label }}
+            </button>
+          </div>
+        </div>
+        
         <textarea 
           v-model="rejectNote"
           placeholder="却下理由を入力してください（必須）"
-          style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; resize: vertical; min-height: 80px; margin-bottom: 1.5rem;"
+          style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; resize: vertical; min-height: 100px; margin-bottom: 1.5rem;"
           required
         ></textarea>
         <p v-if="rejectValidationError" style="color: #dc2626; font-size: 0.875rem; margin: -1rem 0 1rem 0;">
@@ -332,6 +372,50 @@ const showRejectModal = ref(false)
 const selectedRequestId = ref(null)
 const rejectNote = ref('')
 const rejectValidationError = ref(false)
+
+// 却下理由のテンプレート
+const rejectReasonTemplates = ref([
+  {
+    id: 'twitter_mismatch',
+    label: 'Twitter不一致',
+    message: '申請者のTwitterスクリーンネームとサークルの登録Twitter情報が一致しません。サークル代表者のTwitterアカウントから再度申請してください。'
+  },
+  {
+    id: 'no_twitter_connection',
+    label: 'Twitter未連携',
+    message: 'Twitterアカウントとの連携が確認できません。Twitterでログインしてから再度申請してください。'
+  },
+  {
+    id: 'insufficient_evidence',
+    label: '証明不足',
+    message: 'サークルとの関係を示す十分な証明が不足しています。サークル代表者であることを証明できる資料や詳細な申請理由を記載して再申請してください。'
+  },
+  {
+    id: 'invalid_circle',
+    label: '無効なサークル',
+    message: '指定されたサークル情報が見つからないか、無効です。正しいサークルID・サークル名を確認して再申請してください。'
+  },
+  {
+    id: 'duplicate_request',
+    label: '重複申請',
+    message: '同じサークルに対する申請が既に存在するか、既に編集権限が付与されています。重複申請はお控えください。'
+  },
+  {
+    id: 'no_reason',
+    label: '申請理由なし',
+    message: '申請理由が記載されていません。なぜ編集権限が必要なのか、サークルとの関係を詳しく記載して再申請してください。'
+  },
+  {
+    id: 'fake_circle',
+    label: '偽サークル疑い',
+    message: '申請内容から実在しないサークルまたは他人のサークルの可能性があります。正確な情報で再申請してください。'
+  },
+  {
+    id: 'policy_violation',
+    label: 'ポリシー違反',
+    message: '申請内容がサイトの利用規約に違反しています。規約を確認の上、適切な内容で再申請してください。'
+  }
+])
 
 // 認証状態の computed
 const isAuthenticated = computed(() => {
@@ -447,6 +531,11 @@ const rejectRequest = (requestId) => {
   showRejectModal.value = true
 }
 
+const selectRejectTemplate = (message) => {
+  rejectNote.value = message
+  rejectValidationError.value = false
+}
+
 const confirmApprove = async () => {
   try {
     await approveEditPermissionRequest(selectedRequestId.value)
@@ -500,21 +589,31 @@ const loadEditRequests = async () => {
 
 // 自動チェック項目生成
 const generateAutoChecks = (request) => {
+  const twitterMatch = request.applicantTwitterId && request.registeredTwitterId && 
+    request.applicantTwitterId.toLowerCase() === request.registeredTwitterId.toLowerCase()
+  
   return [
     {
       name: 'Twitter連携',
-      description: 'Twitterアカウント連携済み',
+      description: request.applicantTwitterId ? `@${request.applicantTwitterId}` : 'Twitter未連携',
       passed: !!request.applicantTwitterId
     },
     {
       name: 'スクリーンネーム一致',
-      description: 'サークルTwitterと一致',
-      passed: request.isAutoApproved
+      description: twitterMatch ? 
+        `申請者(@${request.applicantTwitterId})とサークル(@${request.registeredTwitterId})が一致` :
+        `申請者(@${request.applicantTwitterId || '未設定'})とサークル(@${request.registeredTwitterId || '未設定'})が不一致`,
+      passed: twitterMatch
     },
     {
       name: '申請理由',
-      description: '申請理由が記入済み',
+      description: request.adminNote ? '申請理由記入済み' : '申請理由なし',
       passed: !!request.adminNote
+    },
+    {
+      name: '自動承認',
+      description: request.isAutoApproved ? '自動承認済み' : '手動審査が必要',
+      passed: request.isAutoApproved
     }
   ]
 }
