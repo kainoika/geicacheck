@@ -212,6 +212,9 @@
             <div v-if="request.note" style="font-size: 0.875rem; color: #4b5563; margin-top: 0.5rem;">
               備考: {{ request.note }}
             </div>
+            <div v-if="request.rejectionReason && request.status === 'rejected'" style="font-size: 0.875rem; color: #dc2626; margin-top: 0.5rem;">
+              却下理由: {{ request.rejectionReason }}
+            </div>
           </div>
         </div>
       </div>
@@ -275,13 +278,17 @@
           申請を却下しますか？
         </h3>
         <p style="color: #6b7280; margin: 0 0 1rem 0; line-height: 1.5;">
-          この申請を却下します。却下理由を入力してください（任意）。
+          この申請を却下します。却下理由を入力してください。
         </p>
         <textarea 
           v-model="rejectNote"
-          placeholder="却下理由（任意）"
+          placeholder="却下理由を入力してください（必須）"
           style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; resize: vertical; min-height: 80px; margin-bottom: 1.5rem;"
+          required
         ></textarea>
+        <p v-if="rejectValidationError" style="color: #dc2626; font-size: 0.875rem; margin: -1rem 0 1rem 0;">
+          却下理由を入力してください
+        </p>
         <div style="display: flex; gap: 1rem; justify-content: end;">
           <button 
             @click="showRejectModal = false"
@@ -324,6 +331,7 @@ const showApproveModal = ref(false)
 const showRejectModal = ref(false)
 const selectedRequestId = ref(null)
 const rejectNote = ref('')
+const rejectValidationError = ref(false)
 
 // 認証状態の computed
 const isAuthenticated = computed(() => {
@@ -435,6 +443,7 @@ const approveRequest = (requestId) => {
 const rejectRequest = (requestId) => {
   selectedRequestId.value = requestId
   rejectNote.value = ''
+  rejectValidationError.value = false
   showRejectModal.value = true
 }
 
@@ -451,12 +460,19 @@ const confirmApprove = async () => {
 }
 
 const confirmReject = async () => {
+  // バリデーション
+  if (!rejectNote.value || rejectNote.value.trim() === '') {
+    rejectValidationError.value = true
+    return
+  }
+  
   try {
-    await rejectEditPermissionRequest(selectedRequestId.value, rejectNote.value || undefined)
+    await rejectEditPermissionRequest(selectedRequestId.value, rejectNote.value.trim())
     await loadEditRequests() // データを再読み込み
     showRejectModal.value = false
     selectedRequestId.value = null
     rejectNote.value = ''
+    rejectValidationError.value = false
   } catch (error) {
     console.error('却下エラー:', error)
     alert('却下処理に失敗しました')
