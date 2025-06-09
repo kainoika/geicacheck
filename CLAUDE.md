@@ -133,3 +133,7 @@ circle_permissions/        # Granted permissions
 
 ## Conversation Guidelines
 - 常に日本語で会話する
+
+## Other Guidelines
+
+- Do not use emojis in the appearance of your application, always use Heroicons
