@@ -157,18 +157,12 @@ circle_permissions/        # Granted permissions
 
 - Do not use emojis in the appearance of your application, always use Heroicons
 
-# 定期的なドキュメントの更新
+## 定期的なドキュメントの更新
 - README.mdとCLAUDE.mdも更新して、新しい機能とその使い方を記載してください。
 
 ## 理解困難なコードへの対処
 - IMPORTANT: 複雑な型定義には必ず使用例とコメントを追加
 - YOU MUST: 生成したコードの動作原理を説明できること
-
-## Commitメッセージに関するルール
-- Conventional Commitsに従うこと
-    - 例: `feat: 新しい機能を追加`、`fix: バグを修正`、`docs: ドキュメントの更新`
-- コミットメッセージは日本語で書くこと
-- コミットメッセージは簡潔に、何をしたかがわかるように書くこと
 
 ## 🎯 Development Philosophy
 
@@ -202,13 +196,10 @@ circle_permissions/        # Granted permissions
 - **Auto-generate comprehensive comments explaining complex logic**
 
 #### 4. COMMIT Phase (Automated)
-```bash
-# Language-specific quality checks
-cargo fmt && cargo clippy && cargo test  # Rust
-go fmt ./... && golangci-lint run && go test ./...  # Go
-npm run precommit  # TypeScript
-uv run --frozen ruff format . && uv run --frozen ruff check . && uv run --frozen pytest  # Python
-```
+- Conventional Commitsに従うこと
+    - 例: `feat: 新しい機能を追加`、`fix: バグを修正`、`docs: ドキュメントの更新`
+- コミットメッセージは日本語で書くこと
+- コミットメッセージは簡潔に、何をしたかがわかるように書くこと
 
 ### Documentation & Code Quality Requirements
 - **YOU MUST: Generate comprehensive documentation for every function**
