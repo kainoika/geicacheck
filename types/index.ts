@@ -315,6 +315,48 @@ export enum ErrorCodes {
   RATE_LIMIT_EXCEEDED = "RATE_LIMIT_EXCEEDED",
 }
 
+// 購入予定関連の型定義
+export interface PurchasePlan {
+  id: string;
+  userId: string;
+  circleId: string;
+  itemId: string;  // CircleItem.id
+  eventId: string;
+  quantity: number;
+  priceAtTime: number;  // 追加時点の価格（価格変動対応）
+  circleName?: string;  // キャッシュ用
+  itemName?: string;    // キャッシュ用
+  addedAt: Date;
+  updatedAt: Date;
+}
+
+// 予算サマリー
+export interface BudgetSummary {
+  eventId: string;
+  totalItems: number;
+  totalPrice: number;
+  byCircle: Array<{
+    circleId: string;
+    circleName: string;
+    items: number;
+    totalPrice: number;
+  }>;
+  updatedAt: Date;
+}
+
+// 拡張された頒布物情報（購入予定状態含む）
+export interface CircleItemWithPurchaseStatus extends CircleItem {
+  purchasePlan?: PurchasePlan;
+  isPurchasePlanned: boolean;
+}
+
+// エクスポートオプション
+export interface BudgetExportOptions {
+  format: 'csv' | 'pdf';
+  includeDetails: boolean;
+  groupBy: 'circle' | 'category' | 'none';
+}
+
 // ユーティリティ型
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;

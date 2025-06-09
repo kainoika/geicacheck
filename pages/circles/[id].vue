@@ -141,9 +141,11 @@
                 :can-edit="permissions.canManageItems"
                 :circle-id="circle.id"
                 :event-id="circle.eventId"
+                :circle-name="circle.circleName"
                 @add-item="addItem"
                 @update-item="updateItem"
                 @delete-item="deleteItem"
+                @purchase-plan-updated="handlePurchasePlanUpdate"
               />
             </div>
 
@@ -509,6 +511,12 @@ const updateGenres = async (genres: string[]) => {
     console.error('ジャンル更新エラー:', err)
     alert('ジャンルの更新に失敗しました')
   }
+}
+
+// 購入予定更新ハンドラー
+const handlePurchasePlanUpdate = () => {
+  // 購入予定が更新された際の処理
+  // 現在は特に何もしないが、将来的に状態の更新などを実装可能
 }
 
 // データ取得

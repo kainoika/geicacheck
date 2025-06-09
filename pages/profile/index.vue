@@ -185,6 +185,14 @@
           </div>
         </div>
 
+        <!-- 予算管理 -->
+        <div v-if="currentEvent" style="background: white; border-radius: 0.5rem; padding: 2rem; border: 1px solid #e5e7eb;">
+          <BudgetSummary 
+            :event-id="currentEvent.id"
+            :event-name="currentEvent.name"
+          />
+        </div>
+
         <!-- 編集権限情報 -->
         <div style="background: white; border-radius: 0.5rem; padding: 2rem; border: 1px solid #e5e7eb;">
           <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1.5rem 0; display: flex; align-items: center; gap: 0.5rem;">

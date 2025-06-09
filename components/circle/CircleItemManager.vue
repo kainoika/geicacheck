@@ -84,6 +84,18 @@
                 その他
               </a>
             </div>
+            
+            <!-- 購入予定ボタン -->
+            <div class="mt-3">
+              <PurchasePlanButton
+                :circle-id="circleId"
+                :item-id="item.id"
+                :price="item.price"
+                :circle-name="circleName"
+                :item-name="item.name"
+                @updated="handlePurchasePlanUpdate"
+              />
+            </div>
           </div>
           
           <div v-if="canEdit" class="flex items-center space-x-2 ml-4">
@@ -274,12 +286,14 @@ interface Props {
   canEdit: boolean
   circleId: string
   eventId: string
+  circleName?: string
 }
 
 interface Emits {
   (e: 'add-item', item: CircleItemFormData): void
   (e: 'update-item', id: string, item: CircleItemFormData): void
   (e: 'delete-item', id: string): void
+  (e: 'purchase-plan-updated'): void
 }
 
 const props = defineProps<Props>()
@@ -359,5 +373,9 @@ const deleteItem = (itemId: string) => {
   if (confirm('この頒布物を削除しますか？')) {
     emit('delete-item', itemId)
   }
+}
+
+const handlePurchasePlanUpdate = () => {
+  emit('purchase-plan-updated')
 }
 </script>
