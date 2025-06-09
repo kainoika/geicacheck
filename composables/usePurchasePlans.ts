@@ -78,6 +78,28 @@ export const usePurchasePlans = () => {
       projectId: $firestore._delegate?._settings?.projectId || 'unknown'
     })
 
+    // Firebase Auth tokenの確認
+    try {
+      const { $auth } = useNuxtApp()
+      if ($auth?.currentUser) {
+        const token = await $auth.currentUser.getIdToken(true)
+        console.log('🎫 Firebase Auth Token取得成功:', token ? 'あり' : 'なし')
+        
+        const tokenClaims = await $auth.currentUser.getIdTokenResult()
+        console.log('🎫 Token Claims:', {
+          uid: tokenClaims.claims.sub,
+          email: tokenClaims.claims.email,
+          authTime: new Date(tokenClaims.claims.auth_time * 1000),
+          issuedAt: new Date(tokenClaims.claims.iat * 1000),
+          expiration: new Date(tokenClaims.claims.exp * 1000)
+        })
+      } else {
+        console.warn('⚠️ Firebase Auth currentUser is null')
+      }
+    } catch (tokenError) {
+      console.error('🚨 Token取得エラー:', tokenError)
+    }
+
     try {
       // 既存の購入予定をチェック
       const existingPlan = await getPurchasePlanByItem(circleId, itemId, eventId)
@@ -108,6 +130,14 @@ export const usePurchasePlans = () => {
       console.log('📋 コレクション参照作成完了')
       
       console.log('💾 Firestoreに保存開始...')
+      
+      // 現在のFirestoreの認証コンテキストを確認
+      console.log('🎫 Firestore認証コンテキスト:', {
+        appName: $firestore.app.name,
+        currentUser: $firestore._delegate?._authCredentials?.currentUser?.uid,
+        settings: $firestore._settings
+      })
+      
       const docRef = await addDoc(plansRef, planData)
       console.log('✅ Firestore保存成功:', docRef.id)
 
