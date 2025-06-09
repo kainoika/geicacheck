@@ -37,7 +37,7 @@
       </div>
 
       <!-- ログイン済み状態 -->
-      <div v-else style="display: grid; grid-template-columns: 1fr; gap: 2rem;">
+      <div v-else class="profile-grid">
         <!-- プロフィール情報 -->
         <div style="background: white; border-radius: 0.5rem; padding: 2rem; border: 1px solid #e5e7eb;">
           <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
@@ -119,6 +119,25 @@
                 優先
               </div>
             </div>
+            
+            <!-- 編集権限統計 -->
+            <div v-if="userStats.editableCircles > 0" style="text-align: center; padding: 1rem; background: #f0fdf4; border-radius: 0.5rem;">
+              <div style="font-size: 1.5rem; font-weight: 700; color: #16a34a; margin-bottom: 0.25rem;">
+                {{ userStats.editableCircles }}
+              </div>
+              <div style="font-size: 0.875rem; color: #6b7280;">
+                編集可能サークル
+              </div>
+            </div>
+            
+            <div v-if="userStats.pendingRequests > 0" style="text-align: center; padding: 1rem; background: #fefce8; border-radius: 0.5rem;">
+              <div style="font-size: 1.5rem; font-weight: 700; color: #f59e0b; margin-bottom: 0.25rem;">
+                {{ userStats.pendingRequests }}
+              </div>
+              <div style="font-size: 0.875rem; color: #6b7280;">
+                申請中
+              </div>
+            </div>
           </div>
 
           <!-- アカウント設定 -->
@@ -129,23 +148,38 @@
             <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
               <button 
                 @click="exportBookmarks"
-                style="padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; font-weight: 500;"
+                :disabled="loading"
+                style="padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: 0.25rem;"
+                :style="{ opacity: loading ? 0.5 : 1, cursor: loading ? 'not-allowed' : 'pointer' }"
               >
-                <DocumentArrowDownIcon class="h-4 w-4 mr-1" /> ブックマークをCSVエクスポート
+                <DocumentArrowDownIcon class="h-4 w-4" /> ブックマークをCSVエクスポート
+              </button>
+              
+              <button 
+                @click="refreshEditPermissions"
+                :disabled="loading"
+                style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: 0.25rem;"
+                :style="{ opacity: loading ? 0.5 : 1, cursor: loading ? 'not-allowed' : 'pointer' }"
+              >
+                <ArrowPathIcon class="h-4 w-4" /> 権限情報を更新
               </button>
               
               <button 
                 @click="showDeleteConfirm = true"
-                style="padding: 0.5rem 1rem; background: #ef4444; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; font-weight: 500;"
+                :disabled="loading"
+                style="padding: 0.5rem 1rem; background: #ef4444; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: 0.25rem;"
+                :style="{ opacity: loading ? 0.5 : 1, cursor: loading ? 'not-allowed' : 'pointer' }"
               >
-                <TrashIcon class="h-4 w-4 mr-1" /> アカウント削除
+                <TrashIcon class="h-4 w-4" /> アカウント削除
               </button>
               
               <button 
                 @click="handleSignOut"
-                style="padding: 0.5rem 1rem; background: #6b7280; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; font-weight: 500;"
+                :disabled="loading"
+                style="padding: 0.5rem 1rem; background: #6b7280; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: 0.25rem;"
+                :style="{ opacity: loading ? 0.5 : 1, cursor: loading ? 'not-allowed' : 'pointer' }"
               >
-                <ArrowRightOnRectangleIcon class="h-4 w-4 mr-1" /> ログアウト
+                <ArrowRightOnRectangleIcon class="h-4 w-4" /> ログアウト
               </button>
             </div>
           </div>
@@ -157,52 +191,143 @@
             <PencilIcon class="h-5 w-5" /> 編集権限
           </h2>
           
-          <div v-if="editPermission.hasPermission" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; color: #16a34a; margin-bottom: 0.5rem;">
-              <CheckCircleIcon class="h-5 w-5" />
-              <span style="font-weight: 600;">編集権限が承認されています</span>
-            </div>
-            <p style="color: #15803d; font-size: 0.875rem; margin: 0;">
-              サークル情報の編集・追加が可能です。
-            </p>
+          <!-- ローディング状態 -->
+          <div v-if="loading" style="text-align: center; padding: 2rem;">
+            <div style="color: #6b7280;">権限情報を読み込み中...</div>
           </div>
           
-          <div v-else-if="editPermission.isPending" style="background: #fefce8; border: 1px solid #fde047; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; color: #ca8a04; margin-bottom: 0.5rem;">
-              <ClockIcon class="h-5 w-5" />
-              <span style="font-weight: 600;">編集権限申請中</span>
+          <!-- エラー状態 -->
+          <div v-else-if="error" style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; color: #dc2626; margin-bottom: 0.5rem;">
+              <ExclamationTriangleIcon class="h-5 w-5" />
+              <span style="font-weight: 600;">エラー</span>
             </div>
-            <p style="color: #a16207; font-size: 0.875rem; margin: 0;">
-              申請を審査中です。しばらくお待ちください。
-            </p>
-          </div>
-          
-          <div v-else style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; color: #64748b; margin-bottom: 0.5rem;">
-              <DocumentTextIcon class="h-5 w-5" />
-              <span style="font-weight: 600;">編集権限なし</span>
-            </div>
-            <p style="color: #475569; font-size: 0.875rem; margin: 0 0 1rem 0;">
-              サークル情報の編集・追加を行うには編集権限が必要です。
-            </p>
+            <p style="color: #991b1b; font-size: 0.875rem; margin: 0 0 1rem 0;">{{ error }}</p>
             <button 
-              @click="applyForEditPermission"
-              style="padding: 0.5rem 1rem; background: #ff69b4; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; font-weight: 500;"
+              @click="refreshEditPermissions"
+              style="padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; font-weight: 500;"
             >
-              編集権限を申請する
+              再試行
             </button>
           </div>
+          
+          <!-- 通常状態 -->
+          <div v-else>
+            <!-- 権限ステータス -->
+            <div v-if="editPermission.hasPermission" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; color: #16a34a; margin-bottom: 0.5rem;">
+                <CheckCircleIcon class="h-5 w-5" />
+                <span style="font-weight: 600;">編集権限が承認されています</span>
+              </div>
+              <p style="color: #15803d; font-size: 0.875rem; margin: 0 0 1rem 0;">
+                {{ editPermission.permissionCount }}件のサークル情報の編集・追加が可能です。
+              </p>
+              
+              <!-- 編集可能なサークル一覧 -->
+              <div v-if="circlePermissions.length > 0" style="background: white; border-radius: 0.375rem; padding: 1rem;">
+                <h4 style="font-size: 0.875rem; font-weight: 600; color: #166534; margin: 0 0 0.75rem 0;">編集可能なサークル</h4>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                  <div 
+                    v-for="permission in circlePermissions.slice(0, 3)" 
+                    :key="permission.id"
+                    style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem; background: #f9fafb; border-radius: 0.25rem; font-size: 0.875rem;"
+                  >
+                    <span style="color: #374151;">サークルID: {{ permission.circleId }}</span>
+                    <span style="color: #6b7280; font-size: 0.75rem;">{{ permission.permission }}</span>
+                  </div>
+                  <div v-if="circlePermissions.length > 3" style="text-align: center; padding: 0.5rem; color: #6b7280; font-size: 0.75rem;">
+                    他 {{ circlePermissions.length - 3 }}件のサークル
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div v-else-if="editPermission.isPending" style="background: #fefce8; border: 1px solid #fde047; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; color: #ca8a04; margin-bottom: 0.5rem;">
+                <ClockIcon class="h-5 w-5" />
+                <span style="font-weight: 600;">編集権限申請中</span>
+              </div>
+              <p style="color: #a16207; font-size: 0.875rem; margin: 0;">
+                {{ editPermission.pendingCount }}件の申請を審査中です。しばらくお待ちください。
+              </p>
+            </div>
+            
+            <div v-else style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; color: #64748b; margin-bottom: 0.5rem;">
+                <DocumentTextIcon class="h-5 w-5" />
+                <span style="font-weight: 600;">編集権限なし</span>
+              </div>
+              <p style="color: #475569; font-size: 0.875rem; margin: 0 0 1rem 0;">
+                サークル情報の編集・追加を行うには編集権限が必要です。<br>
+                各サークルの詳細ページから編集権限の申請を行ってください。
+              </p>
+              <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 0.375rem; padding: 0.75rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem; color: #0c4a6e; margin-bottom: 0.25rem;">
+                  <InformationCircleIcon class="h-4 w-4" />
+                  <span style="font-size: 0.875rem; font-weight: 600;">申請方法</span>
+                </div>
+                <p style="color: #075985; font-size: 0.75rem; margin: 0; line-height: 1.4;">
+                  1. サークル一覧やマップから編集したいサークルを見つけてください<br>
+                  2. サークル詳細ページの「編集権限を申請」ボタンをクリック<br>
+                  3. 審査後、編集権限が付与されます
+                </p>
+              </div>
+            </div>
 
-          <!-- 編集権限の説明 -->
-          <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 0.5rem; padding: 1rem;">
-            <h4 style="font-size: 0.875rem; font-weight: 600; color: #0c4a6e; margin: 0 0 0.5rem 0;">
-              編集権限について
-            </h4>
-            <ul style="font-size: 0.875rem; color: #075985; margin: 0; padding-left: 1rem; line-height: 1.5;">
-              <li>サークル情報の追加・編集が可能になります</li>
-              <li>申請には一定の条件があります（アカウント作成から7日経過など）</li>
-              <li>不適切な編集を行った場合、権限が取り消される場合があります</li>
-            </ul>
+            <!-- 申請履歴 -->
+            <div v-if="editPermissionRequests.length > 0" style="margin-bottom: 1rem;">
+              <h4 style="font-size: 1rem; font-weight: 600; color: #111827; margin: 0 0 0.75rem 0;">申請履歴</h4>
+              <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <div 
+                  v-for="request in editPermissionRequests.slice(0, 5)" 
+                  :key="request.id"
+                  style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; background: #f9fafb; border-radius: 0.375rem; border-left: 3px solid;" 
+                  :style="{ borderLeftColor: getRequestStatusColor(request.status) }"
+                >
+                  <div>
+                    <div style="font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.25rem;">
+                      サークルID: {{ request.circleId }}
+                    </div>
+                    <div style="font-size: 0.75rem; color: #6b7280;">
+                      {{ formatDate(request.createdAt) }}
+                    </div>
+                  </div>
+                  <div 
+                    style="padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 600; color: white;"
+                    :style="{ backgroundColor: getRequestStatusColor(request.status) }"
+                  >
+                    {{ getRequestStatusLabel(request.status) }}
+                  </div>
+                </div>
+                <div v-if="editPermissionRequests.length > 5" style="text-align: center; padding: 0.5rem; color: #6b7280; font-size: 0.75rem;">
+                  他 {{ editPermissionRequests.length - 5 }}件の申請
+                </div>
+              </div>
+            </div>
+
+            <!-- 権限統計 -->
+            <div v-if="editPermission.approvedCount > 0 || editPermission.rejectedCount > 0" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 0.75rem; margin-bottom: 1rem;">
+              <div v-if="editPermission.approvedCount > 0" style="text-align: center; padding: 0.75rem; background: #f0fdf4; border-radius: 0.375rem;">
+                <div style="font-size: 1.25rem; font-weight: 700; color: #16a34a; margin-bottom: 0.25rem;">{{ editPermission.approvedCount }}</div>
+                <div style="font-size: 0.75rem; color: #166534;">承認済み</div>
+              </div>
+              <div v-if="editPermission.rejectedCount > 0" style="text-align: center; padding: 0.75rem; background: #fef2f2; border-radius: 0.375rem;">
+                <div style="font-size: 1.25rem; font-weight: 700; color: #dc2626; margin-bottom: 0.25rem;">{{ editPermission.rejectedCount }}</div>
+                <div style="font-size: 0.75rem; color: #991b1b;">却下</div>
+              </div>
+            </div>
+
+            <!-- 編集権限の説明 -->
+            <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 0.5rem; padding: 1rem;">
+              <h4 style="font-size: 0.875rem; font-weight: 600; color: #0c4a6e; margin: 0 0 0.5rem 0;">
+                編集権限について
+              </h4>
+              <ul style="font-size: 0.875rem; color: #075985; margin: 0; padding-left: 1rem; line-height: 1.5;">
+                <li>サークル情報の追加・編集が可能になります</li>
+                <li>TwitterスクリーンネームがサークルのTwitter情報と一致する場合、自動承認されます</li>
+                <li>不適切な編集を行った場合、権限が取り消される場合があります</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -240,6 +365,8 @@
         </div>
       </div>
     </div>
+
+    <!-- 編集権限申請モーダルは削除 - サークル詳細ページから申請を行うため -->
   </div>
 </template>
 
@@ -254,38 +381,84 @@ import {
   PencilIcon,
   CheckCircleIcon,
   ClockIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
+  ExclamationTriangleIcon,
+  ArrowPathIcon,
+  InformationCircleIcon
 } from '@heroicons/vue/24/outline'
 
 // Composables
 const { user, isAuthenticated } = useAuth()
 const { bookmarks } = useBookmarks()
+const { 
+  submitEditPermissionRequest,
+  getUserEditPermissionRequests,
+  getUserCirclePermissions,
+  hasExistingRequest
+} = useEditPermissions()
+const {
+  userPermissions,
+  loadUserPermissions,
+  refreshPermissions
+} = useCirclePermissions()
+const { currentEvent } = useEvents()
+const { fetchCircleById } = useCircles()
 
 const showDeleteConfirm = ref(false)
+const loading = ref(false)
+const error = ref(null)
+
+// 編集権限関連の状態
+const editPermissionRequests = ref([])
+const circlePermissions = ref([])
 
 // 統計情報の計算
 const userStats = computed(() => {
-  if (!bookmarks.value) {
+  const bookmarkStats = {
+    totalBookmarks: bookmarks.value?.length || 0,
+    checkCount: bookmarks.value?.filter(b => b.category === 'check').length || 0,
+    interestedCount: bookmarks.value?.filter(b => b.category === 'interested').length || 0,
+    priorityCount: bookmarks.value?.filter(b => b.category === 'priority').length || 0
+  }
+  
+  const permissionStats = {
+    editableCircles: circlePermissions.value.length,
+    pendingRequests: editPermissionRequests.value.filter(r => r.status === 'pending').length,
+    approvedRequests: editPermissionRequests.value.filter(r => r.status === 'approved').length,
+    rejectedRequests: editPermissionRequests.value.filter(r => r.status === 'rejected').length
+  }
+  
+  return { ...bookmarkStats, ...permissionStats }
+})
+
+// 編集権限の状態（安全なアクセス）
+const editPermission = computed(() => {
+  // 認証状態をチェック
+  if (!user.value || !isAuthenticated.value) {
     return {
-      totalBookmarks: 0,
-      checkCount: 0,
-      interestedCount: 0,
-      priorityCount: 0
+      hasPermission: false,
+      isPending: false,
+      permissionCount: 0,
+      pendingCount: 0,
+      approvedCount: 0,
+      rejectedCount: 0
     }
   }
   
+  const permissions = circlePermissions.value || []
+  const requests = editPermissionRequests.value || []
+  
+  const hasActivePermissions = permissions.length > 0
+  const hasPendingRequests = requests.some(req => req.status === 'pending')
+  
   return {
-    totalBookmarks: bookmarks.value.length,
-    checkCount: bookmarks.value.filter(b => b.category === 'check').length,
-    interestedCount: bookmarks.value.filter(b => b.category === 'interested').length,
-    priorityCount: bookmarks.value.filter(b => b.category === 'priority').length
+    hasPermission: hasActivePermissions,
+    isPending: hasPendingRequests,
+    permissionCount: permissions.length,
+    pendingCount: requests.filter(req => req.status === 'pending').length,
+    approvedCount: requests.filter(req => req.status === 'approved' || req.status === 'auto_approved').length,
+    rejectedCount: requests.filter(req => req.status === 'rejected').length
   }
-})
-
-// 編集権限の状態（実装は後で必要に応じて追加）
-const editPermission = ref({
-  hasPermission: false,
-  isPending: false
 })
 
 const recentActivities = ref([
@@ -311,53 +484,276 @@ const recentActivities = ref([
 
 // Methods
 const formatDate = (date) => {
-  const now = new Date()
-  const diff = now - date
-  const minutes = Math.floor(diff / (1000 * 60))
-  const hours = Math.floor(diff / (1000 * 60 * 60))
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+  if (!date) return '不明'
+  
+  const targetDate = date instanceof Date ? date : new Date(date)
+  return new Intl.DateTimeFormat('ja-JP', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(targetDate)
+}
 
-  if (minutes < 60) {
-    return `${minutes}分前`
-  } else if (hours < 24) {
-    return `${hours}時間前`
-  } else {
-    return `${days}日前`
+// 申請ステータス関連のヘルパー関数
+const getRequestStatusColor = (status) => {
+  switch (status) {
+    case 'pending': return '#f59e0b'
+    case 'approved': 
+    case 'auto_approved': return '#16a34a'
+    case 'rejected': return '#dc2626'
+    default: return '#6b7280'
   }
 }
 
-const exportBookmarks = () => {
-  // 実際の実装では useBookmarks().exportToCSV() を使用
-  console.log('Exporting bookmarks to CSV...')
-  alert('ブックマークをCSVファイルとしてダウンロードしました')
+const getRequestStatusLabel = (status) => {
+  switch (status) {
+    case 'pending': return '審査中'
+    case 'approved': return '承認済み'
+    case 'auto_approved': return '自動承認'
+    case 'rejected': return '却下'
+    default: return '不明'
+  }
 }
 
-const applyForEditPermission = () => {
-  // 実際の実装では API を呼び出し
-  editPermission.value.isPending = true
-  console.log('Applying for edit permission...')
-  alert('編集権限の申請を送信しました')
+const exportBookmarks = async () => {
+  try {
+    loading.value = true
+    
+    // 実際の実装では useBookmarks()のエクスポート機能を使用
+    // const { exportToCSV } = useBookmarks()
+    // await exportToCSV()
+    
+    console.log('Exporting bookmarks to CSV...')
+    
+    // ダミーデータでCSVエクスポートのシミュレーション
+    const csvContent = generateDummyCSV()
+    downloadCSV(csvContent, `bookmarks_${new Date().toISOString().split('T')[0]}.csv`)
+    
+    alert('ブックマークをCSVファイルとしてダウンロードしました')
+    
+  } catch (err) {
+    console.error('CSVエクスポートエラー:', err)
+    alert('CSVエクスポートに失敗しました')
+  } finally {
+    loading.value = false
+  }
 }
+
+const generateDummyCSV = () => {
+  const headers = ['サークル名', 'ジャンル', '配置', 'カテゴリ', 'メモ', 'Twitter']
+  const rows = [
+    ['サンプルサークル1', 'アイカツ!', 'A-01', 'チェック', '新刊が気になる', '@sample1'],
+    ['サンプルサークル2', 'アイカツスターズ!', 'B-15', '優先', '限定グッズあり', '@sample2']
+  ]
+  
+  return [headers, ...rows]
+    .map(row => row.map(cell => `"${cell}"`).join(','))
+    .join('\n')
+}
+
+const downloadCSV = (content, filename) => {
+  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' })
+  const link = document.createElement('a')
+  
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob)
+    link.setAttribute('href', url)
+    link.setAttribute('download', filename)
+    link.style.visibility = 'hidden'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+}
+
+// applyForEditPermission 関数は削除 - サークル詳細ページから申請を行うため
+
+// handleCircleSelection 関数は削除 - サークル詳細ページから申請を行うため
+
+// handleApplicationSuccess 関数は削除 - サークル詳細ページから申請を行うため
 
 const handleSignOut = async () => {
-  // 実際の実装では useAuth().signOut() を使用
-  await navigateTo('/auth/login')
+  try {
+    loading.value = true
+    
+    // 実際の実装では useAuth().signOut() を使用
+    // const { signOut } = useAuth()
+    // await signOut()
+    
+    console.log('Signing out user...')
+    await navigateTo('/auth/login')
+    
+  } catch (err) {
+    console.error('ログアウトエラー:', err)
+    alert('ログアウトに失敗しました')
+  } finally {
+    loading.value = false
+  }
 }
 
 const deleteAccount = async () => {
-  // 実際の実装では useAuth().deleteAccount() を使用
-  console.log('Deleting account...')
-  alert('アカウントを削除しました')
-  await navigateTo('/')
+  try {
+    loading.value = true
+    showDeleteConfirm.value = false
+    
+    // 実際の実装では useAuth().deleteAccount() を使用
+    // const { deleteAccount } = useAuth()
+    // await deleteAccount()
+    
+    console.log('Deleting account...')
+    
+    // アカウント削除のシミュレーション
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    alert('アカウントを削除しました')
+    await navigateTo('/')
+    
+  } catch (err) {
+    console.error('アカウント削除エラー:', err)
+    alert('アカウントの削除に失敗しました')
+  } finally {
+    loading.value = false
+  }
 }
 
-// 初期化
-onMounted(() => {
-  // 実際の実装では認証状態をチェック
-  if (!user.value) {
-    navigateTo('/auth/login')
+// データ取得関数
+const loadUserEditPermissions = async () => {
+  // 認証状態とFirebase初期化をチェック
+  if (!user.value || !isAuthenticated.value) {
+    console.log('🚫 User not authenticated, skipping edit permissions load')
+    // データをクリア
+    circlePermissions.value = []
+    editPermissionRequests.value = []
+    return
   }
+  
+  if (!checkFirebaseInit()) {
+    console.error('🚨 Firebase not initialized, cannot load permissions')
+    return
+  }
+  
+  try {
+    loading.value = true
+    error.value = null
+    
+    console.log('📊 Loading edit permissions for authenticated user:', user.value.uid)
+    
+    // シーケンシャルにデータを取得（エラー追跡を改善）
+    console.log('📂 Fetching circle permissions...')
+    const permissions = await getUserCirclePermissions(user.value.uid).catch(err => {
+      console.error('🚨 getUserCirclePermissions error:', err)
+      if (err.code === 'permission-denied') {
+        console.error('🚫 Permission denied - User may not be properly authenticated')
+      }
+      return []
+    })
+    
+    console.log('📄 Fetching permission requests...')
+    const requests = await getUserEditPermissionRequests(user.value.uid).catch(err => {
+      console.error('🚨 getUserEditPermissionRequests error:', err)
+      if (err.code === 'permission-denied') {
+        console.error('🚫 Permission denied - User may not be properly authenticated')
+      }
+      return []
+    })
+    
+    console.log('✅ Loaded permissions:', permissions?.length || 0, 'items')
+    console.log('✅ Loaded requests:', requests?.length || 0, 'items')
+    
+    circlePermissions.value = permissions || []
+    editPermissionRequests.value = requests || []
+    
+    // 成功時にエラーをクリア
+    if (error.value && (permissions || requests)) {
+      error.value = null
+    }
+    
+  } catch (err) {
+    console.error('🚨 編集権限データ取得エラー:', err)
+    
+    if (err.code === 'permission-denied') {
+      error.value = 'アクセス権限がありません。再ログインしてください。'
+    } else if (err.code === 'unauthenticated') {
+      error.value = '認証が必要です。ログインしてください。'
+    } else {
+      error.value = `データの取得に失敗しました: ${err.message || err}`
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
+// 権限データのリフレッシュ
+const refreshEditPermissions = async () => {
+  try {
+    console.log('🔄 Refreshing edit permissions...')
+    await Promise.all([
+      loadUserEditPermissions(),
+      loadUserPermissions() // useCirclePermissions の関数を使用
+    ])
+    console.log('✅ Edit permissions refreshed')
+  } catch (err) {
+    console.error('🚨 Permission refresh error:', err)
+  }
+}
+
+// 初期化（認証状態を正しくチェック）
+onMounted(async () => {
+  console.log('🚀 Profile page mounted')
+  console.log('👤 User:', user.value?.uid || 'Not logged in')
+  console.log('🔐 Authenticated:', isAuthenticated.value)
+  
+  // 認証状態をチェック
+  if (!isAuthenticated.value || !user.value) {
+    console.log('🚫 User not authenticated, redirecting to login')
+    await navigateTo('/auth/login')
+    return
+  }
+  
+  // Firebase初期化チェック
+  if (!checkFirebaseInit()) {
+    console.error('🚨 Firebase not initialized')
+    return
+  }
+  
+  // ユーザーデータを読み込み
+  console.log('📊 Starting to load user edit permissions')
+  await loadUserEditPermissions()
 })
+
+// Firebase初期化チェック
+const checkFirebaseInit = () => {
+  const { $firestore } = useNuxtApp()
+  
+  if (!$firestore) {
+    console.error('🚨 Firestore is not initialized')
+    error.value = 'Firebaseが初期化されていません'
+    return false
+  }
+  
+  console.log('✅ Firestore is initialized')
+  return true
+}
+
+// ユーザー状態監視
+watch(() => user.value, async (newUser, oldUser) => {
+  console.log('🔍 User state changed:', { old: oldUser?.uid, new: newUser?.uid })
+  
+  if (newUser && newUser !== oldUser) {
+    console.log('👤 User logged in, loading permissions')
+    if (checkFirebaseInit()) {
+      await loadUserEditPermissions()
+    }
+  } else if (!newUser && oldUser) {
+    console.log('🚪 User logged out, clearing state')
+    // ユーザーがログアウトした場合、状態をクリア
+    editPermissionRequests.value = []
+    circlePermissions.value = []
+    error.value = null
+  }
+}, { immediate: false })
 
 // SEO
 useHead({
@@ -367,3 +763,153 @@ useHead({
   ]
 })
 </script>
+
+<style scoped>
+/* レスポンシブプロフィールグリッド */
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .profile-grid {
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+  }
+}
+
+/* ボタンのホバーエフェクト */
+button:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+/* カードのホバーエフェクト */
+.profile-grid > div {
+  transition: box-shadow 0.2s ease;
+}
+
+.profile-grid > div:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* 統計カードのアニメーション */
+.profile-grid div[style*="grid-template-columns"] > div {
+  transition: transform 0.2s ease;
+}
+
+.profile-grid div[style*="grid-template-columns"] > div:hover {
+  transform: translateY(-2px);
+}
+
+/* モーダルオーバーレイのアニメーション */
+div[style*="position: fixed"][style*="inset: 0"] {
+  animation: fadeIn 0.2s ease-out;
+}
+
+div[style*="position: fixed"][style*="inset: 0"] > div {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* モバイル最適化 */
+@media (max-width: 640px) {
+  .profile-grid {
+    gap: 1rem;
+  }
+  
+  /* ボタンを縦並びに */
+  div[style*="display: flex; flex-wrap: wrap"] {
+    flex-direction: column !important;
+  }
+  
+  /* 統計カードを2列にレイアウト */
+  div[style*="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr))"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+  
+  /* カードのパディングを調整 */
+  .profile-grid > div {
+    padding: 1.5rem !important;
+  }
+}
+
+/* 高DPI画面での最適化 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  button,
+  .profile-grid > div {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* 印刷スタイル */
+@media print {
+  div[style*="position: fixed"] {
+    display: none !important;
+  }
+  
+  button {
+    display: none !important;
+  }
+  
+  .profile-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+}
+
+/* フォーカススタイルの改善 */
+button:focus {
+  outline: 2px solid #ff69b4;
+  outline-offset: 2px;
+}
+
+/* スクロール最適化 */
+.profile-grid {
+  scroll-behavior: smooth;
+}
+
+/* 読み込み状態のスタイル */
+div[style*="text-align: center; padding: 2rem"] {
+  animation: pulse 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
+}
+</style>
