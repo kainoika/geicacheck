@@ -39,7 +39,7 @@ This is a **Nuxt 3 SPA** application for managing circle information at Aikatsu 
 
 **Composables-First State Management:**
 - Uses Vue 3 composables instead of Pinia/Vuex for state management
-- Each domain has its own composable (`useAuth`, `useCircles`, `useBookmarks`, `useEvents`)
+- Each domain has its own composable (`useAuth`, `useCircles`, `useBookmarks`, `useEvents`, `useEditPermissions`, `useCirclePermissions`)
 - State persists across navigation using `useState()` with unique keys
 - Follow the established pattern: state variables, computed properties, methods, return readonly refs
 
@@ -54,6 +54,13 @@ This is a **Nuxt 3 SPA** application for managing circle information at Aikatsu 
 - Circles belong to specific events via `eventId` field
 - Bookmarks are event-specific for data isolation
 - Event switching functionality throughout the application
+
+**Edit Permission System:**
+- Twitter-based authentication for circle editing rights
+- Auto-approval when Twitter screen names match circle's Twitter information
+- Manual admin approval for unmatched requests
+- Granular permissions (image upload, genre editing, etc.)
+- Request tracking and management system with status workflow
 
 **Component Organization:**
 - Feature-based component grouping (`circle/`, `bookmark/`, `layout/`, `ui/`, `map/`)
@@ -81,10 +88,12 @@ circle_permissions/        # Granted permissions
 ```
 
 **Authentication & Authorization:**
-- Twitter OAuth via Firebase Auth
+- Twitter OAuth via Firebase Auth with screen name extraction
 - User types: `general`, `circle`, `admin`
 - Circle editing requires permission approval system
-- Auto-approval for matching Twitter IDs
+- Auto-approval when applicant's Twitter screen name matches circle's Twitter information
+- Admin dashboard at `/admin/edit-requests` for permission management
+- Middleware protection for admin routes
 
 ### Development Guidelines
 
@@ -96,12 +105,17 @@ circle_permissions/        # Granted permissions
 5. Ensure event-specific data isolation where applicable
 6. Replace dummy/sample data with real Firebase integration immediately
 7. Use proper authentication checks for admin-only features
+8. For edit permission features, always check both user authentication and circle ownership/permissions
+9. Use `useCirclePermissions()` for permission checks and `useEditPermissions()` for permission requests
 
 **Firebase Operations:**
 - Always use server timestamps for created/updated fields
 - Handle offline scenarios gracefully
 - Use proper Firestore security rules (defined in `firestore.rules`)
 - Follow the established error handling patterns in composables
+- Admin users can read/write all user data for permission management
+- Permission requests use collection name `edit_permission_requests` (with underscores)
+- Circle permissions use collection name `circle_permissions` (with underscores)
 
 **State Management:**
 - Use `useState()` with descriptive keys for persistent state
@@ -124,12 +138,17 @@ circle_permissions/        # Granted permissions
 
 ### Important Files
 - `nuxt.config.ts` - Main configuration (SPA mode, Firebase env vars, component settings)
-- `types/index.ts` - Complete type definitions
+- `types/index.ts` - Complete type definitions including EditPermissionRequest and CirclePermission
 - `composables/` - Core business logic and state management
+  - `composables/useEditPermissions.ts` - Permission request management
+  - `composables/useCirclePermissions.ts` - Permission checking and user permission cache
 - `plugins/firebase.client.ts` - Firebase service initialization
-- `firestore.rules` - Database security rules
+- `firestore.rules` - Database security rules including edit permission rules
 - `scripts/` - Data migration and management utilities
 - `components/map/EventMap.vue` - Interactive map component for event layouts
+- `components/ui/EditPermissionModal.vue` - Permission request modal with Twitter matching
+- `pages/admin/edit-requests.vue` - Admin dashboard for permission management
+- `middleware/admin.ts` - Admin route protection middleware
 
 ## Conversation Guidelines
 - 常に日本語で会話する
@@ -137,3 +156,63 @@ circle_permissions/        # Granted permissions
 ## Other Guidelines
 
 - Do not use emojis in the appearance of your application, always use Heroicons
+
+# 定期的なドキュメントの更新
+- README.mdとCLAUDE.mdも更新して、新しい機能とその使い方を記載してください。
+
+## 理解困難なコードへの対処
+- IMPORTANT: 複雑な型定義には必ず使用例とコメントを追加
+- YOU MUST: 生成したコードの動作原理を説明できること
+
+## Commitメッセージに関するルール
+- Conventional Commitsに従うこと
+    - 例: `feat: 新しい機能を追加`、`fix: バグを修正`、`docs: ドキュメントの更新`
+- コミットメッセージは日本語で書くこと
+- コミットメッセージは簡潔に、何をしたかがわかるように書くこと
+
+## 🎯 Development Philosophy
+
+### Core Principles
+- **Engineer time is precious** - Automate everything possible
+- **Quality without bureaucracy** - Smart defaults over process
+- **Proactive assistance** - Suggest improvements before asked
+- **Self-documenting code** - Generate docs automatically
+- **Continuous improvement** - Learn from patterns and optimize
+
+### Efficient Professional Workflow
+**Smart Explore-Plan-Code-Commit with time-saving automation**
+
+#### 1. EXPLORE Phase (Automated)
+- **Use AI to quickly scan and summarize codebase**
+- **Auto-identify dependencies and impact areas**
+- **Generate dependency graphs automatically**
+- **Present findings concisely with actionable insights**
+
+#### 2. PLAN Phase (AI-Assisted)
+- **Generate multiple implementation approaches**
+- **Auto-create test scenarios from requirements**
+- **Predict potential issues using pattern analysis**
+- **Provide time estimates for each approach**
+
+#### 3. CODE Phase (Accelerated)
+- **Generate boilerplate with full documentation**
+- **Auto-complete repetitive patterns**
+- **Real-time error detection and fixes**
+- **Parallel implementation of independent components**
+- **Auto-generate comprehensive comments explaining complex logic**
+
+#### 4. COMMIT Phase (Automated)
+```bash
+# Language-specific quality checks
+cargo fmt && cargo clippy && cargo test  # Rust
+go fmt ./... && golangci-lint run && go test ./...  # Go
+npm run precommit  # TypeScript
+uv run --frozen ruff format . && uv run --frozen ruff check . && uv run --frozen pytest  # Python
+```
+
+### Documentation & Code Quality Requirements
+- **YOU MUST: Generate comprehensive documentation for every function**
+- **YOU MUST: Add clear comments explaining business logic**
+- **YOU MUST: Create examples in documentation**
+- **YOU MUST: Auto-fix all linting/formatting issues**
+- **YOU MUST: Generate unit tests for new code**
