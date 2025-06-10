@@ -9,9 +9,12 @@ export const useEventMap = () => {
   const error = ref<string | null>(null)
 
   const loadEventMap = async (eventId: string): Promise<string> => {
+    console.log('🔄 loadEventMap called for:', eventId)
+    
     // キャッシュから取得を試行
     if (mapCache.has(eventId)) {
       const cachedContent = mapCache.get(eventId)!
+      console.log('💾 Using cached map content:', cachedContent.length, 'chars')
       currentMapContent.value = cachedContent
       return cachedContent
     }
@@ -19,28 +22,43 @@ export const useEventMap = () => {
     try {
       isLoading.value = true
       error.value = null
+      console.log('📡 Loading map from server...')
 
       const mapFileName = getMapFileName(eventId)
+      console.log('📁 Map filename:', mapFileName)
+      
       const response = await fetch(`/${mapFileName}`)
+      console.log('📥 Fetch response:', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok
+      })
       
       if (!response.ok) {
         throw new Error(`Failed to fetch map: ${response.status} ${response.statusText}`)
       }
 
       const svgContent = await response.text()
+      console.log('📄 SVG content loaded:', {
+        length: svgContent.length,
+        starts: svgContent.substring(0, 100),
+        containsSvg: svgContent.includes('<svg')
+      })
       
       // キャッシュに保存
       mapCache.set(eventId, svgContent)
       currentMapContent.value = svgContent
+      console.log('✅ Map loaded and cached successfully')
       
       return svgContent
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error'
       error.value = `マップの読み込みに失敗しました: ${errorMessage}`
-      console.error('Map loading error:', err)
+      console.error('❌ Map loading error:', err)
       throw err
     } finally {
       isLoading.value = false
+      console.log('🏁 loadEventMap finished')
     }
   }
 

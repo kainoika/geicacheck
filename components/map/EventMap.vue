@@ -30,7 +30,12 @@
         }"
       >
         <!-- 実際のマップSVGを読み込み -->
-        <div v-if="isMapLoaded && mapSvgContent" v-html="mapSvgContent" style="position: relative; width: 1000px; height: 1000px;"></div>
+        <div v-if="isMapLoaded && mapSvgContent" style="position: relative; width: 100%; height: 100%; border: 2px solid purple; background: cyan; min-height: 500px;">
+          <div v-html="mapSvgContent" style="width: 100%; height: 100%; border: 2px solid red; background: yellow; min-height: 500px;"></div>
+          <div style="position: absolute; top: 10px; left: 10px; background: purple; color: white; padding: 5px; font-size: 12px; z-index: 1000;">
+            🟣 SVG Content Rendered ({{ mapSvgContent.length }} chars)
+          </div>
+        </div>
         
         <!-- エラー状態 -->
         <div v-else-if="mapError" style="width: 1000px; height: 1000px; display: flex; align-items: center; justify-content: center; background: #fef2f2; border: 2px solid #fecaca; border-radius: 8px;">
@@ -452,30 +457,53 @@ watch(() => props.eventId, async (newEventId) => {
 // 初期化
 onMounted(async () => {
   const eventId = props.eventId || 'geika-32'
-  console.log('🗺️ Loading initial map for event:', eventId)
+  console.log('🗺️ EventMap component mounted')
+  console.log('🎯 Props received:', {
+    eventId: props.eventId,
+    visibleBookmarks: props.visibleBookmarks?.length || 0
+  })
+  console.log('📍 Loading initial map for event:', eventId)
+  
   try {
     await loadEventMap(eventId)
+    console.log('✅ Map SVG loaded successfully')
+    console.log('📊 Map state after load:', {
+      isMapLoaded: isMapLoaded.value,
+      mapSvgContentLength: mapSvgContent.value.length,
+      error: mapError.value
+    })
+    
     // マップを画面中央に初期配置
     nextTick(() => {
+      console.log('🎯 Centering map...')
       centerMap()
+      console.log('✅ Map centered')
     })
   } catch (error) {
-    console.error('Failed to load initial map:', error)
+    console.error('❌ Failed to load initial map:', error)
   }
 })
 
 // マップを画面中央に配置する関数
 const centerMap = () => {
+  console.log('🎯 centerMap called')
   if (mapContainer.value) {
     const containerWidth = mapContainer.value.clientWidth
     const containerHeight = mapContainer.value.clientHeight
     
-    // SVGのサイズは1000x1000なので、適切にセンタリング
-    const mapWidth = 1000 * zoomLevel.value
-    const mapHeight = 1000 * zoomLevel.value
+    console.log('📐 Center calculation:', {
+      containerSize: { width: containerWidth, height: containerHeight },
+      zoomLevel: zoomLevel.value,
+      oldPan: { x: panX.value, y: panY.value }
+    })
     
-    panX.value = (containerWidth - mapWidth) / 2
-    panY.value = (containerHeight - mapHeight) / 2
+    // 初期位置を0,0に設定してSVGが確実に表示されるようにする
+    panX.value = 0
+    panY.value = 0
+    
+    console.log('✅ Map centered to (0,0)')
+  } else {
+    console.log('❌ mapContainer.value is null, cannot center')
   }
 }
 

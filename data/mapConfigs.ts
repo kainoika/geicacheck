@@ -1,5 +1,16 @@
 import type { EventMapConfig } from '~/types'
 
+// 座標を簡素化するためのヘルパー関数
+const createCoordinateMapping = (
+  coordinates: Record<string, { x: number; y: number }>
+): Record<string, { x: number; y: number; width: number; height: number }> => {
+  const mapping: Record<string, { x: number; y: number; width: number; height: number }> = {}
+  for (const [key, coord] of Object.entries(coordinates)) {
+    mapping[key] = { ...coord, width: 30, height: 25 }
+  }
+  return mapping
+}
+
 export const mapConfigs: EventMapConfig[] = [
   {
     eventId: 'geika-32',
