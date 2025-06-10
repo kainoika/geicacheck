@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed, readonly } from 'vue'
 import type { EventMapConfig } from '~/types'
 import { getMapConfig as getConfigFromData } from '~/data/mapConfigs'
 
