@@ -244,7 +244,7 @@ const sidebarOpen = ref(false)
 
 // Composables
 const { bookmarks, getBookmarksByEventId, fetchBookmarksWithCircles } = useBookmarks()
-const { currentEvent } = useEvents()
+const { currentEvent, fetchEvents } = useEvents()
 const { formatPlacement } = useCircles()
 
 // ブックマークデータ
@@ -260,7 +260,10 @@ const initError = ref<string | null>(null)
 onMounted(async () => {
   try {
     console.log('Map page mounted')
-    console.log('Current event:', currentEvent.value)
+    
+    // イベント情報を取得
+    await fetchEvents()
+    console.log('Events loaded, current event:', currentEvent.value)
     
     // ブックマーク情報を取得
     await fetchBookmarksWithCircles()
