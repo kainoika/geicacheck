@@ -20,31 +20,47 @@
       <div 
         :style="{
           transform: `translate(${panX}px, ${panY}px) scale(${zoomLevel})`,
-          transformOrigin: 'center center',
+          transformOrigin: '0 0',
           transition: isPanning ? 'none' : 'transform 0.3s ease',
           position: 'absolute',
-          top: '50%',
-          left: '50%',
-          marginTop: '-300px',
-          marginLeft: '-400px'
+          top: '0',
+          left: '0',
+          width: '100%',
+          height: '100%'
         }"
       >
         <!-- 実際のマップSVGを読み込み -->
-        <div v-if="isMapLoaded && mapSvgContent" v-html="mapSvgContent" style="position: relative;"></div>
+        <div v-if="isMapLoaded && mapSvgContent" v-html="mapSvgContent" style="position: relative; width: 1000px; height: 1000px;"></div>
+        
+        <!-- エラー状態 -->
+        <div v-else-if="mapError" style="width: 1000px; height: 1000px; display: flex; align-items: center; justify-content: center; background: #fef2f2; border: 2px solid #fecaca; border-radius: 8px;">
+          <div style="text-align: center; padding: 2rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem; color: #dc2626;">⚠️</div>
+            <div style="font-size: 1.25rem; color: #dc2626; margin-bottom: 0.5rem; font-weight: 600;">マップの読み込みに失敗しました</div>
+            <div style="font-size: 0.875rem; color: #991b1b; margin-bottom: 1rem;">{{ mapError }}</div>
+            <button 
+              @click="loadEventMap(props.eventId || 'geika-32')"
+              style="padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; font-weight: 500;"
+            >
+              再試行
+            </button>
+          </div>
+        </div>
         
         <!-- ローディング状態 -->
-        <div v-else style="width: 800px; height: 600px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border: 2px solid #dee2e6; border-radius: 8px;">
+        <div v-else style="width: 1000px; height: 1000px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border: 2px solid #dee2e6; border-radius: 8px;">
           <div style="text-align: center;">
             <div style="font-size: 3rem; margin-bottom: 1rem; animation: pulse 2s infinite;">🗺️</div>
             <div style="font-size: 1.25rem; color: #6c757d; margin-bottom: 0.5rem;">マップを読み込み中...</div>
             <div style="font-size: 0.875rem; color: #adb5bd;">SVGデータの取得中</div>
+            <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.5rem;">イベントID: {{ props.eventId || 'geika-32' }}</div>
           </div>
         </div>
         
         <!-- ブックマークピン表示 -->
         <svg 
-          style="position: absolute; top: 0; left: 0; width: 800px; height: 600px; pointer-events: none;"
-          viewBox="0 0 800 600"
+          style="position: absolute; top: 0; left: 0; width: 1000px; height: 1000px; pointer-events: none;"
+          viewBox="0 0 1000 1000"
         >
           <!-- ブックマークピン -->
           <g v-for="bookmark in visibleBookmarks" :key="bookmark.id">
@@ -192,6 +208,7 @@
 </template>
 
 <script setup lang="ts">
+import { nextTick } from 'vue'
 import type { Circle, BookmarkCategory } from '~/types'
 import { useTouch, MomentumScroll } from '~/composables/useTouch'
 import { useEventMap, useCircleMapping } from '~/composables/useEventMap'
@@ -351,8 +368,11 @@ const getCirclePositionForMap = (circle: Circle) => {
 
 const focusOnCircle = (circle: Circle) => {
   const position = getCirclePositionForMap(circle)
-  panX.value = -position.x * zoomLevel.value + (mapContainer.value?.clientWidth || 800) / 2
-  panY.value = -position.y * zoomLevel.value + (mapContainer.value?.clientHeight || 600) / 2
+  const containerWidth = mapContainer.value?.clientWidth || 1000
+  const containerHeight = mapContainer.value?.clientHeight || 1000
+  
+  panX.value = containerWidth / 2 - position.x * zoomLevel.value
+  panY.value = containerHeight / 2 - position.y * zoomLevel.value
   selectedCircle.value = circle
   emit('circleSelect', circle)
 }
@@ -373,8 +393,7 @@ const zoomOut = () => {
 
 const resetZoom = () => {
   zoomLevel.value = 1
-  panX.value = 0
-  panY.value = 0
+  centerMap()
 }
 
 const handleZoom = (event: WheelEvent) => {
@@ -436,10 +455,29 @@ onMounted(async () => {
   console.log('🗺️ Loading initial map for event:', eventId)
   try {
     await loadEventMap(eventId)
+    // マップを画面中央に初期配置
+    nextTick(() => {
+      centerMap()
+    })
   } catch (error) {
     console.error('Failed to load initial map:', error)
   }
 })
+
+// マップを画面中央に配置する関数
+const centerMap = () => {
+  if (mapContainer.value) {
+    const containerWidth = mapContainer.value.clientWidth
+    const containerHeight = mapContainer.value.clientHeight
+    
+    // SVGのサイズは1000x1000なので、適切にセンタリング
+    const mapWidth = 1000 * zoomLevel.value
+    const mapHeight = 1000 * zoomLevel.value
+    
+    panX.value = (containerWidth - mapWidth) / 2
+    panY.value = (containerHeight - mapHeight) / 2
+  }
+}
 
 // クリーンアップ
 onUnmounted(() => {
