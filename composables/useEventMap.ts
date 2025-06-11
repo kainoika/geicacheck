@@ -1,6 +1,7 @@
 import { ref, computed, readonly } from 'vue'
 import type { EventMapConfig } from '~/types'
 import { getMapConfig as getConfigFromData } from '~/data/mapConfigs'
+import { normalizePlacement, parsePlacementString } from '~/utils/placementUtils'
 
 export const useEventMap = () => {
   const mapCache = new Map<string, string>()
@@ -122,30 +123,41 @@ export const useCircleMapping = () => {
     }
 
     const placement = circle.placement
-    let blockKey: string
-
-    // みきエリア（特別配置）
-    if (placement.block === 'み' || placement.block === 'カ') {
-      blockKey = `${placement.block}-${placement.number1?.toString().padStart(2, '0')}`
-      
-      const position = config.coordinateMapping[blockKey]
-      if (position) {
-        return { x: position.x, y: position.y }
-      }
+    
+    // 配置番号を正規化（2スペース対応）
+    const normalized = normalizePlacement(placement)
+    
+    // 2スペースの場合は中央位置を計算
+    if (normalized.isDoubleSpace) {
+      return calculateDoubleSpacePosition(normalized, config, eventId)
     }
-
-    // 通常のサークル配置（アやド行など）
-    if (placement.block && placement.number1) {
-      blockKey = `${placement.block}-${placement.number1.toString().padStart(2, '0')}`
-      
-      const position = config.coordinateMapping[blockKey]
-      if (position) {
-        return { x: position.x, y: position.y }
-      }
+    
+    // 1スペースの場合は通常の処理
+    return getSingleSpacePosition(normalized.primaryPosition, config, eventId)
+  }
+  
+  const getSingleSpacePosition = (position: string, config: any, eventId: string): { x: number; y: number } => {
+    // 座標マッピングから取得を試行
+    const mappedPosition = config.coordinateMapping[position]
+    if (mappedPosition) {
+      return { x: mappedPosition.x, y: mappedPosition.y }
     }
-
-    // フォールバック: 数値ベースの配置計算
-    return calculatePositionFromPlacement(placement, eventId)
+    
+    // マッピングにない場合は動的計算
+    const placementInfo = parsePlacementString(position)
+    return calculatePositionFromPlacement(placementInfo, eventId)
+  }
+  
+  const calculateDoubleSpacePosition = (normalized: any, config: any, eventId: string): { x: number; y: number } => {
+    // 2つの位置を取得
+    const pos1 = getSingleSpacePosition(normalized.primaryPosition, config, eventId)
+    const pos2 = getSingleSpacePosition(normalized.secondaryPosition!, config, eventId)
+    
+    // 中央位置を計算
+    return {
+      x: (pos1.x + pos2.x) / 2,
+      y: (pos1.y + pos2.y) / 2
+    }
   }
 
   const calculatePositionFromPlacement = (placement: any, eventId: string): { x: number; y: number } => {

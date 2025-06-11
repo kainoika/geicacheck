@@ -93,7 +93,10 @@
                   class="accent-pink-500"
                 >
                 <span class="text-sm font-medium text-gray-700 flex-1">{{ category.label }}</span>
-                <span class="bg-pink-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-semibold">
+                <span 
+                  class="text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-semibold"
+                  :style="{ backgroundColor: getCategoryColor(category.key) }"
+                >
                   {{ getBookmarkCount(category.key) }}
                 </span>
               </label>
@@ -281,45 +284,8 @@
                   cursor: isPanning ? 'grabbing' : 'grab'
                 }"
               >
-                <!-- ベースSVGマップ -->
-                <div v-html="svgContent"></div>
-                
-                <!-- ブックマークピンオーバーレイ -->
-                <svg 
-                  v-if="validBookmarks.length > 0"
-                  class="absolute top-0 left-0 pointer-events-none"
-                  style="width: 1000px; height: 1000px;"
-                  viewBox="0 0 1000 1000"
-                >
-                  <!-- ブックマークピン -->
-                  <g v-for="bookmark in validBookmarks" :key="bookmark.id">
-                    <circle 
-                      :cx="getCirclePositionForMap(bookmark.circle).x" 
-                      :cy="getCirclePositionForMap(bookmark.circle).y"
-                      r="12"
-                      :fill="getCategoryColor(bookmark.category)"
-                      stroke="white"
-                      stroke-width="3"
-                      class="cursor-pointer pointer-events-auto filter drop-shadow-lg"
-                      @click="showCircleInfo(bookmark.circle)"
-                    />
-                    
-                    <!-- ピンアイコン -->
-                    <svg 
-                      :x="getCirclePositionForMap(bookmark.circle).x - 6" 
-                      :y="getCirclePositionForMap(bookmark.circle).y - 6"
-                      width="12" 
-                      height="12" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="white" 
-                      stroke-width="2.5"
-                      class="pointer-events-none"
-                    >
-                      <path :d="getCategoryIcon(bookmark.category)" />
-                    </svg>
-                  </g>
-                </svg>
+                <!-- ベースSVGマップ（ピンはここに直接埋め込まれる） -->
+                <div ref="svgMapContainer" v-html="svgContent"></div>
               </div>
 
               <!-- 操作説明 -->
@@ -413,8 +379,6 @@
       class="fixed inset-0 bg-black bg-opacity-50 z-40"
     ></div>
     
-    <!-- フッター -->
-    <AppFooter />
   </div>
 </template>
 
@@ -422,6 +386,7 @@
 // Type imports
 import type { Circle, BookmarkCategory, BookmarkWithCircle } from '~/types'
 import { useCircleMapping } from '~/composables/useEventMap'
+import { useSvgPins } from '~/composables/useSvgPins'
 
 // State
 const svgContent = ref<string>('')
@@ -430,6 +395,7 @@ const error = ref<string | null>(null)
 
 // ズーム・パン関連のstate
 const mapContainer = ref<HTMLElement | null>(null)
+const svgMapContainer = ref<HTMLElement | null>(null)
 const zoomLevel = ref<number>(1)
 const panX = ref<number>(0)
 const panY = ref<number>(0)
@@ -454,6 +420,12 @@ const { bookmarksWithCircles, fetchBookmarksWithCircles } = useBookmarks()
 const { currentEvent, fetchEvents } = useEvents()
 const { formatPlacement } = useCircles()
 const { getCirclePosition } = useCircleMapping()
+const { initializePins, renderPins, highlightPin, resetPinHighlight, clearPins, pinStyles } = useSvgPins({
+  radius: 12,
+  strokeWidth: 3,
+  dropShadow: true,
+  animated: true
+})
 
 // ズーム設定
 const MIN_ZOOM = 0.5
@@ -498,9 +470,11 @@ const loadSvg = async () => {
     
     console.log('✅ SVGマップの読み込み完了')
     
-    // SVG読み込み完了後にマップを中央配置
-    nextTick(() => {
+    // SVG読み込み完了後にマップを中央配置とピン初期化
+    nextTick(async () => {
       centerMap()
+      await initializeSvgPins()
+      await renderBookmarkPins()
     })
   } catch (err) {
     console.error('❌ SVGマップの読み込みエラー:', err)
@@ -708,13 +682,9 @@ const getBookmarkCount = (category: BookmarkCategory): number => {
 }
 
 const getCategoryColor = (category: BookmarkCategory): string => {
-  switch (category) {
-    case 'check': return '#0284c7'      // 青
-    case 'interested': return '#ca8a04' // 黄
-    case 'priority': return '#dc2626'   // 赤
-    default: return '#6b7280'           // グレー
-  }
+  return pinStyles.value[category]?.fill || '#6b7280'
 }
+
 
 const focusOnCircle = (bookmark: BookmarkWithCircle) => {
   console.log('📍 サークルにフォーカス:', bookmark.circle.circleName)
@@ -729,10 +699,46 @@ const focusOnCircle = (bookmark: BookmarkWithCircle) => {
     panY.value = containerHeight / 2 - position.y * zoomLevel.value
   }
   
+  // ピンを強調表示
+  highlightPin(bookmark.id)
+  
+  // 3秒後に強調表示をリセット
+  setTimeout(() => {
+    resetPinHighlight()
+  }, 3000)
+  
   // モバイルでフォーカス時はサイドバーを閉じる
   if (window.innerWidth < 640) {
     closeSidebar()
   }
+}
+
+// SVGピン関連の新しい関数
+const initializeSvgPins = async () => {
+  if (!svgMapContainer.value) return
+  
+  const svgElement = svgMapContainer.value.querySelector('svg')
+  if (svgElement) {
+    await initializePins(svgElement)
+    console.log('✅ SVGピンが初期化されました')
+  } else {
+    console.warn('⚠️ SVG要素が見つかりません')
+  }
+}
+
+const renderBookmarkPins = async () => {
+  if (validBookmarks.value.length === 0) {
+    clearPins()
+    return
+  }
+  
+  renderPins(
+    validBookmarks.value,
+    getCirclePositionForMap,
+    showCircleInfo
+  )
+  
+  console.log('✅ ブックマークピンを描画しました:', validBookmarks.value.length)
 }
 
 // サークル位置取得
@@ -744,15 +750,6 @@ const getCirclePositionForMap = (circle: Circle): { x: number; y: number } => {
   return getCirclePosition(circle, selectedEventId.value)
 }
 
-// カテゴリアイコン取得（SVGパス）
-const getCategoryIcon = (category: BookmarkCategory): string => {
-  switch (category) {
-    case 'check': return 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'
-    case 'interested': return 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z'
-    case 'priority': return 'M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z'
-    default: return 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'
-  }
-}
 
 // サークル詳細表示
 const selectedCircle = ref<Circle | null>(null)
@@ -782,9 +779,11 @@ const switchEvent = async () => {
     svgContent.value = svgText
     svgLoaded.value = true
     
-    // マップを中央配置
-    nextTick(() => {
+    // マップを中央配置とピン再初期化
+    nextTick(async () => {
       centerMap()
+      await initializeSvgPins()
+      await renderBookmarkPins()
     })
     
     console.log('✅ マップ切り替え完了:', selectedEventId.value)
@@ -801,6 +800,16 @@ watch(() => currentEvent.value, (newEvent) => {
     switchEvent()
   }
 })
+
+// ブックマーク変更時の自動再描画
+watch(() => validBookmarks.value, async () => {
+  await renderBookmarkPins()
+}, { deep: true })
+
+// フィルター変更時の再描画
+watch(() => visibleCategories.value, async () => {
+  await renderBookmarkPins()
+}, { deep: true })
 
 // 初期化
 onMounted(async () => {
