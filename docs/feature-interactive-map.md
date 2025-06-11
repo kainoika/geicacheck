@@ -1,377 +1,212 @@
-# インタラクティブマップ機能 実装計画
+# インタラクティブマップ機能
 
-## 📋 現状分析
+## 📋 実装完了状況（2024年12月現在）
 
-### 既存の実装状況
-- ✅ **EventMapコンポーネント**: ズーム・パン機能の基本実装済み
-- ✅ **マップページ**: ブックマーク管理とサイドバー実装済み  
-- ✅ **SVGマップ**: geika31.svg、geika32.svg ファイル存在
-- ✅ **ブックマーク表示**: ピン表示とポップアップ機能
-- ✅ **PC/タブレット対応**: 基本的なレスポンシブデザイン
+### ✅ 実装済み機能
+- **ズーム・パン機能**: マウスホイール、ドラッグ操作完全対応
+- **タッチ操作**: ピンチズーム、タッチパン、慣性スクロール対応
+- **ブックマークピン表示**: カテゴリ別色分けとアイコン表示
+- **サイドバー機能**: 統計、フィルター、リスト表示
+- **サークル詳細ポップアップ**: ピンクリックで詳細情報表示
+- **イベント切り替え**: geika-31/32対応完了
+- **レスポンシブデザイン**: PC・タブレット・スマートフォン対応
+- **Heroicons統一**: 絵文字からHeroiconsへの完全移行
+- **Firestore連携**: リアルタイムブックマークデータ同期
 
-### 不足している機能・改善点
-- ❌ **タッチ操作**: スマートフォンでのピンチズーム・タッチパン
-- ❌ **イベント自動切り替え**: 現在はgeika32固定
-- ❌ **座標マッピング**: SVG座標とサークル位置の正確性に課題
-- ❌ **パフォーマンス最適化**: 大量サークル表示時の処理
-- ❌ **アクセシビリティ**: キーボード操作、スクリーンリーダー対応
+## 📱 機能詳細
 
-## 🎯 要件・仕様
+### 1. マップ表示機能
+- **SVGマップ表示**: イベントごとのレイアウトをSVG形式で高品質表示
+- **イベント切り替え**: ヘッダーのドロップダウンでげいか31/32を選択可能
+- **自動マップ読み込み**: イベント変更時の自動SVG切り替え
+- **エラーハンドリング**: 読み込み失敗時の再試行機能
 
-### 基本要件
-1. **ブックマーク表示**: ブックマークしたサークルの配置を会場マップで確認
-2. **ズーム・パン機能**: 詳細な位置まで把握できる操作性
-3. **マルチデバイス対応**: スマートフォン、PC、タブレット対応
-4. **イベント対応**: 開催イベントごとに配置図・位置を切り替え
-5. **SVGベース**: 配置図はSVGデータを使用
+### 2. ズーム・パン操作
+#### PC操作
+- **マウスホイール**: スムーズなズームイン/アウト
+- **ドラッグ操作**: 直感的なマップ移動
+- **コントロールボタン**: +/-/リセットボタン
 
-### 詳細機能要件
-- **タッチ操作**: ピンチズーム、タッチパン、慣性スクロール
-- **キーボード操作**: 矢印キー移動、+/-キーズーム
-- **アクセシビリティ**: スクリーンリーダー対応、高コントラストモード
-- **パフォーマンス**: 仮想化、遅延読み込み、キャッシュ最適化
+#### スマートフォン・タブレット操作
+- **ピンチズーム**: 2本指での拡大縮小
+- **タッチパン**: 指によるマップ移動
+- **慣性スクロール**: 自然な減速効果
+- **マルチタッチ対応**: 同時操作の適切な処理
 
-## 🏗️ 実装計画
+### 3. ブックマーク表示
+#### ピン表示
+- **カテゴリ別色分け**:
+  - チェック予定: 青色（#0284c7）
+  - 気になる: 黄色（#ca8a04）
+  - 優先: 赤色（#dc2626）
+- **Heroiconsアイコン**: 本・星・炎のSVGアイコン
+- **ドロップシャドウ**: 視認性向上のためのシャドウ効果
 
-### Phase 1: タッチ操作対応 (優先度: 高)
-**期間: 1-2日**
+#### リアルタイム同期
+- **Firestore連携**: ブックマーク変更の即座反映
+- **イベントフィルタリング**: 選択イベントのブックマークのみ表示
+- **安全なデータアクセス**: エラー耐性のあるデータ処理
 
-#### 1.1 タッチイベント処理の実装
-```typescript
-// composables/useTouch.ts
-export const useTouch = () => {
-  const handleTouchStart = (event: TouchEvent) => {
-    // マルチタッチ検出
-    // 初期位置記録
-  }
-  
-  const handleTouchMove = (event: TouchEvent) => {
-    // ピンチズーム計算
-    // タッチパン処理
-  }
-  
-  const handleTouchEnd = (event: TouchEvent) => {
-    // 慣性スクロール開始
-  }
-}
+### 4. サイドバー機能
+#### 統計表示
+- **合計件数**: 現在のイベントのブックマーク総数
+- **カテゴリ別件数**: チェック予定・気になる・優先の個別件数
+- **視覚的表示**: カラーコード付きの統計ボックス
+
+#### フィルター機能
+- **カテゴリ選択**: チェックボックスによる表示切り替え
+- **件数表示**: 各カテゴリの該当件数をバッジ表示
+- **即座反映**: フィルター変更の瞬時適用
+
+#### ブックマークリスト
+- **サークル一覧**: 名前と配置番号の表示
+- **クリック移動**: リスト項目クリックでマップ上の位置へ移動
+- **ホバー効果**: マウスオーバー時のハイライト
+
+#### レスポンシブ対応
+- **デスクトップ**: 常時表示の固定サイドバー
+- **モバイル**: スライドイン式のオーバーレイサイドバー
+- **タブレット**: 画面サイズに応じた適応表示
+
+### 5. サークル詳細ポップアップ
+#### 表示内容
+- **基本情報**: サークル名、読み仮名、配置番号
+- **ジャンル情報**: タグ形式での複数ジャンル表示
+- **説明文**: サークルの詳細説明
+- **詳細リンク**: サークル詳細ページへの導線
+
+#### デザイン
+- **モーダル表示**: 中央配置のモーダルダイアログ
+- **背景オーバーレイ**: クリックで閉じる半透明背景
+- **閉じるボタン**: Heroiconsの×ボタン
+
+## 🏗️ 技術仕様
+
+### ファイル構成
+```
+pages/map/index.vue                    # メインマップページ
+composables/useEventMap.ts            # SVGマップ管理
+composables/useCircleMapping.ts       # サークル座標計算
+data/mapConfigs.ts                    # 座標マッピング設定
+public/map-geika31.svg                # げいか31会場マップ
+public/map-geika32.svg                # げいか32会場マップ
 ```
 
-#### 1.2 EventMapコンポーネント拡張
-```vue
-<!-- components/map/EventMap.vue -->
-<template>
-  <div 
-    @touchstart="handleTouchStart"
-    @touchmove="handleTouchMove" 
-    @touchend="handleTouchEnd"
-    @gesturestart.prevent
-    @gesturechange.prevent
-    @gestureend.prevent
-  >
-    <!-- 既存のマップコンテンツ -->
-  </div>
-</template>
-```
+### 使用技術スタック
+- **Vue 3 Composition API**: リアクティブ状態管理
+- **TypeScript**: 型安全な実装
+- **Tailwind CSS**: ユーティリティファーストCSS
+- **Firebase Firestore**: リアルタイムデータベース
+- **Heroicons**: 統一されたSVGアイコンセット
+- **CSS Transforms**: 高パフォーマンスなズーム・パン
 
-#### 1.3 慣性スクロール実装
+### 座標マッピングシステム
+#### エリア分類
+- **カエリア（カ-01〜06）**: 特別配置上部エリア
+- **みきエリア（み-01〜20）**: 特別配置メインエリア
+- **アエリア（ア-01〜72）**: 通常配置上段エリア（3列構成）
+- **ドエリア（ド-01〜72）**: 通常配置下段エリア（3列構成）
+
+#### 座標データ構造
 ```typescript
-// utils/momentum.ts
-export class MomentumScroll {
-  private velocity = { x: 0, y: 0 }
-  private friction = 0.95
-  
-  public startMomentum() {
-    // requestAnimationFrame でスムーズな減速
-  }
-}
-```
-
-### Phase 2: イベント自動切り替え (優先度: 高)
-**期間: 1日**
-
-#### 2.1 イベント対応マップローダー
-```typescript
-// composables/useEventMap.ts
-export const useEventMap = () => {
-  const mapCache = new Map<string, string>()
-  
-  const loadEventMap = async (eventId: string): Promise<string> => {
-    if (mapCache.has(eventId)) {
-      return mapCache.get(eventId)!
-    }
-    
-    const response = await fetch(`/map-${eventId}.svg`)
-    const svgContent = await response.text()
-    mapCache.set(eventId, svgContent)
-    return svgContent
-  }
-}
-```
-
-#### 2.2 座標マッピング設定
-```typescript
-// types/map.ts
-export interface EventMapConfig {
-  eventId: string
-  svgPath: string
-  coordinateMapping: {
-    [blockId: string]: {
-      x: number
-      y: number
-      width: number
-      height: number
-    }
-  }
-}
-
-// data/mapConfigs.ts
-export const mapConfigs: EventMapConfig[] = [
-  {
-    eventId: 'geika-31',
-    svgPath: '/map-geika31.svg',
-    coordinateMapping: {
-      // SVGから実際の座標を抽出して設定
-    }
-  },
-  {
-    eventId: 'geika-32', 
-    svgPath: '/map-geika32.svg',
-    coordinateMapping: {
-      // 現在のハードコードされた座標を整理
-    }
-  }
-]
-```
-
-### Phase 3: 座標マッピング精度向上 (優先度: 中)
-**期間: 1-2日**
-
-#### 3.1 SVG解析ユーティリティ
-```typescript
-// utils/svgParser.ts
-export class SVGParser {
-  public extractCirclePositions(svgContent: string): CirclePosition[] {
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(svgContent, 'image/svg+xml')
-    
-    // data-block, data-number 属性から座標を抽出
-    const circleElements = doc.querySelectorAll('[data-block][data-number]')
-    
-    return Array.from(circleElements).map(element => ({
-      block: element.getAttribute('data-block')!,
-      number: element.getAttribute('data-number')!,
-      x: parseFloat(element.getAttribute('x') || '0'),
-      y: parseFloat(element.getAttribute('y') || '0'),
-      width: parseFloat(element.getAttribute('width') || '30'),
-      height: parseFloat(element.getAttribute('height') || '25')
-    }))
+interface CoordinateMapping {
+  [key: string]: {
+    x: number      // X座標
+    y: number      // Y座標
+    width: number  // 表示幅
+    height: number // 表示高さ
   }
 }
 ```
 
-#### 3.2 動的座標マッピング
-```typescript
-// composables/useCircleMapping.ts
-export const useCircleMapping = () => {
-  const getCirclePosition = (circle: Circle, eventId: string): Position => {
-    const config = getMapConfig(eventId)
-    const blockKey = `${circle.placement.block}-${circle.placement.number1}`
-    
-    return config.coordinateMapping[blockKey] || getDefaultPosition()
-  }
-}
-```
+### データフロー
+1. **初期化**: イベント情報とブックマークデータを並行取得
+2. **マップ読み込み**: 選択イベントに応じたSVGファイル読み込み
+3. **ピン描画**: ブックマークデータと座標マッピングからピン配置
+4. **インタラクション**: ユーザー操作に応じたリアルタイム更新
 
-### Phase 4: パフォーマンス最適化 (優先度: 中)
-**期間: 1日**
+## 🎨 ユーザーインターフェース
 
-#### 4.1 仮想化によるピン表示最適化
-```typescript
-// composables/useVirtualPins.ts
-export const useVirtualPins = (pins: Ref<Pin[]>, viewport: Ref<Viewport>) => {
-  const visiblePins = computed(() => {
-    return pins.value.filter(pin => 
-      isInViewport(pin, viewport.value)
-    )
-  })
-  
-  return { visiblePins }
-}
-```
+### デザイン原則
+- **直感的操作**: 説明不要の自然な操作性
+- **視覚的フィードバック**: 操作結果の明確な表示
+- **アクセシビリティ**: 多様なユーザーへの配慮
+- **パフォーマンス**: 60fps のスムーズな動作
 
-#### 4.2 マップキャッシュシステム
-```typescript
-// utils/mapCache.ts
-export class MapCache {
-  private cache = new Map<string, CachedMap>()
-  private maxSize = 5
-  
-  public async getMap(eventId: string): Promise<string> {
-    // LRUキャッシュ実装
-  }
-}
-```
+### カラーパレット
+- **プライマリ**: ピンク（#FF69B4）- ブランドカラー
+- **セカンダリ**: グレー（#6B7280）- 中性色
+- **アクセント**: カテゴリ別カラー（青・黄・赤）
 
-### Phase 5: アクセシビリティ対応 (優先度: 低)
-**期間: 1日**
+### アイコンシステム
+- **統一性**: Heroiconsによる一貫したデザイン
+- **識別性**: 機能ごとの明確な区別
+- **スケーラビリティ**: サイズ変更に対応した SVG
 
-#### 5.1 キーボード操作
-```typescript
-// composables/useKeyboardNavigation.ts
-export const useKeyboardNavigation = () => {
-  const handleKeyDown = (event: KeyboardEvent) => {
-    switch (event.key) {
-      case 'ArrowUp': panUp(); break
-      case 'ArrowDown': panDown(); break
-      case 'ArrowLeft': panLeft(); break
-      case 'ArrowRight': panRight(); break
-      case '+': case '=': zoomIn(); break
-      case '-': zoomOut(); break
-      case '0': resetZoom(); break
-    }
-  }
-}
-```
+## 🔧 運用・メンテナンス
 
-#### 5.2 スクリーンリーダー対応
-```vue
-<template>
-  <div 
-    role="application"
-    aria-label="会場マップ"
-    :aria-describedby="mapDescriptionId"
-  >
-    <div :id="mapDescriptionId" class="sr-only">
-      ブックマークしたサークルの配置を確認できる会場マップです。
-      矢印キーで移動、+/-キーでズームできます。
-    </div>
-    
-    <!-- ピン要素にaria-label追加 -->
-    <circle 
-      v-for="pin in visiblePins"
-      :aria-label="`${pin.circle.circleName} ${formatPlacement(pin.circle.placement)}`"
-      role="button"
-      tabindex="0"
-    />
-  </div>
-</template>
-```
+### パフォーマンス最適化
+- **SVGキャッシュ**: 一度読み込んだマップの再利用
+- **効率的描画**: CSS Transform による GPU アクセラレーション
+- **遅延読み込み**: 必要時のみのデータ取得
 
-## 📱 レスポンシブ対応詳細
+### エラーハンドリング
+- **ネットワークエラー**: 再試行機能付きエラー表示
+- **データ不整合**: 安全なフォールバック処理
+- **ユーザビリティ**: 分かりやすいエラーメッセージ
 
-### モバイル最適化
-```vue
-<template>
-  <div class="map-container">
-    <!-- モバイル用タッチガイド -->
-    <div class="mobile-guide md:hidden">
-      <div class="guide-item">👆 タップでサークル選択</div>
-      <div class="guide-item">🤏 ピンチでズーム</div>
-      <div class="guide-item">👋 ドラッグで移動</div>
-    </div>
-    
-    <!-- デスクトップ用マウスガイド -->
-    <div class="desktop-guide hidden md:block">
-      <div class="guide-item">🖱️ マウスホイールでズーム</div>
-      <div class="guide-item">✋ ドラッグで移動</div>
-      <div class="guide-item">📍 ピンクリックで詳細</div>
-    </div>
-  </div>
-</template>
-```
+### 今後の拡張計画
+#### 短期改善
+- **検索機能**: サークル名による検索とマップ移動
+- **お気に入りグループ**: ブックマークのカスタム分類
+- **印刷機能**: 配置マップの印刷対応
 
-### ビューポート別最適化
-```typescript
-// composables/useResponsiveMap.ts
-export const useResponsiveMap = () => {
-  const isMobile = computed(() => window.innerWidth < 768)
-  const isTablet = computed(() => 
-    window.innerWidth >= 768 && window.innerWidth < 1024
-  )
-  
-  const mapConfig = computed(() => ({
-    pinSize: isMobile.value ? 12 : 10,
-    zoomSensitivity: isMobile.value ? 0.3 : 0.1,
-    panSensitivity: isMobile.value ? 1.2 : 1.0
-  }))
-  
-  return { mapConfig }
-}
-```
+#### 長期改善
+- **経路最適化**: 効率的な巡回ルート提案
+- **混雑状況**: リアルタイム混雑度の可視化
+- **AR対応**: 拡張現実による現地ナビゲーション
 
-## 🧪 テスト計画
+## 📊 利用統計・効果測定
 
-### 単体テスト
-```typescript
-// tests/composables/useTouch.test.ts
-describe('useTouch', () => {
-  it('should handle pinch zoom correctly', () => {
-    // ピンチズームのテスト
-  })
-  
-  it('should detect pan gestures', () => {
-    // パンジェスチャーのテスト
-  })
-})
-```
+### 想定効果
+- **ユーザビリティ向上**: 直感的なマップ操作による満足度向上
+- **時間短縮**: 効率的なサークル位置確認による巡回計画時間削減
+- **アクセシビリティ**: モバイル対応による利用層拡大
 
-### 統合テスト
-```typescript
-// tests/components/EventMap.test.ts
-describe('EventMap', () => {
-  it('should render bookmarked circles correctly', () => {
-    // ブックマーク表示のテスト
-  })
-  
-  it('should handle event switching', () => {
-    // イベント切り替えのテスト
-  })
-})
-```
+### 測定指標
+- **利用率**: マップページへのアクセス数
+- **操作率**: ズーム・パン操作の頻度
+- **滞在時間**: マップページでの平均滞在時間
+- **エラー率**: 機能利用時のエラー発生率
 
-## 🚀 実装優先順位
+## 📚 使用方法
 
-### 必須機能 (Phase 1-2)
-1. **タッチ操作対応** - スマートフォンユーザビリティの向上
-2. **イベント自動切り替え** - 複数イベント対応
+### 基本操作
+1. **アクセス**: メニューの「マップ」をクリック
+2. **イベント選択**: 右上ドロップダウンからイベントを選択
+3. **マップ操作**:
+   - PC: マウスホイールでズーム、ドラッグで移動
+   - モバイル: ピンチでズーム、ドラッグで移動
+4. **ブックマーク確認**: サイドバーやマップ上のピンで位置確認
+5. **詳細表示**: ピンクリックで詳細情報表示
 
-### 重要機能 (Phase 3-4)  
-3. **座標マッピング精度向上** - 正確なサークル位置表示
-4. **パフォーマンス最適化** - 大量データ処理
+### トラブルシューティング
+#### マップが表示されない
+- ブラウザキャッシュのクリア
+- ページの再読み込み
+- 別ブラウザでの確認
 
-### 改善機能 (Phase 5)
-5. **アクセシビリティ対応** - インクルーシブデザイン
+#### ブックマークが表示されない
+- ログイン状態の確認
+- ブックマーク存在の確認
+- フィルター設定の確認
 
-## 📊 技術仕様
-
-### 使用技術
-- **フロントエンド**: Vue 3 Composition API, TypeScript
-- **タッチ処理**: Touch Events API, Gesture Events
-- **SVG操作**: DOM Parser, SVG API
-- **キャッシュ**: Map, WeakMap, IndexedDB
-- **アニメーション**: RequestAnimationFrame, CSS Transforms
-
-### パフォーマンス目標
-- **初期読み込み**: 2秒以内
-- **ズーム応答性**: 60fps
-- **パン応答性**: 16ms以内
-- **メモリ使用量**: 50MB以下
-
-## 🔄 実装後の運用
-
-### モニタリング
-- ユーザー操作の分析
-- パフォーマンスメトリクス監視
-- エラーレート追跡
-
-### メンテナンス
-- SVGファイルの更新手順
-- 座標マッピングの調整方法
-- 新イベント追加のワークフロー
+#### 動作が重い
+- ハードウェアアクセラレーションの有効化
+- 他タブの整理
+- ブラウザの最新化
 
 ---
 
-**推定実装期間**: 5-7日  
-**リリース目標**: Phase 1-2を優先実装
-
-この計画により、既存のマップ機能を大幅に強化し、全デバイスで快適なユーザー体験を提供できます。
+**最終更新**: 2024年12月  
+**バージョン**: v1.0（フル実装完了）
