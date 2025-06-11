@@ -208,6 +208,7 @@ import {
 // Composables
 const { user, isAuthenticated } = useAuth()
 const { bookmarks, bookmarksWithCircles, loading, fetchBookmarksWithCircles, toggleBookmark, generateExportData } = useBookmarks()
+const { currentEvent } = useEvents()
 
 // State
 const activeCategory = ref('all')
@@ -302,17 +303,58 @@ const downloadCSV = (csvContent, filename) => {
 
 // 初期化
 onMounted(async () => {
+  console.log('🚀 Bookmarks page mounted')
+  console.log('🔍 初期currentEvent:', currentEvent.value?.id)
+  
   if (!isAuthenticated.value) {
     await navigateTo('/auth/login')
     return
   }
   
   try {
-    await fetchBookmarksWithCircles()
+    // イベントデータを取得（currentEventが未初期化の場合）
+    const { fetchEvents } = useEvents()
+    if (!currentEvent.value) {
+      console.log('⏳ イベントデータを取得中...')
+      await fetchEvents()
+    }
+    
+    // currentEventが設定されるまで待機
+    await nextTick()
+    
+    // currentEventが設定されていない場合は短時間待機してリトライ
+    if (!currentEvent.value) {
+      console.log('⏳ currentEventの設定を待機中...')
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
+    
+    if (currentEvent.value) {
+      console.log('✅ currentEvent確認:', currentEvent.value.id)
+      await fetchBookmarksWithCircles()
+      console.log('✅ Bookmarksページ初期化完了')
+    } else {
+      console.warn('⚠️ currentEventが設定されていません')
+    }
   } catch (error) {
-    console.error('Failed to fetch bookmarks:', error)
+    console.error('❌ Failed to initialize bookmarks page:', error)
   }
 })
+
+// イベント変更時にブックマークを再読み込み
+watch(currentEvent, async (newEvent, oldEvent) => {
+  console.log('🔄 Bookmarksページ: currentEvent変更検知:', oldEvent?.id, '→', newEvent?.id)
+  
+  // 初回設定時（oldEventがnullでnewEventが存在する場合）も含めて処理
+  if (newEvent && newEvent.id !== oldEvent?.id && isAuthenticated.value) {
+    console.log('🔄 Bookmarksページ: ブックマーク再読み込み開始')
+    try {
+      await fetchBookmarksWithCircles()
+      console.log('✅ ブックマーク再読み込み完了')
+    } catch (error) {
+      console.error('❌ Failed to fetch bookmarks after event change:', error)
+    }
+  }
+}, { immediate: true })
 
 // SEO
 useHead({

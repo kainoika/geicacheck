@@ -104,11 +104,15 @@ export const useEvents = () => {
   const setCurrentEvent = (eventId: string) => {
     const event = getEventById(eventId)
     if (event) {
+      const oldEventId = currentEvent.value?.id
       currentEvent.value = event
       // ローカルストレージに保存
       if (process.client) {
         localStorage.setItem('selectedEventId', eventId)
       }
+      console.log('✅ Current event set:', oldEventId, '→', eventId, event)
+    } else {
+      console.warn('⚠️ Event not found:', eventId, 'Available events:', events.value.map(e => e.id))
     }
   }
 
@@ -361,17 +365,23 @@ export const useEvents = () => {
     }
   }
 
-  // 初期化時にローカルストレージから選択されたイベントを復元
-  onMounted(() => {
-    if (process.client) {
+  // ローカルストレージからの復元を適切なタイミングで実行
+  const restoreFromLocalStorage = () => {
+    if (process.client && events.value.length > 0) {
       const savedEventId = localStorage.getItem('selectedEventId')
-      if (savedEventId && events.value.length > 0) {
+      if (savedEventId) {
         const savedEvent = getEventById(savedEventId)
-        if (savedEvent) {
+        if (savedEvent && savedEvent.id !== currentEvent.value?.id) {
           currentEvent.value = savedEvent
+          console.log('🔄 Event restored from localStorage:', savedEventId, savedEvent)
         }
       }
     }
+  }
+
+  // イベントリストが更新された時にローカルストレージから復元
+  watch(events, () => {
+    restoreFromLocalStorage()
   })
 
   return {

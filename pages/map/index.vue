@@ -399,8 +399,12 @@ const lastTouchCenter = ref<{ x: number; y: number }>({ x: 0, y: 0 })
 const sidebarOpen = ref<boolean>(false)
 const visibleCategories = ref<BookmarkCategory[]>(['check', 'interested', 'priority'])
 
-// 現在のイベントIDを使用
-const selectedEventId = computed(() => currentEvent.value?.id || 'geika-32')
+// 現在のイベントIDを取得（currentEventが利用可能になるまで待機）
+const selectedEventId = computed(() => {
+  const eventId = currentEvent.value?.id || 'geika-32'
+  console.log('🎯 selectedEventId computed:', eventId, currentEvent.value)
+  return eventId
+})
 
 // Composables
 const { bookmarksWithCircles, fetchBookmarksWithCircles } = useBookmarks()
@@ -612,8 +616,17 @@ const closeSidebar = () => {
 
 // ブックマーク関連
 const eventBookmarks = computed(() => {
-  if (!currentEvent.value || !bookmarksWithCircles.value) return []
-  return bookmarksWithCircles.value.filter(bookmark => bookmark.eventId === currentEvent.value.id)
+  if (!currentEvent.value || !bookmarksWithCircles.value) {
+    console.log('📊 eventBookmarks: empty', { currentEvent: currentEvent.value?.id, bookmarks: bookmarksWithCircles.value?.length })
+    return []
+  }
+  const filtered = bookmarksWithCircles.value.filter(bookmark => bookmark.eventId === currentEvent.value.id)
+  console.log('📊 eventBookmarks computed:', { 
+    eventId: currentEvent.value.id, 
+    totalBookmarks: bookmarksWithCircles.value.length, 
+    eventBookmarks: filtered.length 
+  })
+  return filtered
 })
 
 const filteredBookmarks = computed(() => {
@@ -628,7 +641,9 @@ const validBookmarks = computed(() => {
 })
 
 const getBookmarkCount = (category: BookmarkCategory): number => {
-  return eventBookmarks.value.filter(bookmark => bookmark.category === category).length
+  const count = eventBookmarks.value.filter(bookmark => bookmark.category === category).length
+  console.log('📊 getBookmarkCount:', { category, count, eventBookmarks: eventBookmarks.value.length })
+  return count
 }
 
 const getCategoryColor = (category: BookmarkCategory): string => {
@@ -743,12 +758,19 @@ const loadMapForCurrentEvent = async () => {
   }
 }
 
-// currentEvent変更時の自動切り替え
-watch(() => currentEvent.value, async (newEvent) => {
-  if (newEvent) {
+// currentEvent変更時の自動切り替え（即座に反応）
+watch(() => currentEvent.value, async (newEvent, oldEvent) => {
+  if (newEvent && newEvent.id !== oldEvent?.id) {
+    console.log('🔄 マップページ: イベント変更検知:', oldEvent?.id, '→', newEvent.id)
+    
+    // ブックマークデータを再取得
+    await fetchBookmarksWithCircles()
+    console.log('✅ ブックマークデータ再取得完了:', bookmarksWithCircles.value?.length || 0)
+    
+    // マップを更新
     await loadMapForCurrentEvent()
   }
-})
+}, { immediate: false, flush: 'sync' })
 
 // ブックマーク変更時の自動再描画
 watch(() => validBookmarks.value, async () => {
@@ -760,21 +782,59 @@ watch(() => visibleCategories.value, async () => {
   await renderBookmarkPins()
 }, { deep: true })
 
+// 現在のイベントが利用可能になるまで待機
+const waitForCurrentEvent = async (): Promise<boolean> => {
+  let attempts = 0
+  const maxAttempts = 50 // 5秒間
+  
+  while (!currentEvent.value && attempts < maxAttempts) {
+    await new Promise(resolve => setTimeout(resolve, 100))
+    attempts++
+    
+    if (attempts === 10) {
+      // 1秒後にfetchEventsを試す
+      console.log('🔄 Attempting to fetch events...')
+      try {
+        await fetchEvents()
+      } catch (error) {
+        console.error('❌ Failed to fetch events:', error)
+      }
+    }
+    
+    if (attempts % 10 === 0) {
+      console.log(`⏳ Still waiting for currentEvent... (${attempts * 100}ms)`)
+    }
+  }
+  
+  return !!currentEvent.value
+}
+
 // 初期化
 onMounted(async () => {
   console.log('🚀 マップページがマウントされました')
+  console.log('🔍 初期currentEvent:', currentEvent.value?.id)
   
-  // イベント情報とブックマークを取得
   try {
-    await Promise.all([
-      fetchEvents(),
-      fetchBookmarksWithCircles()
-    ])
+    // まずイベント情報を取得
+    await fetchEvents()
+    
+    // currentEventが設定されるまで待機
+    const hasCurrentEvent = await waitForCurrentEvent()
+    
+    if (!hasCurrentEvent) {
+      console.error('❌ currentEventが利用できません')
+      return
+    }
+    
+    console.log('✅ currentEvent確認完了:', currentEvent.value?.id)
+    
+    // ブックマーク情報を並行して取得
+    await fetchBookmarksWithCircles()
     
     // SVGマップを読み込み
     await loadMapForCurrentEvent()
     
-    console.log('✅ 初期化完了')
+    console.log('✅ マップページ初期化完了')
   } catch (error) {
     console.error('❌ 初期化エラー:', error)
   }

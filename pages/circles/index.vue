@@ -268,10 +268,37 @@ const checkMobileSize = () => {
   }
 }
 
+// 現在のイベントが利用可能になるまで待機
+const waitForCurrentEvent = async (): Promise<boolean> => {
+  let attempts = 0
+  const maxAttempts = 50 // 5秒間
+  
+  while (!currentEvent.value && attempts < maxAttempts) {
+    await new Promise(resolve => setTimeout(resolve, 100))
+    attempts++
+    
+    if (attempts === 10) {
+      // 1秒後にfetchEventsを試す
+      console.log('🔄 Attempting to fetch events...')
+      try {
+        await fetchEvents()
+      } catch (error) {
+        console.error('❌ Failed to fetch events:', error)
+      }
+    }
+    
+    if (attempts % 10 === 0) {
+      console.log(`⏳ Still waiting for currentEvent... (${attempts * 100}ms)`)
+    }
+  }
+  
+  return !!currentEvent.value
+}
+
 // 初期データ読み込み
 onMounted(async () => {
-  console.log('Circles page mounted')
-  console.log('currentEvent:', currentEvent.value)
+  console.log('🚀 Circles page mounted')
+  console.log('🔍 初期currentEvent:', currentEvent.value?.id)
   
   // 画面サイズをチェック
   checkMobileSize()
@@ -281,49 +308,38 @@ onMounted(async () => {
     window.addEventListener('resize', checkMobileSize)
   }
   
-  // プラグインでイベントが初期化されていない場合のフォールバック
-  if (!currentEvent.value) {
-    console.log('Waiting for events to be initialized...')
+  try {
+    // まずイベント情報を取得
+    await fetchEvents()
     
-    let attempts = 0
-    const maxAttempts = 50 // 5秒間
+    // currentEventが設定されるまで待機
+    const hasCurrentEvent = await waitForCurrentEvent()
     
-    while (!currentEvent.value && attempts < maxAttempts) {
-      await new Promise(resolve => setTimeout(resolve, 100))
-      attempts++
-      
-      if (attempts === 10) {
-        // 1秒後にfetchEventsを試す
-        console.log('Attempting to fetch events...')
-        try {
-          await fetchEvents()
-        } catch (error) {
-          console.error('Failed to fetch events:', error)
-        }
-      }
-      
-      if (attempts % 10 === 0) {
-        console.log(`Still waiting... (${attempts * 100}ms)`)
-      }
+    if (!hasCurrentEvent) {
+      console.error('❌ currentEventが利用できません')
+      return
     }
-  }
-  
-  if (currentEvent.value) {
-    console.log('currentEvent available:', currentEvent.value.id)
+    
+    console.log('✅ currentEvent確認完了:', currentEvent.value?.id)
+    
+    // データを読み込み
     await fetchData()
     await fetchPopularGenres()
-  } else {
-    console.error('No currentEvent available after waiting')
+    
+    console.log('✅ Circlesページ初期化完了')
+  } catch (error) {
+    console.error('❌ 初期化エラー:', error)
   }
 })
 
 // イベント変更時にデータを再読み込み
-watch(currentEvent, async () => {
-  if (currentEvent.value) {
+watch(currentEvent, async (newEvent, oldEvent) => {
+  if (newEvent && newEvent.id !== oldEvent?.id) {
+    console.log('🔄 Circlesページ: イベント変更検知:', oldEvent?.id, '→', newEvent.id)
     await fetchData()
     await fetchPopularGenres()
   }
-})
+}, { immediate: false })
 
 // コンポーネントアンマウント時にタイマーをクリアとイベントリスナーを削除
 onUnmounted(() => {
