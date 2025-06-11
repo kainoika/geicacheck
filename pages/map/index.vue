@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 flex flex-col">
     <!-- ヘッダー -->
     <div class="bg-white border-b border-gray-200 sticky top-0 z-30">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -30,7 +30,7 @@
     </div>
 
     <!-- メインコンテンツ -->
-    <div class="flex h-screen pt-16">
+    <div class="flex flex-1 relative">
       <!-- サイドバー -->
       <div 
         :class="[
@@ -178,7 +178,7 @@
         </div>
 
         <!-- SVG表示エリア -->
-        <div class="flex-1 bg-white border border-gray-200 rounded-lg m-4">
+        <div class="flex-1 bg-white border border-gray-200 rounded-lg m-4 flex flex-col" style="max-height: calc(100vh - 200px);">
           <!-- ヘッダー -->
           <div class="flex justify-between items-center p-4 border-b border-gray-200">
             <h2 class="text-lg font-semibold text-gray-900">SVGマップ</h2>
@@ -222,7 +222,7 @@
           </div>
 
           <!-- SVG表示 -->
-          <div v-else class="flex flex-col h-full">
+          <div v-else class="flex flex-col flex-1 overflow-hidden">
             <!-- ズームコントロール -->
             <div class="flex gap-2 p-4 border-b border-gray-200">
               <button 
@@ -261,7 +261,7 @@
             <div 
               ref="mapContainer"
               class="flex-1 relative overflow-hidden bg-gray-50 select-none"
-              style="touch-action: none;"
+              style="touch-action: none; min-height: 400px;"
               @mousedown="startPan"
               @mousemove="handlePan"
               @mouseup="endPan"
@@ -412,6 +412,9 @@
       @click="selectedCircle = null"
       class="fixed inset-0 bg-black bg-opacity-50 z-40"
     ></div>
+    
+    <!-- フッター -->
+    <AppFooter />
   </div>
 </template>
 
