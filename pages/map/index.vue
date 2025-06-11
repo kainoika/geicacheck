@@ -12,19 +12,6 @@
               ブックマークしたサークルの配置を確認
             </p>
           </div>
-          
-          <!-- イベント切り替え -->
-          <div class="flex items-center gap-2">
-            <label class="text-sm font-medium text-gray-700">イベント:</label>
-            <select 
-              v-model="selectedEventId"
-              @change="switchEvent"
-              class="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
-            >
-              <option value="geika-32">げいか32</option>
-              <option value="geika-31">げいか31</option>
-            </select>
-          </div>
         </div>
       </div>
     </div>
@@ -184,7 +171,7 @@
         <div class="flex-1 bg-white border border-gray-200 rounded-lg m-4 flex flex-col" style="max-height: calc(100vh - 200px);">
           <!-- ヘッダー -->
           <div class="flex justify-between items-center p-4 border-b border-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900">SVGマップ</h2>
+            <h2 class="text-lg font-semibold text-gray-900">会場マップ</h2>
             
             <!-- モバイル用サイドバートグル -->
             <button 
@@ -412,8 +399,8 @@ const lastTouchCenter = ref<{ x: number; y: number }>({ x: 0, y: 0 })
 const sidebarOpen = ref<boolean>(false)
 const visibleCategories = ref<BookmarkCategory[]>(['check', 'interested', 'priority'])
 
-// イベント切り替え関連
-const selectedEventId = ref<string>('geika-32')
+// 現在のイベントIDを使用
+const selectedEventId = computed(() => currentEvent.value?.id || 'geika-32')
 
 // Composables
 const { bookmarksWithCircles, fetchBookmarksWithCircles } = useBookmarks()
@@ -441,45 +428,8 @@ const bookmarkCategories = ref([
 
 // SVG読み込み関数
 const loadSvg = async () => {
-  try {
-    svgLoaded.value = false
-    error.value = null
-    
-    console.log('🔄 SVGマップの読み込み開始')
-    
-    const response = await fetch('/map-geika32.svg')
-    console.log('📥 Fetch response:', {
-      status: response.status,
-      statusText: response.statusText,
-      ok: response.ok
-    })
-    
-    if (!response.ok) {
-      throw new Error(`SVGファイルの取得に失敗: ${response.status} ${response.statusText}`)
-    }
-    
-    const svgText = await response.text()
-    console.log('📄 SVG content loaded:', {
-      length: svgText.length,
-      starts: svgText.substring(0, 100),
-      containsSvg: svgText.includes('<svg')
-    })
-    
-    svgContent.value = svgText
-    svgLoaded.value = true
-    
-    console.log('✅ SVGマップの読み込み完了')
-    
-    // SVG読み込み完了後にマップを中央配置とピン初期化
-    nextTick(async () => {
-      centerMap()
-      await initializeSvgPins()
-      await renderBookmarkPins()
-    })
-  } catch (err) {
-    console.error('❌ SVGマップの読み込みエラー:', err)
-    error.value = err instanceof Error ? err.message : 'Unknown error'
-  }
+  // 現在のイベントに基づいてマップを読み込む
+  await loadMapForCurrentEvent()
 }
 
 // ズーム機能
@@ -759,11 +709,11 @@ const showCircleInfo = (circle: Circle) => {
   console.log('📋 サークル詳細表示:', circle.circleName)
 }
 
-// イベント切り替え
-const switchEvent = async () => {
-  console.log('🔄 イベント切り替え:', selectedEventId.value)
+// SVGマップの読み込み（現在のイベントに基づく）
+const loadMapForCurrentEvent = async () => {
+  console.log('🔄 マップ読み込み:', selectedEventId.value)
   
-  // SVGマップを新しいイベント用に読み込み
+  // SVGマップを現在のイベント用に読み込み
   const mapFileName = selectedEventId.value === 'geika-31' ? 'map-geika31.svg' : 'map-geika32.svg'
   
   try {
@@ -786,18 +736,17 @@ const switchEvent = async () => {
       await renderBookmarkPins()
     })
     
-    console.log('✅ マップ切り替え完了:', selectedEventId.value)
+    console.log('✅ マップ読み込み完了:', selectedEventId.value)
   } catch (err) {
-    console.error('❌ マップ切り替えエラー:', err)
+    console.error('❌ マップ読み込みエラー:', err)
     error.value = err instanceof Error ? err.message : 'Unknown error'
   }
 }
 
 // currentEvent変更時の自動切り替え
-watch(() => currentEvent.value, (newEvent) => {
-  if (newEvent && newEvent.id !== selectedEventId.value) {
-    selectedEventId.value = newEvent.id
-    switchEvent()
+watch(() => currentEvent.value, async (newEvent) => {
+  if (newEvent) {
+    await loadMapForCurrentEvent()
   }
 })
 
@@ -822,13 +771,8 @@ onMounted(async () => {
       fetchBookmarksWithCircles()
     ])
     
-    // 現在のイベントに基づいて初期イベントを設定
-    if (currentEvent.value) {
-      selectedEventId.value = currentEvent.value.id
-    }
-    
     // SVGマップを読み込み
-    await switchEvent()
+    await loadMapForCurrentEvent()
     
     console.log('✅ 初期化完了')
   } catch (error) {

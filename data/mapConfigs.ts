@@ -207,11 +207,220 @@ export const mapConfigs: EventMapConfig[] = [
     eventId: 'geika-31',
     svgPath: '/map-geika31.svg',
     coordinateMapping: {
-      // geika-31用の座標マッピング（必要に応じて追加）
-      // 現在はgeika-32と同じレイアウトと仮定
-      'ア-01': { x: 265, y: 157, width: 30, height: 25 },
-      'ア-02': { x: 265, y: 187, width: 30, height: 25 },
-      // ... 他の座標も必要に応じて定義
+      // つエリア (左上) - つ-41からつ-44
+      'つ-41': { x: 85, y: 152, width: 30, height: 25 },
+      'つ-42': { x: 85, y: 182, width: 30, height: 25 },
+      'つ-43': { x: 85, y: 212, width: 30, height: 25 },
+      'つ-44': { x: 85, y: 242, width: 30, height: 25 },
+
+      // つエリア (右上) - つ-25からつ-28
+      'つ-25': { x: 1140, y: 622, width: 30, height: 25 },
+      'つ-26': { x: 1140, y: 652, width: 30, height: 25 },
+      'つ-27': { x: 1140, y: 682, width: 30, height: 25 },
+      'つ-28': { x: 1140, y: 712, width: 30, height: 25 },
+
+      // あエリア (transform="translate(150, 180)")
+      // あ-24からあ-13 (第1行)
+      'あ-24': { x: 165, y: 197, width: 30, height: 25 },
+      'あ-23': { x: 200, y: 197, width: 30, height: 25 },
+      'あ-22': { x: 235, y: 197, width: 30, height: 25 },
+      'あ-21': { x: 270, y: 197, width: 30, height: 25 },
+      'あ-20': { x: 305, y: 197, width: 30, height: 25 },
+      'あ-19': { x: 340, y: 197, width: 30, height: 25 },
+      'あ-18': { x: 375, y: 197, width: 30, height: 25 },
+      'あ-17': { x: 410, y: 197, width: 30, height: 25 },
+      'あ-16': { x: 445, y: 197, width: 30, height: 25 },
+      'あ-15': { x: 480, y: 197, width: 30, height: 25 },
+      'あ-14': { x: 515, y: 197, width: 30, height: 25 },
+      'あ-13': { x: 550, y: 197, width: 30, height: 25 },
+
+      // あ-12からあ-01 (第1行右側、transform="translate(500, 0)")
+      'あ-12': { x: 665, y: 197, width: 30, height: 25 },
+      'あ-11': { x: 700, y: 197, width: 30, height: 25 },
+      'あ-10': { x: 735, y: 197, width: 30, height: 25 },
+      'あ-09': { x: 770, y: 197, width: 30, height: 25 },
+      'あ-08': { x: 805, y: 197, width: 30, height: 25 },
+      'あ-07': { x: 840, y: 197, width: 30, height: 25 },
+      'あ-06': { x: 875, y: 197, width: 30, height: 25 },
+      'あ-05': { x: 910, y: 197, width: 30, height: 25 },
+      'あ-04': { x: 945, y: 197, width: 30, height: 25 },
+      'あ-03': { x: 980, y: 197, width: 30, height: 25 },
+      'あ-02': { x: 1015, y: 197, width: 30, height: 25 },
+      'あ-01': { x: 1050, y: 197, width: 30, height: 25 },
+
+      // あ-25からあ-34 (第2行、transform="translate(0, 50)")
+      'あ-25': { x: 165, y: 247, width: 30, height: 25 },
+      'あ-26': { x: 200, y: 247, width: 30, height: 25 },
+      'あ-27': { x: 235, y: 247, width: 30, height: 25 },
+      'あ-28': { x: 270, y: 247, width: 30, height: 25 },
+      'あ-29': { x: 305, y: 247, width: 30, height: 25 },
+      'あ-30': { x: 340, y: 247, width: 30, height: 25 },
+      'あ-31': { x: 445, y: 247, width: 30, height: 25 },
+      'あ-32': { x: 480, y: 247, width: 30, height: 25 },
+      'あ-33': { x: 515, y: 247, width: 30, height: 25 },
+      'あ-34': { x: 550, y: 247, width: 30, height: 25 },
+
+      // あ-35からあ-44 (第2行右側)
+      'あ-35': { x: 665, y: 247, width: 30, height: 25 },
+      'あ-36': { x: 700, y: 247, width: 30, height: 25 },
+      'あ-37': { x: 735, y: 247, width: 30, height: 25 },
+      'あ-38': { x: 770, y: 247, width: 30, height: 25 },
+      'あ-39': { x: 875, y: 247, width: 30, height: 25 },
+      'あ-40': { x: 910, y: 247, width: 30, height: 25 },
+      'あ-41': { x: 945, y: 247, width: 30, height: 25 },
+      'あ-42': { x: 980, y: 247, width: 30, height: 25 },
+      'あ-43': { x: 1015, y: 247, width: 30, height: 25 },
+      'あ-44': { x: 1050, y: 247, width: 30, height: 25 },
+
+      // いエリア (transform="translate(150, 350)")
+      // い-24からい-13 (第1行)
+      'い-24': { x: 165, y: 367, width: 30, height: 25 },
+      'い-23': { x: 200, y: 367, width: 30, height: 25 },
+      'い-22': { x: 235, y: 367, width: 30, height: 25 },
+      'い-21': { x: 270, y: 367, width: 30, height: 25 },
+      'い-20': { x: 305, y: 367, width: 30, height: 25 },
+      'い-19': { x: 340, y: 367, width: 30, height: 25 },
+      'い-18': { x: 375, y: 367, width: 30, height: 25 },
+      'い-17': { x: 410, y: 367, width: 30, height: 25 },
+      'い-16': { x: 445, y: 367, width: 30, height: 25 },
+      'い-15': { x: 480, y: 367, width: 30, height: 25 },
+      'い-14': { x: 515, y: 367, width: 30, height: 25 },
+      'い-13': { x: 550, y: 367, width: 30, height: 25 },
+
+      // い-12からい-01 (第1行右側)
+      'い-12': { x: 665, y: 367, width: 30, height: 25 },
+      'い-11': { x: 700, y: 367, width: 30, height: 25 },
+      'い-10': { x: 735, y: 367, width: 30, height: 25 },
+      'い-09': { x: 770, y: 367, width: 30, height: 25 },
+      'い-08': { x: 805, y: 367, width: 30, height: 25 },
+      'い-07': { x: 840, y: 367, width: 30, height: 25 },
+      'い-06': { x: 875, y: 367, width: 30, height: 25 },
+      'い-05': { x: 910, y: 367, width: 30, height: 25 },
+      'い-04': { x: 945, y: 367, width: 30, height: 25 },
+      'い-03': { x: 980, y: 367, width: 30, height: 25 },
+      'い-02': { x: 1015, y: 367, width: 30, height: 25 },
+      'い-01': { x: 1050, y: 367, width: 30, height: 25 },
+
+      // い-25からい-34 (第2行)
+      'い-25': { x: 165, y: 417, width: 30, height: 25 },
+      'い-26': { x: 200, y: 417, width: 30, height: 25 },
+      'い-27': { x: 235, y: 417, width: 30, height: 25 },
+      'い-28': { x: 270, y: 417, width: 30, height: 25 },
+      'い-29': { x: 305, y: 417, width: 30, height: 25 },
+      'い-30': { x: 340, y: 417, width: 30, height: 25 },
+      'い-31': { x: 445, y: 417, width: 30, height: 25 },
+      'い-32': { x: 480, y: 417, width: 30, height: 25 },
+      'い-33': { x: 515, y: 417, width: 30, height: 25 },
+      'い-34': { x: 550, y: 417, width: 30, height: 25 },
+
+      // い-35からい-44 (第2行右側)
+      'い-35': { x: 665, y: 417, width: 30, height: 25 },
+      'い-36': { x: 700, y: 417, width: 30, height: 25 },
+      'い-37': { x: 735, y: 417, width: 30, height: 25 },
+      'い-38': { x: 770, y: 417, width: 30, height: 25 },
+      'い-39': { x: 875, y: 417, width: 30, height: 25 },
+      'い-40': { x: 910, y: 417, width: 30, height: 25 },
+      'い-41': { x: 945, y: 417, width: 30, height: 25 },
+      'い-42': { x: 980, y: 417, width: 30, height: 25 },
+      'い-43': { x: 1015, y: 417, width: 30, height: 25 },
+      'い-44': { x: 1050, y: 417, width: 30, height: 25 },
+
+      // かエリア (transform="translate(150, 520)")
+      // か-24からか-13 (第1行)
+      'か-24': { x: 165, y: 537, width: 30, height: 25 },
+      'か-23': { x: 200, y: 537, width: 30, height: 25 },
+      'か-22': { x: 235, y: 537, width: 30, height: 25 },
+      'か-21': { x: 270, y: 537, width: 30, height: 25 },
+      'か-20': { x: 305, y: 537, width: 30, height: 25 },
+      'か-19': { x: 340, y: 537, width: 30, height: 25 },
+      'か-18': { x: 375, y: 537, width: 30, height: 25 },
+      'か-17': { x: 410, y: 537, width: 30, height: 25 },
+      'か-16': { x: 445, y: 537, width: 30, height: 25 },
+      'か-15': { x: 480, y: 537, width: 30, height: 25 },
+      'か-14': { x: 515, y: 537, width: 30, height: 25 },
+      'か-13': { x: 550, y: 537, width: 30, height: 25 },
+
+      // か-12からか-01 (第1行右側)
+      'か-12': { x: 665, y: 537, width: 30, height: 25 },
+      'か-11': { x: 700, y: 537, width: 30, height: 25 },
+      'か-10': { x: 735, y: 537, width: 30, height: 25 },
+      'か-09': { x: 770, y: 537, width: 30, height: 25 },
+      'か-08': { x: 805, y: 537, width: 30, height: 25 },
+      'か-07': { x: 840, y: 537, width: 30, height: 25 },
+      'か-06': { x: 875, y: 537, width: 30, height: 25 },
+      'か-05': { x: 910, y: 537, width: 30, height: 25 },
+      'か-04': { x: 945, y: 537, width: 30, height: 25 },
+      'か-03': { x: 980, y: 537, width: 30, height: 25 },
+      'か-02': { x: 1015, y: 537, width: 30, height: 25 },
+      'か-01': { x: 1050, y: 537, width: 30, height: 25 },
+
+      // か-25からか-34 (第2行)
+      'か-25': { x: 165, y: 587, width: 30, height: 25 },
+      'か-26': { x: 200, y: 587, width: 30, height: 25 },
+      'か-27': { x: 235, y: 587, width: 30, height: 25 },
+      'か-28': { x: 270, y: 587, width: 30, height: 25 },
+      'か-29': { x: 305, y: 587, width: 30, height: 25 },
+      'か-30': { x: 340, y: 587, width: 30, height: 25 },
+      'か-31': { x: 445, y: 587, width: 30, height: 25 },
+      'か-32': { x: 480, y: 587, width: 30, height: 25 },
+      'か-33': { x: 515, y: 587, width: 30, height: 25 },
+      'か-34': { x: 550, y: 587, width: 30, height: 25 },
+
+      // か-35からか-44 (第2行右側)
+      'か-35': { x: 665, y: 587, width: 30, height: 25 },
+      'か-36': { x: 700, y: 587, width: 30, height: 25 },
+      'か-37': { x: 735, y: 587, width: 30, height: 25 },
+      'か-38': { x: 770, y: 587, width: 30, height: 25 },
+      'か-39': { x: 875, y: 587, width: 30, height: 25 },
+      'か-40': { x: 910, y: 587, width: 30, height: 25 },
+      'か-41': { x: 945, y: 587, width: 30, height: 25 },
+      'か-42': { x: 980, y: 587, width: 30, height: 25 },
+      'か-43': { x: 1015, y: 587, width: 30, height: 25 },
+      'か-44': { x: 1050, y: 587, width: 30, height: 25 },
+
+      // つエリア左下 - つ-40からつ-33
+      'つ-40': { x: 85, y: 507, width: 30, height: 25 },
+      'つ-39': { x: 85, y: 537, width: 30, height: 25 },
+      'つ-38': { x: 85, y: 567, width: 30, height: 25 },
+      'つ-37': { x: 85, y: 597, width: 30, height: 25 },
+      'つ-36': { x: 85, y: 627, width: 30, height: 25 },
+      'つ-35': { x: 85, y: 657, width: 30, height: 25 },
+      'つ-34': { x: 85, y: 687, width: 30, height: 25 },
+      'つ-33': { x: 85, y: 717, width: 30, height: 25 },
+
+      // つエリア右下 - つ-32からつ-29
+      'つ-32': { x: 1140, y: 507, width: 30, height: 25 },
+      'つ-31': { x: 1140, y: 537, width: 30, height: 25 },
+      'つ-30': { x: 1140, y: 567, width: 30, height: 25 },
+      'つ-29': { x: 1140, y: 597, width: 30, height: 25 },
+
+      // つエリア下部 (つ-14からつ-01)
+      'つ-14': { x: 365, y: 717, width: 30, height: 25 },
+      'つ-13': { x: 400, y: 717, width: 30, height: 25 },
+      'つ-12': { x: 435, y: 717, width: 30, height: 25 },
+      'つ-11': { x: 470, y: 717, width: 30, height: 25 },
+      'つ-10': { x: 505, y: 717, width: 30, height: 25 },
+      'つ-09': { x: 540, y: 717, width: 30, height: 25 },
+      'つ-08': { x: 575, y: 717, width: 30, height: 25 },
+      'つ-07': { x: 610, y: 717, width: 30, height: 25 },
+      'つ-06': { x: 645, y: 717, width: 30, height: 25 },
+      'つ-05': { x: 680, y: 717, width: 30, height: 25 },
+      'つ-04': { x: 715, y: 717, width: 30, height: 25 },
+      'つ-03': { x: 750, y: 717, width: 30, height: 25 },
+      'つ-02': { x: 785, y: 717, width: 30, height: 25 },
+      'つ-01': { x: 820, y: 717, width: 30, height: 25 },
+
+      // つエリア下部第2行 (つ-15からつ-24)
+      'つ-15': { x: 465, y: 797, width: 30, height: 25 },
+      'つ-16': { x: 500, y: 797, width: 30, height: 25 },
+      'つ-17': { x: 535, y: 797, width: 30, height: 25 },
+      'つ-18': { x: 570, y: 797, width: 30, height: 25 },
+      'つ-19': { x: 605, y: 797, width: 30, height: 25 },
+      'つ-20': { x: 640, y: 797, width: 30, height: 25 },
+      'つ-21': { x: 675, y: 797, width: 30, height: 25 },
+      'つ-22': { x: 710, y: 797, width: 30, height: 25 },
+      'つ-23': { x: 745, y: 797, width: 30, height: 25 },
+      'つ-24': { x: 780, y: 797, width: 30, height: 25 }
     }
   }
 ]
