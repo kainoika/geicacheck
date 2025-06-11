@@ -228,6 +228,19 @@ export interface MapViewport {
   zoom: number;
 }
 
+export interface EventMapConfig {
+  eventId: string;
+  svgPath: string;
+  coordinateMapping: {
+    [blockId: string]: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    };
+  };
+}
+
 // フォーム関連の型定義
 export interface CircleFormData {
   circleName: string;

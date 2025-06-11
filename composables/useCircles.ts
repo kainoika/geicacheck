@@ -10,6 +10,7 @@ import {
   type Unsubscribe,
 } from "firebase/firestore";
 import type { Circle, SearchParams, SearchResult, PlacementInfo } from "~/types";
+import { normalizePlacement, formatPlacementDisplay } from "~/utils/placementUtils";
 
 export const useCircles = () => {
   const { $firestore } = useNuxtApp() as any;
@@ -442,13 +443,19 @@ export const useCircles = () => {
   // その他の関数は元の実装を維持
   const formatPlacement = (placement: PlacementInfo): string => {
     if (!placement) return "";
-    const number2 = placement.number2 ? placement.number2 : "";
     
-    if (number2 === "") {
-      return `${placement.block}-${placement.number1}`;
+    try {
+      const normalized = normalizePlacement(placement);
+      return formatPlacementDisplay(normalized);
+    } catch (error) {
+      console.warn('配置番号のフォーマットに失敗:', error);
+      // フォールバック処理
+      const number2 = placement.number2 ? placement.number2 : "";
+      if (number2 === "") {
+        return `${placement.block}-${placement.number1}`;
+      }
+      return `${placement.block}-${placement.number1}-${placement.number2}`;
     }
-    
-    return `${placement.block}-${placement.number1}-${placement.number2}`;
   };
 
   const applyClientSideFilters = (circleList: Circle[], filters: SearchParams): Circle[] => {

@@ -3,48 +3,75 @@
     <!-- マップコンテナ -->
     <div 
       ref="mapContainer"
-      style="width: 100%; height: 100%; position: relative; cursor: grab; overflow: hidden;"
+      style="width: 100%; height: 100%; position: relative; cursor: grab; overflow: hidden; touch-action: none;"
       @mousedown="startPan"
       @mousemove="handlePan"
       @mouseup="endPan"
       @mouseleave="endPan"
       @wheel="handleZoom"
+      @touchstart="onTouchStart"
+      @touchmove="onTouchMove"
+      @touchend="onTouchEnd"
+      @gesturestart.prevent
+      @gesturechange.prevent
+      @gestureend.prevent
     >
       <!-- SVGマップ -->
       <div 
         :style="{
           transform: `translate(${panX}px, ${panY}px) scale(${zoomLevel})`,
-          transformOrigin: 'center center',
+          transformOrigin: '0 0',
           transition: isPanning ? 'none' : 'transform 0.3s ease',
           position: 'absolute',
-          top: '50%',
-          left: '50%',
-          marginTop: '-300px',
-          marginLeft: '-400px'
+          top: '0',
+          left: '0',
+          width: '100%',
+          height: '100%'
         }"
       >
         <!-- 実際のマップSVGを読み込み -->
-        <div v-if="isMapLoaded && mapSvgContent" v-html="mapSvgContent" style="position: relative;"></div>
+        <div v-if="isMapLoaded && mapSvgContent" style="position: relative; width: 100%; height: 100%; border: 2px solid purple; background: cyan; min-height: 500px;">
+          <div v-html="mapSvgContent" style="width: 100%; height: 100%; border: 2px solid red; background: yellow; min-height: 500px;"></div>
+          <div style="position: absolute; top: 10px; left: 10px; background: purple; color: white; padding: 5px; font-size: 12px; z-index: 1000;">
+            🟣 SVG Content Rendered ({{ mapSvgContent.length }} chars)
+          </div>
+        </div>
+        
+        <!-- エラー状態 -->
+        <div v-else-if="mapError" style="width: 1000px; height: 1000px; display: flex; align-items: center; justify-content: center; background: #fef2f2; border: 2px solid #fecaca; border-radius: 8px;">
+          <div style="text-align: center; padding: 2rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem; color: #dc2626;">⚠️</div>
+            <div style="font-size: 1.25rem; color: #dc2626; margin-bottom: 0.5rem; font-weight: 600;">マップの読み込みに失敗しました</div>
+            <div style="font-size: 0.875rem; color: #991b1b; margin-bottom: 1rem;">{{ mapError }}</div>
+            <button 
+              @click="loadEventMap(props.eventId || 'geika-32')"
+              style="padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; font-weight: 500;"
+            >
+              再試行
+            </button>
+          </div>
+        </div>
         
         <!-- ローディング状態 -->
-        <div v-else style="width: 800px; height: 600px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border: 2px solid #dee2e6; border-radius: 8px;">
+        <div v-else style="width: 1000px; height: 1000px; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border: 2px solid #dee2e6; border-radius: 8px;">
           <div style="text-align: center;">
             <div style="font-size: 3rem; margin-bottom: 1rem; animation: pulse 2s infinite;">🗺️</div>
             <div style="font-size: 1.25rem; color: #6c757d; margin-bottom: 0.5rem;">マップを読み込み中...</div>
             <div style="font-size: 0.875rem; color: #adb5bd;">SVGデータの取得中</div>
+            <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.5rem;">イベントID: {{ props.eventId || 'geika-32' }}</div>
           </div>
         </div>
         
         <!-- ブックマークピン表示 -->
         <svg 
-          style="position: absolute; top: 0; left: 0; width: 800px; height: 600px; pointer-events: none;"
-          viewBox="0 0 800 600"
+          style="position: absolute; top: 0; left: 0; width: 1000px; height: 1000px; pointer-events: none;"
+          viewBox="0 0 1000 1000"
         >
           <!-- ブックマークピン -->
           <g v-for="bookmark in visibleBookmarks" :key="bookmark.id">
             <circle 
-              :cx="getCirclePosition(bookmark.circle).x" 
-              :cy="getCirclePosition(bookmark.circle).y"
+              :cx="getCirclePositionForMap(bookmark.circle).x" 
+              :cy="getCirclePositionForMap(bookmark.circle).y"
               :r="10"
               :fill="getCategoryColor(bookmark.category)"
               stroke="white"
@@ -55,8 +82,8 @@
             
             <!-- ピンアイコン -->
             <text 
-              :x="getCirclePosition(bookmark.circle).x" 
-              :y="getCirclePosition(bookmark.circle).y + 3"
+              :x="getCirclePositionForMap(bookmark.circle).x" 
+              :y="getCirclePositionForMap(bookmark.circle).y + 3"
               text-anchor="middle"
               font-size="10"
               fill="white"
@@ -71,9 +98,18 @@
 
       <!-- ズーム・パン説明 -->
       <div style="position: absolute; bottom: 1rem; left: 1rem; background: rgba(0,0,0,0.8); color: white; padding: 0.75rem; border-radius: 0.5rem; font-size: 0.75rem; backdrop-filter: blur(4px);">
-        <div>🖱️ マウスホイール: ズーム</div>
-        <div>✋ ドラッグ: パン移動</div>
-        <div>📍 ピンクリック: 詳細表示</div>
+        <!-- デスクトップ用説明 -->
+        <div class="hidden sm:block">
+          <div>🖱️ マウスホイール: ズーム</div>
+          <div>✋ ドラッグ: パン移動</div>
+          <div>📍 ピンクリック: 詳細表示</div>
+        </div>
+        <!-- モバイル用説明 -->
+        <div class="sm:hidden">
+          <div>🤏 ピンチ: ズーム</div>
+          <div>👆 ドラッグ: 移動</div>
+          <div>📍 ピンタップ: 詳細</div>
+        </div>
       </div>
     </div>
 
@@ -177,7 +213,10 @@
 </template>
 
 <script setup lang="ts">
+import { nextTick } from 'vue'
 import type { Circle, BookmarkCategory } from '~/types'
+import { useTouch, MomentumScroll } from '~/composables/useTouch'
+import { useEventMap, useCircleMapping } from '~/composables/useEventMap'
 
 interface Props {
   visibleBookmarks: any[]
@@ -199,31 +238,113 @@ const panY = ref(0)
 const isPanning = ref(false)
 const lastPanPoint = ref({ x: 0, y: 0 })
 const selectedCircle = ref<Circle | null>(null)
-const mapSvgContent = ref('')
-const isMapLoaded = ref(false)
-
-// マップSVGを読み込み
-const loadMapSvg = async () => {
-  try {
-    console.log('🗺️ Loading map from public/map-geika32.svg...')
-    
-    // 外部SVGファイルを読み込み
-    const response = await fetch('/map-geika32.svg')
-    if (!response.ok) {
-      throw new Error(`Failed to fetch SVG: ${response.status}`)
-    }
-    
-    mapSvgContent.value = await response.text()
-    isMapLoaded.value = true
-    console.log('✅ Map loaded successfully from external SVG file')
-  } catch (error) {
-    console.error('❌ Failed to load map SVG:', error)
-    isMapLoaded.value = false
-  }
-}
+const currentMomentumScroll = ref<MomentumScroll | null>(null)
 
 // Composables
 const { formatPlacement } = useCircles()
+const { 
+  currentMapContent,
+  isLoading: isMapLoading,
+  error: mapError,
+  loadEventMap
+} = useEventMap()
+const { getCirclePosition } = useCircleMapping()
+const {
+  handleTouchStart,
+  handleTouchMove,
+  handleTouchEnd,
+  stopTouch
+} = useTouch()
+
+// Computed
+const isMapLoaded = computed(() => currentMapContent.value !== '')
+const mapSvgContent = computed(() => currentMapContent.value)
+
+// タッチイベントハンドラー
+const onTouchStart = (event: TouchEvent) => {
+  stopCurrentMomentum()
+  
+  handleTouchStart(
+    event,
+    // ピンチ開始
+    (distance, midpoint) => {
+      console.log('🤏 Pinch start:', { distance, midpoint })
+    },
+    // パン開始 
+    (point) => {
+      console.log('👆 Pan start:', point)
+      isPanning.value = true
+      lastPanPoint.value = point
+      if (mapContainer.value) {
+        mapContainer.value.style.cursor = 'grabbing'
+      }
+    }
+  )
+}
+
+const onTouchMove = (event: TouchEvent) => {
+  handleTouchMove(
+    event,
+    // ピンチ + パン処理
+    (scale, center, deltaX, deltaY) => {
+      // ズーム処理
+      const newZoom = Math.max(0.5, Math.min(3, zoomLevel.value * scale))
+      zoomLevel.value = newZoom
+      
+      // パン処理（ピンチ中心を基準）
+      panX.value += deltaX
+      panY.value += deltaY
+    },
+    // パン処理
+    (deltaX, deltaY, velocity) => {
+      panX.value += deltaX
+      panY.value += deltaY
+    }
+  )
+}
+
+const onTouchEnd = (event: TouchEvent) => {
+  handleTouchEnd(
+    event,
+    // 慣性スクロール開始
+    (velocity) => {
+      startMomentumScroll(velocity)
+    },
+    // タッチ終了
+    () => {
+      isPanning.value = false
+      if (mapContainer.value) {
+        mapContainer.value.style.cursor = 'grab'
+      }
+    }
+  )
+}
+
+const startMomentumScroll = (velocity: { x: number, y: number }) => {
+  currentMomentumScroll.value = new MomentumScroll(
+    velocity,
+    {
+      friction: 0.95,
+      threshold: 0.01,
+      onUpdate: (deltaX, deltaY) => {
+        panX.value += deltaX
+        panY.value += deltaY
+      },
+      onComplete: () => {
+        currentMomentumScroll.value = null
+      }
+    }
+  )
+  
+  currentMomentumScroll.value.start()
+}
+
+const stopCurrentMomentum = () => {
+  if (currentMomentumScroll.value) {
+    currentMomentumScroll.value.stop()
+    currentMomentumScroll.value = null
+  }
+}
 
 // Methods
 const getCategoryIcon = (category: BookmarkCategory) => {
@@ -244,57 +365,19 @@ const getCategoryColor = (category: BookmarkCategory) => {
   }
 }
 
-// サークル位置を配置情報から計算
-const getCirclePosition = (circle: Circle) => {
-  const placement = circle.placement
-  
-  // みきエリア
-  if (placement.block >= '01' && placement.block <= '20') {
-    const num = parseInt(placement.block)
-    if (num >= 1 && num <= 8) {
-      return { x: 45, y: 200 + (num - 1) * 15 }
-    } else if (num >= 9 && num <= 16) {
-      return { x: 45, y: 360 + (num - 9) * 15 }
-    } else if (num >= 17 && num <= 20) {
-      return { x: 70 + (num - 17) * 25, y: 565 }
-    }
-  }
-  
-  // メインサークルエリア
-  const blockNum = parseInt(placement.block)
-  if (blockNum >= 1 && blockNum <= 72) {
-    let x = 120
-    let y = 150
-    
-    // 列の計算 (1-24, 25-48, 49-72)
-    let col = 0
-    if (blockNum <= 24) {
-      col = 0
-      x += 120 + (blockNum <= 12 ? (blockNum - 1) % 2 * 30 + Math.floor((blockNum - 1) / 2) * 10 : 60 + ((blockNum - 13) % 2) * 30 + Math.floor((blockNum - 13) / 2) * 10)
-      y += Math.floor((blockNum - 1) / 2) * 15
-    } else if (blockNum <= 48) {
-      col = 1
-      const relNum = blockNum - 24
-      x += 240 + (relNum <= 12 ? (relNum - 1) % 2 * 30 + Math.floor((relNum - 1) / 2) * 10 : 60 + ((relNum - 13) % 2) * 30 + Math.floor((relNum - 13) / 2) * 10)
-      y += Math.floor((relNum - 1) / 2) * 15
-    } else {
-      col = 2
-      const relNum = blockNum - 48
-      x += 360 + (relNum <= 12 ? (relNum - 1) % 2 * 30 + Math.floor((relNum - 1) / 2) * 10 : 60 + ((relNum - 13) % 2) * 30 + Math.floor((relNum - 13) / 2) * 10)
-      y += Math.floor((relNum - 1) / 2) * 15
-    }
-    
-    return { x, y }
-  }
-  
-  // デフォルト位置
-  return { x: 400, y: 300 }
+// サークル位置取得（useCircleMapping を使用）
+const getCirclePositionForMap = (circle: Circle) => {
+  const eventId = props.eventId || 'geika-32'
+  return getCirclePosition(circle, eventId)
 }
 
 const focusOnCircle = (circle: Circle) => {
-  const position = getCirclePosition(circle)
-  panX.value = -position.x * zoomLevel.value + (mapContainer.value?.clientWidth || 800) / 2
-  panY.value = -position.y * zoomLevel.value + (mapContainer.value?.clientHeight || 600) / 2
+  const position = getCirclePositionForMap(circle)
+  const containerWidth = mapContainer.value?.clientWidth || 1000
+  const containerHeight = mapContainer.value?.clientHeight || 1000
+  
+  panX.value = containerWidth / 2 - position.x * zoomLevel.value
+  panY.value = containerHeight / 2 - position.y * zoomLevel.value
   selectedCircle.value = circle
   emit('circleSelect', circle)
 }
@@ -315,8 +398,7 @@ const zoomOut = () => {
 
 const resetZoom = () => {
   zoomLevel.value = 1
-  panX.value = 0
-  panY.value = 0
+  centerMap()
 }
 
 const handleZoom = (event: WheelEvent) => {
@@ -361,14 +443,74 @@ defineExpose({
 })
 
 // プロパティの変更を監視してマップを再読み込み
-watch(() => props.eventId, () => {
-  console.log('🔄 Event ID changed, reloading map...')
-  loadMapSvg()
+watch(() => props.eventId, async (newEventId) => {
+  if (newEventId) {
+    console.log('🔄 Event ID changed, reloading map...', newEventId)
+    try {
+      await loadEventMap(newEventId)
+    } catch (error) {
+      console.error('Failed to load map for event:', newEventId, error)
+    }
+  }
 }, { immediate: true })
 
 // 初期化
-onMounted(() => {
-  loadMapSvg()
+onMounted(async () => {
+  const eventId = props.eventId || 'geika-32'
+  console.log('🗺️ EventMap component mounted')
+  console.log('🎯 Props received:', {
+    eventId: props.eventId,
+    visibleBookmarks: props.visibleBookmarks?.length || 0
+  })
+  console.log('📍 Loading initial map for event:', eventId)
+  
+  try {
+    await loadEventMap(eventId)
+    console.log('✅ Map SVG loaded successfully')
+    console.log('📊 Map state after load:', {
+      isMapLoaded: isMapLoaded.value,
+      mapSvgContentLength: mapSvgContent.value.length,
+      error: mapError.value
+    })
+    
+    // マップを画面中央に初期配置
+    nextTick(() => {
+      console.log('🎯 Centering map...')
+      centerMap()
+      console.log('✅ Map centered')
+    })
+  } catch (error) {
+    console.error('❌ Failed to load initial map:', error)
+  }
+})
+
+// マップを画面中央に配置する関数
+const centerMap = () => {
+  console.log('🎯 centerMap called')
+  if (mapContainer.value) {
+    const containerWidth = mapContainer.value.clientWidth
+    const containerHeight = mapContainer.value.clientHeight
+    
+    console.log('📐 Center calculation:', {
+      containerSize: { width: containerWidth, height: containerHeight },
+      zoomLevel: zoomLevel.value,
+      oldPan: { x: panX.value, y: panY.value }
+    })
+    
+    // 初期位置を0,0に設定してSVGが確実に表示されるようにする
+    panX.value = 0
+    panY.value = 0
+    
+    console.log('✅ Map centered to (0,0)')
+  } else {
+    console.log('❌ mapContainer.value is null, cannot center')
+  }
+}
+
+// クリーンアップ
+onUnmounted(() => {
+  stopCurrentMomentum()
+  stopTouch()
 })
 </script>
 
