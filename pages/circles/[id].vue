@@ -483,33 +483,78 @@ const updateItem = async (itemId: string, itemData: CircleItemFormData) => {
 }
 
 const deleteItem = async (itemId: string) => {
-  if (!circle.value || !circle.value.items) return
+  if (!circle.value || !circle.value.items) {
+    console.error('❌ サークル情報または頒布物がありません')
+    alert('サークル情報が見つかりません')
+    return
+  }
+  
+  if (!currentEvent.value) {
+    console.error('❌ イベント情報がありません')
+    alert('イベント情報が見つかりません')
+    return
+  }
   
   const updatedItems = circle.value.items.filter(item => item.id !== itemId)
   
   try {
-    await updateCircle(circle.value.id, currentEvent.value!.id, {
+    console.log('🗑️ Deleting item:', {
+      circleId: circle.value.id,
+      eventId: currentEvent.value.id,
+      itemId,
+      updatedItemsCount: updatedItems.length
+    })
+    
+    await updateCircle(circle.value.id, currentEvent.value.id, {
       items: updatedItems
     })
+    
+    // 成功した場合のみローカル状態を更新
     circle.value.items = updatedItems
+    console.log('✅ Item deleted successfully')
   } catch (err) {
-    console.error('頒布物削除エラー:', err)
-    alert('頒布物の削除に失敗しました')
+    console.error('❌ 頒布物削除エラー:', err)
+    
+    // より詳細なエラー情報を表示
+    const errorMessage = err.message || '頒布物の削除に失敗しました'
+    alert(`頒布物の削除に失敗しました: ${errorMessage}`)
   }
 }
 
 // ジャンル管理
 const updateGenres = async (genres: string[]) => {
-  if (!circle.value) return
+  if (!circle.value) {
+    console.error('❌ サークル情報がありません')
+    alert('サークル情報が見つかりません')
+    return
+  }
+  
+  if (!currentEvent.value) {
+    console.error('❌ イベント情報がありません')
+    alert('イベント情報が見つかりません')
+    return
+  }
   
   try {
-    await updateCircle(circle.value.id, currentEvent.value!.id, {
+    console.log('🔄 Updating genres:', {
+      circleId: circle.value.id,
+      eventId: currentEvent.value.id,
+      genres: genres
+    })
+    
+    await updateCircle(circle.value.id, currentEvent.value.id, {
       genre: genres
     })
+    
+    // 成功した場合のみローカル状態を更新
     circle.value.genre = genres
+    console.log('✅ Genres updated successfully')
   } catch (err) {
-    console.error('ジャンル更新エラー:', err)
-    alert('ジャンルの更新に失敗しました')
+    console.error('❌ ジャンル更新エラー:', err)
+    
+    // より詳細なエラー情報を表示
+    const errorMessage = err.message || 'ジャンルの更新に失敗しました'
+    alert(`ジャンルの更新に失敗しました: ${errorMessage}`)
   }
 }
 

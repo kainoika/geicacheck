@@ -468,20 +468,47 @@ export const useCircles = () => {
     }
 
     try {
+      console.log('🔄 updateCircle called:', {
+        circleId,
+        eventId,
+        updates,
+        firestoreInitialized: !!$firestore
+      });
+
       const circleRef = doc($firestore, "events", eventId, "circles", circleId);
+      console.log('📍 Document reference:', circleRef.path);
       
       const updateData = {
         ...updates,
         updatedAt: new Date()
       };
       
+      console.log('📤 Update data:', updateData);
+      
       await updateDoc(circleRef, updateData);
-      console.log('✅ Circle updated:', circleId);
+      console.log('✅ Circle updated successfully:', circleId);
       
       // リアルタイム同期により自動的にキャッシュが更新される
     } catch (err) {
-      console.error("Update circle error:", err);
-      throw new Error("サークル情報の更新に失敗しました");
+      console.error("❌ Update circle error details:", {
+        error: err,
+        message: err.message,
+        code: err.code,
+        circleId,
+        eventId,
+        updates
+      });
+      
+      // Firestoreエラーコードに基づいてより具体的なエラーメッセージを提供
+      if (err.code === 'permission-denied') {
+        throw new Error("編集権限がありません");
+      } else if (err.code === 'not-found') {
+        throw new Error("サークル情報が見つかりません");
+      } else if (err.code === 'invalid-argument') {
+        throw new Error("無効なデータが含まれています");
+      } else {
+        throw new Error(`サークル情報の更新に失敗しました: ${err.message}`);
+      }
     }
   };
 
