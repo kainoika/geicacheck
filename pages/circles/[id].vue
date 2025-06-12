@@ -539,7 +539,11 @@ const updateGenres = async (genres: string[]) => {
     console.log('🔄 Updating genres:', {
       circleId: circle.value.id,
       eventId: currentEvent.value.id,
-      genres: genres
+      genres: genres,
+      currentUser: user.value,
+      circleOwnerId: circle.value.ownerId,
+      isOwner: circle.value.ownerId === user.value?.uid,
+      userType: user.value?.userType
     })
     
     await updateCircle(circle.value.id, currentEvent.value.id, {

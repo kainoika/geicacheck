@@ -1,6 +1,14 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    
+    // ヘルパー関数: サークル編集権限をチェック
+    function hasCirclePermission(userId, circleId) {
+      // circle_permissionsコレクションでユーザーの権限を確認
+      // より簡単な方法: 一時的にクエリベースの権限チェックを無効化し、
+      // 代わりにアプリケーション側で権限チェックを行う
+      return false;
+    }
     // テスト用コレクション（開発時のみ）
     match /test/{document} {
       allow read, write: if true;
