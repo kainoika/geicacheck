@@ -5,6 +5,7 @@ import {
   setDoc,
   serverTimestamp
 } from 'firebase/firestore'
+import { computed } from 'vue'
 import type { PurchasePlan, BudgetSummary, BudgetExportOptions } from '~/types'
 
 export const useBudget = () => {
@@ -305,11 +306,11 @@ export const useBudget = () => {
   }
 
   /**
-   * 変更があるかチェック
+   * 変更があるかチェック（computed）
    */
-  const hasDataChanges = (): boolean => {
+  const hasDataChanges = computed(() => {
     return dataChanges.value.hasChanges
-  }
+  })
 
   /**
    * 予算を強制再計算（整合性チェック付き）

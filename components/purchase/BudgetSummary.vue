@@ -48,6 +48,7 @@
             <button
               @click="dismissChanges"
               style="font-size: 0.75rem; color: #92400e; background: none; border: none; cursor: pointer; text-decoration: underline; margin-top: 0.5rem; padding: 0;"
+              type="button"
             >
               この通知を消す
             </button>
@@ -181,7 +182,10 @@ const { getUserPurchasePlans } = usePurchasePlans()
 
 // Methods
 const dismissChanges = (): void => {
+  console.log('🔄 dismissChanges called')
+  console.log('📊 Current dataChanges state:', dataChanges.value)
   clearDataChanges()
+  console.log('✅ dataChanges cleared, new state:', dataChanges.value)
 }
 
 // State
