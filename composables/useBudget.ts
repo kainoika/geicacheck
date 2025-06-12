@@ -10,15 +10,26 @@ import type { PurchasePlan, BudgetSummary, BudgetExportOptions } from '~/types'
 export const useBudget = () => {
   const { $firestore } = useNuxtApp()
   const { user } = useAuth()
-  const { purchasePlans, getUserPurchasePlans } = usePurchasePlans()
+  const { purchasePlans, getUserPurchasePlans, validateAndCleanupPurchasePlans } = usePurchasePlans()
   
   // 予算サマリーの状態管理
   const budgetSummary = useState<BudgetSummary | null>('budgetSummary', () => null)
   const loading = useState('budgetLoading', () => false)
   const error = useState<string | null>('budgetError', () => null)
+  
+  // 変更検出フラグ
+  const dataChanges = useState<{
+    hasChanges: boolean
+    removedCount: number
+    lastCleanupAt: Date | null
+  }>('budgetDataChanges', () => ({
+    hasChanges: false,
+    removedCount: 0,
+    lastCleanupAt: null
+  }))
 
   /**
-   * 予算サマリーを取得
+   * 予算サマリーを取得（整合性チェック付き）
    */
   const getBudgetSummary = async (eventId: string): Promise<BudgetSummary | null> => {
     if (!user.value) {
@@ -35,7 +46,20 @@ export const useBudget = () => {
       loading.value = true
       error.value = null
 
-      // 購入予定を取得
+      // データ整合性チェックと自動修復
+      const cleanupResult = await validateAndCleanupPurchasePlans(eventId)
+      
+      // 変更があった場合は記録
+      if (cleanupResult.removedCount > 0) {
+        dataChanges.value = {
+          hasChanges: true,
+          removedCount: cleanupResult.removedCount,
+          lastCleanupAt: new Date()
+        }
+        console.log(`💰 予算に影響: ${cleanupResult.removedCount}件の頒布物が削除されました`)
+      }
+
+      // 購入予定を取得（クリーンアップ後）
       const plans = await getUserPurchasePlans(eventId)
       
       // サマリーを計算
@@ -269,11 +293,41 @@ export const useBudget = () => {
     }
   }
 
+  /**
+   * 変更通知をクリア
+   */
+  const clearDataChanges = (): void => {
+    dataChanges.value = {
+      hasChanges: false,
+      removedCount: 0,
+      lastCleanupAt: null
+    }
+  }
+
+  /**
+   * 変更があるかチェック
+   */
+  const hasDataChanges = (): boolean => {
+    return dataChanges.value.hasChanges
+  }
+
+  /**
+   * 予算を強制再計算（整合性チェック付き）
+   */
+  const recalculateBudget = async (eventId: string): Promise<BudgetSummary | null> => {
+    // 既存の変更フラグをクリア
+    clearDataChanges()
+    
+    // 予算サマリーを再取得（内部で整合性チェックが実行される）
+    return await getBudgetSummary(eventId)
+  }
+
   return {
     // State
     budgetSummary: readonly(budgetSummary),
     loading: readonly(loading),
     error: readonly(error),
+    dataChanges: readonly(dataChanges),
     
     // Methods
     getBudgetSummary,
@@ -284,6 +338,11 @@ export const useBudget = () => {
     exportBudgetAsCSV,
     updateBudgetSummary,
     getCachedBudgetSummary,
-    checkBudgetAlert
+    checkBudgetAlert,
+    
+    // 変更管理
+    clearDataChanges,
+    hasDataChanges,
+    recalculateBudget
   }
 }
