@@ -20,16 +20,46 @@
           </div>
           
           <!-- 権限表示 -->
-          <div style="display: flex; align-items: center; gap: 0.5rem; background: #f0fdf4; padding: 0.5rem 1rem; border-radius: 0.5rem;">
-            <span style="color: #16a34a;">✅</span>
-            <span style="color: #15803d; font-weight: 500; font-size: 0.875rem;">編集権限あり</span>
+          <div v-if="originalCircle" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 0.5rem;"
+               :style="{ 
+                 background: canEditCircle(originalCircle) ? '#f0fdf4' : '#fef2f2',
+                 border: canEditCircle(originalCircle) ? '1px solid #22c55e' : '1px solid #ef4444' 
+               }">
+            <span :style="{ color: canEditCircle(originalCircle) ? '#16a34a' : '#dc2626' }">
+              {{ canEditCircle(originalCircle) ? '✅' : '❌' }}
+            </span>
+            <span :style="{ 
+              color: canEditCircle(originalCircle) ? '#15803d' : '#991b1b', 
+              fontWeight: '500', 
+              fontSize: '0.875rem' 
+            }">
+              {{ canEditCircle(originalCircle) ? '編集権限あり' : '編集権限なし' }}
+            </span>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- ローディング状態 -->
+    <div v-if="loading" style="max-width: 1280px; margin: 0 auto; padding: 2rem 1rem; text-align: center;">
+      <div style="background: white; border-radius: 0.5rem; padding: 3rem; border: 1px solid #e5e7eb;">
+        <div style="font-size: 1.125rem; color: #6b7280; margin-bottom: 1rem;">データを読み込み中...</div>
+        <div style="width: 2rem; height: 2rem; border: 2px solid #e5e7eb; border-top: 2px solid #ff69b4; border-radius: 50%; margin: 0 auto; animation: spin 1s linear infinite;"></div>
+      </div>
+    </div>
+
+    <!-- エラー状態 -->
+    <div v-else-if="error" style="max-width: 1280px; margin: 0 auto; padding: 2rem 1rem;">
+      <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.5rem; padding: 1.5rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; color: #dc2626; margin-bottom: 0.5rem;">
+          <span style="font-weight: 600;">エラー</span>
+        </div>
+        <p style="color: #991b1b; margin: 0;">{{ error }}</p>
+      </div>
+    </div>
+
     <!-- メインコンテンツ -->
-    <div style="max-width: 1280px; margin: 0 auto; padding: 2rem 1rem;">
+    <div v-else style="max-width: 1280px; margin: 0 auto; padding: 2rem 1rem;">
       <form @submit.prevent="handleSubmit" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
         <!-- 左カラム：基本情報 -->
         <div style="display: flex; flex-direction: column; gap: 2rem;">
@@ -437,6 +467,12 @@
 </template>
 
 <script setup>
+// Composables
+const { user, isAuthenticated } = useAuth()
+const { updateCircle, fetchCircleById } = useCircles()
+const { canEditCircle, loadUserPermissions } = useCirclePermissions()
+const { currentEvent } = useEvents()
+
 // Route params
 const route = useRoute()
 const circleId = route.params.id
@@ -445,6 +481,8 @@ const circleId = route.params.id
 const isNewCircle = computed(() => circleId === 'new')
 const originalCircle = ref(null)
 const saving = ref(false)
+const loading = ref(false)
+const error = ref(null)
 const newGenre = ref('')
 const newTag = ref('')
 
@@ -543,33 +581,85 @@ const resetForm = () => {
       },
       isAdult: false
     }
-  } else {
+  } else if (originalCircle.value) {
     // 編集の場合は元のデータに戻す
-    loadCircleData()
+    const circle = originalCircle.value
+    form.value = {
+      circleName: circle.circleName,
+      circleKana: circle.circleKana || '',
+      description: circle.description || '',
+      genre: [...(circle.genre || [])],
+      tags: [],
+      placement: {
+        day: '1',
+        area: '東1',
+        block: circle.placement?.block || '',
+        number: circle.placement?.number1 || '',
+        position: circle.placement?.number2 || ''
+      },
+      contact: {
+        twitter: circle.contact?.twitter || '',
+        pixiv: circle.contact?.pixiv || '',
+        website: '',
+        oshinaUrl: circle.contact?.oshinaUrl || ''
+      },
+      isAdult: circle.isAdult || false
+    }
   }
 }
 
 const handleSubmit = async () => {
   if (!isFormValid.value) return
   
+  // 権限チェック
+  if (!originalCircle.value || !canEditCircle(originalCircle.value)) {
+    alert('編集権限がありません')
+    return
+  }
+
+  // イベントIDチェック
+  if (!currentEvent.value) {
+    alert('イベント情報の取得に失敗しました')
+    return
+  }
+  
   saving.value = true
   
   try {
-    // 実際の実装では API に送信
-    await new Promise(resolve => setTimeout(resolve, 1000)) // シミュレーション
+    // フォームデータを Circle 型に合わせて変換
+    const updateData = {
+      circleName: form.value.circleName,
+      circleKana: form.value.circleKana || undefined,
+      description: form.value.description || undefined,
+      genre: form.value.genre,
+      placement: {
+        block: form.value.placement.block,
+        number1: form.value.placement.number,
+        number2: form.value.placement.position
+      },
+      contact: {
+        twitter: form.value.contact.twitter || undefined,
+        pixiv: form.value.contact.pixiv || undefined,
+        oshinaUrl: form.value.contact.oshinaUrl || undefined
+      },
+      isAdult: form.value.isAdult,
+      isPublic: true,
+      eventId: currentEvent.value.id
+    }
     
-    console.log('Save circle:', form.value)
-    alert(isNewCircle.value ? 'サークル情報を登録しました' : 'サークル情報を更新しました')
+    console.log('💾 Updating circle:', circleId, updateData)
+    
+    // Firestore更新処理
+    await updateCircle(circleId, currentEvent.value.id, updateData)
+    
+    console.log('✅ Circle updated successfully')
+    alert('サークル情報を更新しました')
     
     // 詳細ページにリダイレクト
-    if (isNewCircle.value) {
-      await navigateTo('/circles/1') // 実際の実装では新しいIDを使用
-    } else {
-      await navigateTo(`/circles/${circleId}`)
-    }
+    await navigateTo(`/circles/${circleId}`)
   } catch (error) {
-    console.error('Save error:', error)
-    alert('保存に失敗しました')
+    console.error('❌ Save error:', error)
+    alert(error.message || '保存に失敗しました')
   } finally {
     saving.value = false
   }
@@ -578,50 +668,93 @@ const handleSubmit = async () => {
 const loadCircleData = async () => {
   if (isNewCircle.value) return
   
+  loading.value = true
+  error.value = null
+  
   try {
-    // 実際の実装では API からデータを取得
-    const sampleData = {
-      id: circleId,
-      circleName: '星宮製作所',
-      circleKana: 'ほしみやせいさくしょ',
-      description: '星宮いちごちゃんのイラスト本とグッズを頒布予定です。',
-      genre: ['アイカツ！', 'いちご'],
-      tags: ['いちご', 'イラスト', 'グッズ'],
-      placement: {
-        day: '1',
-        area: '東1',
-        block: 'あ',
-        number: '01',
-        position: 'a'
-      },
-      contact: {
-        twitter: 'hoshimiya_circle',
-        pixiv: 'https://pixiv.net/users/12345',
-        website: '',
-        oshinaUrl: ''
-      },
-      isAdult: false
+    console.log('📡 Loading circle data for ID:', circleId)
+    
+    // Firestoreからサークルデータを取得
+    const circle = await fetchCircleById(circleId)
+    
+    if (!circle) {
+      throw new Error('サークル情報が見つかりません')
     }
     
-    originalCircle.value = sampleData
-    form.value = { ...sampleData }
-  } catch (error) {
-    console.error('Load error:', error)
-    alert('データの読み込みに失敗しました')
+    console.log('📄 Circle data loaded:', circle)
+    
+    // Circle型からフォーム型に変換
+    const formData = {
+      circleName: circle.circleName,
+      circleKana: circle.circleKana || '',
+      description: circle.description || '',
+      genre: circle.genre || [],
+      tags: [], // tagsは現在のCircle型に含まれていない
+      placement: {
+        day: '1', // 固定値（現在の型定義にはdayがない）
+        area: '東1', // 固定値（現在の型定義にはareaがない）
+        block: circle.placement?.block || '',
+        number: circle.placement?.number1 || '',
+        position: circle.placement?.number2 || ''
+      },
+      contact: {
+        twitter: circle.contact?.twitter || '',
+        pixiv: circle.contact?.pixiv || '',
+        website: '', // websiteは現在のCircle型に含まれていない
+        oshinaUrl: circle.contact?.oshinaUrl || ''
+      },
+      isAdult: circle.isAdult || false
+    }
+    
+    originalCircle.value = circle
+    form.value = formData
+    
+    console.log('✅ Form data set:', formData)
+  } catch (err) {
+    console.error('❌ Load error:', err)
+    error.value = err.message || 'データの読み込みに失敗しました'
+  } finally {
+    loading.value = false
   }
 }
 
 // 初期化
-onMounted(() => {
-  // 編集権限チェック
-  const hasEditPermission = true // 実際の実装では useAuth().hasEditPermission を使用
-  if (!hasEditPermission) {
-    alert('編集権限がありません')
-    navigateTo('/circles')
+onMounted(async () => {
+  console.log('🚀 Circle edit page mounted')
+  
+  // 認証チェック
+  if (!isAuthenticated.value) {
+    alert('ログインが必要です')
+    await navigateTo('/auth/login')
     return
   }
   
-  loadCircleData()
+  // 新規作成の場合は権限チェックをスキップ
+  if (isNewCircle.value) {
+    console.log('📝 New circle mode')
+    return
+  }
+  
+  try {
+    // ユーザー権限を読み込み
+    await loadUserPermissions()
+    
+    // サークルデータを読み込み
+    await loadCircleData()
+    
+    // 編集権限をチェック
+    if (originalCircle.value && !canEditCircle(originalCircle.value)) {
+      alert('このサークルの編集権限がありません')
+      await navigateTo(`/circles/${circleId}`)
+      return
+    }
+    
+    console.log('✅ Permission check passed')
+  } catch (error) {
+    console.error('❌ Initialization error:', error)
+    alert('ページの初期化に失敗しました')
+    await navigateTo('/circles')
+  }
 })
 
 // SEO
@@ -637,6 +770,15 @@ useHead(() => ({
 @media (max-width: 768px) {
   form {
     grid-template-columns: 1fr !important;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>
