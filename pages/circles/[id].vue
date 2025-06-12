@@ -523,6 +523,13 @@ const deleteItem = async (itemId: string) => {
 
 // ジャンル管理
 const updateGenres = async (genres: string[]) => {
+  console.log('🚀 updateGenres called with:', {
+    hasCircle: !!circle.value,
+    hasCurrentEvent: !!currentEvent.value,
+    hasUser: !!user.value,
+    isAuthenticated: isAuthenticated.value
+  })
+
   if (!circle.value) {
     console.error('❌ サークル情報がありません')
     alert('サークル情報が見つかりません')
@@ -532,6 +539,36 @@ const updateGenres = async (genres: string[]) => {
   if (!currentEvent.value) {
     console.error('❌ イベント情報がありません')
     alert('イベント情報が見つかりません')
+    return
+  }
+
+  console.log('👤 User and Circle info:', {
+    currentUser: user.value,
+    userId: user.value?.uid,
+    userType: user.value?.userType,
+    circleId: circle.value.id,
+    circleOwnerId: circle.value.ownerId,
+    isOwner: circle.value.ownerId === user.value?.uid,
+    circle: circle.value
+  })
+
+  // 一時的なワークアラウンド: 権限エラーの詳細情報を表示
+  if (!user.value) {
+    alert('ユーザー情報が取得できません。ログインし直してください。')
+    return
+  }
+
+  if (circle.value.ownerId !== user.value.uid && user.value.userType !== 'admin') {
+    console.warn('⚠️ Permission issue detected:', {
+      requiredCondition: 'User must be circle owner OR admin',
+      actualUserId: user.value.uid,
+      circleOwnerId: circle.value.ownerId,
+      userType: user.value.userType,
+      isOwner: circle.value.ownerId === user.value.uid,
+      isAdmin: user.value.userType === 'admin'
+    })
+    
+    alert(`権限エラー: このサークルの編集権限がありません。\n\n詳細:\n- サークルID: ${circle.value.id}\n- 所有者ID: ${circle.value.ownerId}\n- あなたのID: ${user.value.uid}\n- あなたのタイプ: ${user.value.userType}`)
     return
   }
   

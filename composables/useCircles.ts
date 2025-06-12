@@ -13,7 +13,7 @@ import type { Circle, SearchParams, SearchResult, PlacementInfo } from "~/types"
 import { normalizePlacement, formatPlacementDisplay } from "~/utils/placementUtils";
 
 export const useCircles = () => {
-  const { $firestore } = useNuxtApp() as any;
+  const { $firestore, $auth } = useNuxtApp() as any;
   const { currentEvent } = useEvents();
 
   // State
@@ -478,9 +478,15 @@ export const useCircles = () => {
       const circleRef = doc($firestore, "events", eventId, "circles", circleId);
       console.log('📍 Document reference:', circleRef.path);
       
+      // 既存のサークルデータを取得して所有者情報を確認
+      const existingDoc = await getDoc(circleRef);
+      const existingData = existingDoc.data();
+      
       const updateData = {
         ...updates,
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        // 所有者が設定されていない場合は現在のユーザーを所有者に設定
+        ...(existingData && !existingData.ownerId ? { ownerId: $auth?.currentUser?.uid } : {})
       };
       
       console.log('📤 Update data:', updateData);
