@@ -43,6 +43,14 @@ This is a **Nuxt 3 SPA** application for managing circle information at Aikatsu 
 - State persists across navigation using `useState()` with unique keys
 - Follow the established pattern: state variables, computed properties, methods, return readonly refs
 
+**Interactive Map System:**
+- `useEventMap()` - SVG map loading, caching, and event-based switching
+- `useSvgPins()` - SVG-native pin rendering with category-based styling and animations
+- `useTouch()` - Touch gesture recognition, pinch-to-zoom, and pan operations
+- `useCircleMapping()` - Circle position calculation and placement normalization
+- Intelligent caching system with automatic map switching based on current event
+- Performance-optimized for large datasets (1000+ bookmarks)
+
 **Firebase Integration:**
 - Firebase services initialized in `plugins/firebase.client.ts`
 - Services accessed via `const { $auth, $firestore, $storage } = useNuxtApp()`
@@ -67,7 +75,11 @@ This is a **Nuxt 3 SPA** application for managing circle information at Aikatsu 
 - PascalCase naming convention with descriptive names
 - TypeScript interfaces for all props and emits
 - Reusable UI components in `ui/` directory
-- Map-related components in `map/` directory (EventMap.vue)
+- Map-related components in `map/` directory:
+  - `EventMap.vue` - Core interactive map component with touch controls
+  - Advanced SVG manipulation and coordinate mapping
+  - Touch gesture support for mobile devices
+  - Real-time bookmark synchronization
 
 ### Data Layer
 
@@ -108,6 +120,16 @@ circle_permissions/        # Granted permissions
 8. For edit permission features, always check both user authentication and circle ownership/permissions
 9. Use `useCirclePermissions()` for permission checks and `useEditPermissions()` for permission requests
 
+**Interactive Map Development:**
+1. **Event Switching**: Always use `currentEvent.value?.id` for event-specific operations
+2. **Performance**: Optimize for large datasets (1000+ bookmarks) with efficient rendering
+3. **Touch Support**: Implement full touch gesture support for mobile devices
+4. **State Management**: Use proper state synchronization across page navigation
+5. **Caching**: Leverage intelligent caching for map files and coordinate calculations
+6. **Testing**: Include comprehensive tests for map interactions and edge cases
+7. **Coordinate Mapping**: Use `data/mapConfigs.ts` for event-specific coordinate mappings
+8. **Error Handling**: Implement graceful fallbacks for map loading failures
+
 **Firebase Operations:**
 - Always use server timestamps for created/updated fields
 - Handle offline scenarios gracefully
@@ -132,9 +154,18 @@ circle_permissions/        # Granted permissions
 
 ### Testing
 - Unit tests use Vitest
-- Component tests use Vue Test Utils
+- Component tests use Vue Test Utils (where applicable)
 - Run tests with `npm run test`
 - Aim for 80%+ coverage on utility functions and composables
+
+**Interactive Map Testing:**
+- `useEventMap.test.ts` - Map loading, caching, and error handling
+- `useSvgPins.test.ts` - Pin rendering, highlighting, and performance
+- `useTouch.test.ts` - Touch gesture recognition and zoom/pan operations
+- `useCircleMapping.test.ts` - Position calculation and placement normalization
+- `placementUtils.test.ts` - Placement string normalization and edge cases
+- Performance tests for large datasets (1000+ items)
+- Error handling and edge case coverage
 
 ### Important Files
 - `nuxt.config.ts` - Main configuration (SPA mode, Firebase env vars, component settings)
@@ -142,11 +173,17 @@ circle_permissions/        # Granted permissions
 - `composables/` - Core business logic and state management
   - `composables/useEditPermissions.ts` - Permission request management
   - `composables/useCirclePermissions.ts` - Permission checking and user permission cache
+  - `composables/useEventMap.ts` - Map loading, caching, and event switching
+  - `composables/useSvgPins.ts` - SVG pin rendering and animation system
+  - `composables/useTouch.ts` - Touch gesture recognition and processing
+- `data/mapConfigs.ts` - Event-specific map configurations and coordinate mappings
+- `utils/placementUtils.ts` - Placement normalization and coordinate calculation utilities
 - `plugins/firebase.client.ts` - Firebase service initialization
 - `firestore.rules` - Database security rules including edit permission rules
 - `scripts/` - Data migration and management utilities
 - `components/map/EventMap.vue` - Interactive map component for event layouts
 - `components/ui/EditPermissionModal.vue` - Permission request modal with Twitter matching
+- `pages/map/index.vue` - Main map page with touch controls and bookmark integration
 - `pages/admin/edit-requests.vue` - Admin dashboard for permission management
 - `middleware/admin.ts` - Admin route protection middleware
 
