@@ -343,6 +343,94 @@ export const usePurchasePlans = () => {
     }
   }
 
+  /**
+   * 頒布物の存在確認
+   */
+  const checkItemExists = async (circleId: string, itemId: string, eventId: string): Promise<boolean> => {
+    if (!$firestore) {
+      console.warn('Firestoreが初期化されていません')
+      return false
+    }
+
+    try {
+      // サークル情報を取得
+      const circleRef = doc($firestore, 'events', eventId, 'circles', circleId)
+      const circleDoc = await getDoc(circleRef)
+      
+      if (!circleDoc.exists()) {
+        return false
+      }
+      
+      const circleData = circleDoc.data()
+      const items = circleData.items || []
+      
+      // 頒布物IDが存在するかチェック
+      return items.some((item: any) => item.id === itemId)
+    } catch (err) {
+      console.error('頒布物存在確認エラー:', err)
+      return false
+    }
+  }
+
+  /**
+   * 購入予定データの整合性チェックと自動修復
+   */
+  const validateAndCleanupPurchasePlans = async (eventId?: string): Promise<{
+    removedCount: number;
+    removedPlans: PurchasePlan[];
+  }> => {
+    if (!user.value) {
+      console.warn('ユーザーが認証されていません')
+      return { removedCount: 0, removedPlans: [] }
+    }
+    
+    if (!$firestore) {
+      console.warn('Firestoreが初期化されていません')
+      return { removedCount: 0, removedPlans: [] }
+    }
+
+    try {
+      console.log('🔍 購入予定データの整合性チェックを開始...')
+      
+      // 購入予定一覧を取得
+      const plans = await getUserPurchasePlans(eventId)
+      const invalidPlans: PurchasePlan[] = []
+      
+      // 各購入予定の頒布物存在確認
+      for (const plan of plans) {
+        const exists = await checkItemExists(plan.circleId, plan.itemId, plan.eventId)
+        if (!exists) {
+          console.log(`❌ 無効な購入予定を検出: ${plan.circleName} - ${plan.itemName}`)
+          invalidPlans.push(plan)
+        }
+      }
+      
+      // 無効な購入予定を削除
+      if (invalidPlans.length > 0) {
+        console.log(`🗑️ ${invalidPlans.length}件の無効な購入予定を削除中...`)
+        await Promise.all(invalidPlans.map(plan => removeFromPurchasePlan(plan.id)))
+        
+        // 購入予定リストを更新
+        const updatedPlans = plans.filter(plan => 
+          !invalidPlans.some(invalid => invalid.id === plan.id)
+        )
+        purchasePlans.value = updatedPlans
+        
+        console.log(`✅ データクリーンアップ完了: ${invalidPlans.length}件削除`)
+      } else {
+        console.log('✅ 購入予定データに問題はありません')
+      }
+      
+      return { 
+        removedCount: invalidPlans.length, 
+        removedPlans: invalidPlans 
+      }
+    } catch (err) {
+      console.error('購入予定整合性チェックエラー:', err)
+      throw err
+    }
+  }
+
 
   return {
     // State
@@ -360,6 +448,10 @@ export const usePurchasePlans = () => {
     calculateTotal,
     groupByCircle,
     watchPurchasePlans,
-    clearPurchasePlans
+    clearPurchasePlans,
+    
+    // 整合性チェック機能
+    checkItemExists,
+    validateAndCleanupPurchasePlans
   }
 }

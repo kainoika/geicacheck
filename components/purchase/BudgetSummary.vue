@@ -34,6 +34,28 @@
         </button>
       </div>
 
+      <!-- 変更通知 -->
+      <div v-if="hasDataChanges" style="background: #fffbeb; border: 1px solid #fbbf24; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.5rem;">
+        <div style="display: flex; align-items: start; gap: 0.75rem;">
+          <ExclamationTriangleIcon class="h-5 w-5 text-amber-600 flex-shrink-0" style="margin-top: 0.125rem;" />
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: #92400e; margin-bottom: 0.25rem;">
+              予算が変更されました
+            </div>
+            <div style="font-size: 0.875rem; color: #a16207; line-height: 1.5;">
+              {{ dataChanges.removedCount }}件の頒布物がサークル側で削除されたため、予算が自動的に調整されました。
+            </div>
+            <button
+              @click="dismissChanges"
+              style="font-size: 0.75rem; color: #92400e; background: none; border: none; cursor: pointer; text-decoration: underline; margin-top: 0.5rem; padding: 0;"
+              type="button"
+            >
+              この通知を消す
+            </button>
+          </div>
+        </div>
+      </div>
+
       <!-- 予算カード -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
         <!-- 合計予算 -->
@@ -155,8 +177,16 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Composables
 const { user, isAuthenticated } = useAuth()
-const { getBudgetSummary, getBudgetStatistics, exportBudgetAsCSV } = useBudget()
+const { getBudgetSummary, getBudgetStatistics, exportBudgetAsCSV, dataChanges, hasDataChanges, clearDataChanges } = useBudget()
 const { getUserPurchasePlans } = usePurchasePlans()
+
+// Methods
+const dismissChanges = (): void => {
+  console.log('🔄 dismissChanges called')
+  console.log('📊 Current dataChanges state:', dataChanges.value)
+  clearDataChanges()
+  console.log('✅ dataChanges cleared, new state:', dataChanges.value)
+}
 
 // State
 const loading = ref(false)
