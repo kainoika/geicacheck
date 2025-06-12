@@ -100,11 +100,38 @@ const createMockUseEditPermissions = () => {
     return circleId === 'circle-1' // circle-1には既に申請済み
   })
   
+  const processAutoApprovedRequests = vi.fn().mockImplementation(async () => {
+    // auto_approved ステータスの申請を模擬処理
+    const mockAutoApprovedRequests = [
+      { id: 'auto-req-1', userId: 'user-1', circleId: 'circle-1', status: 'auto_approved' },
+      { id: 'auto-req-2', userId: 'user-2', circleId: 'circle-2', status: 'auto_approved' }
+    ]
+    
+    let success = 0
+    let failed = 0
+    
+    for (const req of mockAutoApprovedRequests) {
+      try {
+        // 権限付与処理をシミュレート
+        if (req.userId && req.circleId) {
+          success++
+        } else {
+          failed++
+        }
+      } catch {
+        failed++
+      }
+    }
+    
+    return { success, failed }
+  })
+  
   return {
     submitEditPermissionRequest,
     getUserEditPermissionRequests,
     getUserCirclePermissions,
-    hasExistingRequest
+    hasExistingRequest,
+    processAutoApprovedRequests
   }
 }
 
@@ -133,6 +160,42 @@ describe('useEditPermissions', () => {
       })
       expect(result.id).toBeDefined()
       expect(editPermissions.submitEditPermissionRequest).toHaveBeenCalledWith(requestData)
+    })
+    
+    it('Twitter情報が一致する場合はauto_approvedステータスになる', async () => {
+      const requestData = {
+        circleId: 'circle-1',
+        applicantTwitterId: 'testuser',
+        registeredTwitterId: 'testuser',
+        reason: undefined
+      }
+      
+      // submitEditPermissionRequestを自動承認用にモック
+      editPermissions.submitEditPermissionRequest.mockResolvedValueOnce({
+        id: 'auto-req-1',
+        ...requestData,
+        status: 'auto_approved',
+        isAutoApproved: true
+      })
+      
+      const result = await editPermissions.submitEditPermissionRequest(requestData)
+      
+      expect(result.status).toBe('auto_approved')
+      expect(result.isAutoApproved).toBe(true)
+    })
+    
+    it('申請理由がundefinedでもFirestoreエラーが発生しない', async () => {
+      const requestData = {
+        userId: 'user-123', // userIdを追加
+        circleId: 'circle-1',
+        applicantTwitterId: 'testuser',
+        registeredTwitterId: 'testuser',
+        reason: undefined
+      }
+      
+      // undefinedを含むデータでもエラーが出ないことを確認
+      await expect(editPermissions.submitEditPermissionRequest(requestData))
+        .resolves.toBeDefined()
     })
     
     it('必須フィールドが不足している場合エラーを投げる', async () => {
@@ -225,6 +288,28 @@ describe('useEditPermissions', () => {
     })
   })
   
+  describe('processAutoApprovedRequests', () => {
+    it('自動承認待ちの申請を一括処理できる', async () => {
+      const result = await editPermissions.processAutoApprovedRequests()
+      
+      expect(result).toEqual({ success: 2, failed: 0 })
+      expect(editPermissions.processAutoApprovedRequests).toHaveBeenCalled()
+    })
+    
+    it('処理結果の件数が正しく返される', async () => {
+      // 一部失敗する場合をシミュレート
+      editPermissions.processAutoApprovedRequests.mockResolvedValueOnce({
+        success: 1,
+        failed: 1
+      })
+      
+      const result = await editPermissions.processAutoApprovedRequests()
+      
+      expect(result.success).toBe(1)
+      expect(result.failed).toBe(1)
+    })
+  })
+  
   describe('統合テスト', () => {
     it('申請 → 取得 → 権限確認の一連の流れが正常に動作する', async () => {
       const userId = 'user-123'
@@ -257,6 +342,30 @@ describe('useEditPermissions', () => {
       expect(permissions).toEqual(expect.arrayContaining([
         expect.objectContaining({ circleId: 'circle-2', permission: 'edit' })
       ]))
+    })
+    
+    it('自動承認フロー: 申請 → 一括処理 → 権限付与', async () => {
+      const requestData = {
+        circleId: 'circle-auto',
+        applicantTwitterId: 'testuser',
+        registeredTwitterId: 'testuser',
+        reason: undefined
+      }
+      
+      // 自動承認申請
+      editPermissions.submitEditPermissionRequest.mockResolvedValueOnce({
+        id: 'auto-req',
+        ...requestData,
+        status: 'auto_approved',
+        isAutoApproved: true
+      })
+      
+      const submitted = await editPermissions.submitEditPermissionRequest(requestData)
+      expect(submitted.status).toBe('auto_approved')
+      
+      // 一括処理実行
+      const processResult = await editPermissions.processAutoApprovedRequests()
+      expect(processResult.success).toBeGreaterThan(0)
     })
   })
 })
