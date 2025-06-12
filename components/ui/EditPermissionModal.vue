@@ -55,13 +55,21 @@
         </div>
 
         <div class="form-section">
-          <label class="form-label">申請理由（任意）</label>
+          <label class="form-label">
+            申請理由
+            <span v-if="!twitterMatches" class="required-badge">必須</span>
+            <span v-else class="optional-badge">任意</span>
+          </label>
           <textarea
             v-model="reason"
             class="form-textarea"
+            :class="{ 'error': !twitterMatches && showReasonError }"
             rows="3"
-            placeholder="編集を希望する理由があれば記入してください（例：サークル主、関係者など）"
+            :placeholder="twitterMatches ? '編集を希望する理由があれば記入してください（例：サークル主、関係者など）' : '編集を希望する理由を記入してください（例：サークル主、関係者など）'"
           />
+          <p v-if="!twitterMatches && showReasonError" class="error-message">
+            Twitter情報が一致しない場合は申請理由の入力が必須です
+          </p>
         </div>
       </div>
 
@@ -108,6 +116,7 @@ const { submitEditPermissionRequest } = useEditPermissions()
 // State
 const reason = ref('')
 const submitting = ref(false)
+const showReasonError = ref(false)
 
 // Computed
 const userTwitterScreenName = computed(() => user.value?.twitterScreenName || '')
@@ -140,6 +149,12 @@ const getTwitterUsername = (twitterUrl: string) => {
 const submitRequest = async () => {
   if (!user.value) return
   
+  // Twitter情報が一致しない場合は申請理由が必須
+  if (!twitterMatches.value && !reason.value.trim()) {
+    showReasonError.value = true
+    return
+  }
+  
   submitting.value = true
   try {
     await submitEditPermissionRequest({
@@ -157,6 +172,13 @@ const submitRequest = async () => {
     submitting.value = false
   }
 }
+
+// reasonの値が変更されたらエラー表示をリセット
+watch(reason, () => {
+  if (showReasonError.value && reason.value.trim()) {
+    showReasonError.value = false
+  }
+})
 </script>
 
 <style scoped>
@@ -370,6 +392,42 @@ const submitRequest = async () => {
   outline: none;
   border-color: #ff69b4;
   box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.1);
+}
+
+.form-textarea.error {
+  border-color: #ef4444;
+}
+
+.form-textarea.error:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.required-badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #ef4444;
+  background: #fee2e2;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  margin-left: 0.5rem;
+}
+
+.optional-badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  margin-left: 0.5rem;
+}
+
+.error-message {
+  font-size: 0.875rem;
+  color: #ef4444;
+  margin-top: 0.25rem;
+  margin-bottom: 0;
 }
 
 .modal-footer {

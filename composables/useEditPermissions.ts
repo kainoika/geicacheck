@@ -37,7 +37,7 @@ export const useEditPermissions = () => {
       registeredTwitterId: data.registeredTwitterId,
       status: (isAutoApproved ? 'auto_approved' : 'pending') as PermissionStatus,
       isAutoApproved,
-      adminNote: data.reason,
+      ...(data.reason && { adminNote: data.reason }),
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       ...(isAutoApproved && {
@@ -50,9 +50,11 @@ export const useEditPermissions = () => {
     const docRef = await addDoc(requestsRef, requestData)
 
     // 自動承認の場合は権限を直接付与
-    if (isAutoApproved) {
-      await grantCirclePermission(user.value.uid, data.circleId, 'editor')
-    }
+    // 注: circle_permissionsへの書き込みは管理者権限が必要なため、
+    // 自動承認の申請は作成されるが、実際の権限付与は管理者またはシステムによって行われる
+    // if (isAutoApproved) {
+    //   await grantCirclePermission(user.value.uid, data.circleId, 'editor')
+    // }
 
     return docRef.id
   }
@@ -200,6 +202,54 @@ export const useEditPermissions = () => {
     })
   }
 
+  // 自動承認対象の申請を一括処理（管理者用）
+  const processAutoApprovedRequests = async () => {
+    if (!user.value || !$firestore) {
+      throw new Error('ユーザーまたはFirestoreが初期化されていません')
+    }
+
+    // 管理者権限チェック
+    const userDoc = await getDoc(doc($firestore, 'users', user.value.uid))
+    if (!userDoc.exists() || userDoc.data().userType !== 'admin') {
+      throw new Error('管理者権限が必要です')
+    }
+
+    // auto_approved ステータスの申請を取得
+    const requestsRef = collection($firestore, 'edit_permission_requests')
+    const q = query(
+      requestsRef,
+      where('status', '==', 'auto_approved'),
+      where('isAutoApproved', '==', true)
+    )
+
+    const snapshot = await getDocs(q)
+    const results = { success: 0, failed: 0 }
+
+    for (const docSnapshot of snapshot.docs) {
+      const data = docSnapshot.data()
+      
+      try {
+        // 権限を付与
+        await grantCirclePermission(data.userId, data.circleId, 'editor')
+        
+        // 申請を承認済みに更新
+        await updateDoc(docSnapshot.ref, {
+          status: 'approved',
+          approvedAt: serverTimestamp(),
+          approvedBy: user.value.uid,
+          updatedAt: serverTimestamp()
+        })
+        
+        results.success++
+      } catch (error) {
+        console.error(`自動承認処理エラー (${docSnapshot.id}):`, error)
+        results.failed++
+      }
+    }
+
+    return results
+  }
+
   // ユーザーがサークルの編集権限を持っているかチェック
   const hasCircleEditPermission = async (userId: string, circleId: string) => {
     if (!$firestore) return false
@@ -287,6 +337,7 @@ export const useEditPermissions = () => {
     getAllEditPermissionRequests,
     approveEditPermissionRequest,
     rejectEditPermissionRequest,
+    processAutoApprovedRequests,
     hasCircleEditPermission,
     getUserCirclePermissions,
     hasExistingRequest

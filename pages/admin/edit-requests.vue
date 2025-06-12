@@ -29,11 +29,29 @@
           </div>
           
           <div style="display: flex; gap: 1rem;">
+            <!-- 自動承認一括処理ボタン -->
+            <button
+              v-if="autoApprovedCount > 0"
+              @click="processAllAutoApproved"
+              style="padding: 0.75rem 1.5rem; background: #8b5cf6; color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem;"
+              onmouseover="this.style.backgroundColor='#7c3aed'"
+              onmouseout="this.style.backgroundColor='#8b5cf6'"
+              :disabled="processingAutoApproved"
+            >
+              <CheckCircleIcon class="h-5 w-5" />
+              <span v-if="!processingAutoApproved">自動承認を一括処理 ({{ autoApprovedCount }}件)</span>
+              <span v-else>処理中...</span>
+            </button>
+            
             <!-- 統計情報 -->
             <div style="display: flex; gap: 1rem; background: white; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem;">
               <div style="text-align: center;">
                 <div style="font-size: 1.25rem; font-weight: 700; color: #f59e0b;">{{ pendingCount }}</div>
                 <div style="font-size: 0.75rem; color: #6b7280;">申請中</div>
+              </div>
+              <div style="text-align: center;">
+                <div style="font-size: 1.25rem; font-weight: 700; color: #8b5cf6;">{{ autoApprovedCount }}</div>
+                <div style="font-size: 0.75rem; color: #6b7280;">自動承認待ち</div>
               </div>
               <div style="text-align: center;">
                 <div style="font-size: 1.25rem; font-weight: 700; color: #10b981;">{{ approvedCount }}</div>
@@ -182,7 +200,7 @@
           </div>
 
           <!-- アクション -->
-          <div v-if="request.status === 'pending'" style="display: flex; gap: 1rem; justify-content: end;">
+          <div v-if="request.status === 'pending' || request.status === 'auto_approved'" style="display: flex; gap: 1rem; justify-content: end;">
             <button 
               @click="rejectRequest(request.id)"
               style="padding: 0.75rem 1.5rem; background: #ef4444; color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: 500; transition: all 0.2s;"
@@ -354,7 +372,8 @@ import {
   ClipboardDocumentListIcon,
   ClockIcon,
   CheckCircleIcon,
-  XCircleIcon
+  XCircleIcon,
+  SparklesIcon
 } from '@heroicons/vue/24/outline'
 
 // ミドルウェアで管理者権限をチェック
@@ -423,16 +442,18 @@ const isAuthenticated = computed(() => {
 })
 
 // Composables
-const { getAllEditPermissionRequests, approveEditPermissionRequest, rejectEditPermissionRequest } = useEditPermissions()
+const { getAllEditPermissionRequests, approveEditPermissionRequest, rejectEditPermissionRequest, processAutoApprovedRequests } = useEditPermissions()
 
 // データ
 const editRequests = ref([])
 const loading = ref(true)
 const error = ref(null)
+const processingAutoApproved = ref(false)
 
 const statusFilters = ref([
   { key: 'all', label: 'すべて', color: '#6b7280' },
   { key: 'pending', label: '申請中', color: '#f59e0b' },
+  { key: 'auto_approved', label: '自動承認待ち', color: '#8b5cf6' },
   { key: 'approved', label: '承認済み', color: '#10b981' },
   { key: 'rejected', label: '却下', color: '#ef4444' }
 ])
@@ -449,6 +470,10 @@ const pendingCount = computed(() =>
   editRequests.value.filter(r => r.status === 'pending').length
 )
 
+const autoApprovedCount = computed(() => 
+  editRequests.value.filter(r => r.status === 'auto_approved').length
+)
+
 const approvedCount = computed(() => 
   editRequests.value.filter(r => r.status === 'approved').length
 )
@@ -462,6 +487,7 @@ const getStatusIcon = (status) => {
   switch (status) {
     case 'all': return ClipboardDocumentListIcon
     case 'pending': return ClockIcon
+    case 'auto_approved': return SparklesIcon
     case 'approved': return CheckCircleIcon
     case 'rejected': return XCircleIcon
     default: return ClipboardDocumentListIcon
@@ -476,6 +502,7 @@ const getRequestCount = (status) => {
 const getStatusColor = (status) => {
   switch (status) {
     case 'pending': return '#f59e0b'
+    case 'auto_approved': return '#8b5cf6'
     case 'approved': return '#10b981'
     case 'rejected': return '#ef4444'
     default: return '#6b7280'
@@ -485,6 +512,7 @@ const getStatusColor = (status) => {
 const getStatusLabel = (status) => {
   switch (status) {
     case 'pending': return '申請中'
+    case 'auto_approved': return '自動承認待ち'
     case 'approved': return '承認済み'
     case 'rejected': return '却下'
     default: return '不明'
@@ -504,6 +532,7 @@ const formatDate = (date) => {
 const getEmptyStateTitle = () => {
   switch (activeStatus.value) {
     case 'pending': return '申請中の項目はありません'
+    case 'auto_approved': return '自動承認待ちの項目はありません'
     case 'approved': return '承認済みの項目はありません'
     case 'rejected': return '却下された項目はありません'
     default: return '申請はありません'
@@ -513,6 +542,7 @@ const getEmptyStateTitle = () => {
 const getEmptyStateDescription = () => {
   switch (activeStatus.value) {
     case 'pending': return '新しい編集権限申請があると、ここに表示されます'
+    case 'auto_approved': return 'Twitter情報が一致して自動承認された申請があると、ここに表示されます'
     case 'approved': return '承認された申請があると、ここに表示されます'
     case 'rejected': return '却下された申請があると、ここに表示されます'
     default: return '編集権限の申請があると、ここに表示されます'
@@ -565,6 +595,25 @@ const confirmReject = async () => {
   } catch (error) {
     console.error('却下エラー:', error)
     alert('却下処理に失敗しました')
+  }
+}
+
+// 自動承認待ちを一括処理
+const processAllAutoApproved = async () => {
+  if (!confirm(`${autoApprovedCount.value}件の自動承認待ち申請を一括処理しますか？`)) {
+    return
+  }
+  
+  processingAutoApproved.value = true
+  try {
+    const results = await processAutoApprovedRequests()
+    await loadEditRequests() // データを再読み込み
+    alert(`処理完了: ${results.success}件成功, ${results.failed}件失敗`)
+  } catch (error) {
+    console.error('自動承認一括処理エラー:', error)
+    alert('自動承認の一括処理に失敗しました')
+  } finally {
+    processingAutoApproved.value = false
   }
 }
 
