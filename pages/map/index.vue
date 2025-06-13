@@ -419,7 +419,7 @@ const selectedEventId = computed(() => {
 })
 
 // Composables
-const { bookmarksWithCircles, fetchBookmarksWithCircles } = useBookmarks()
+const { bookmarksWithCircles, fetchBookmarksWithCircles, clearOtherEventsData } = useBookmarks()
 const { currentEvent, fetchEvents } = useEvents()
 const { formatPlacement } = useCircles()
 const { getCirclePosition } = useCircleMapping()
@@ -851,6 +851,9 @@ onMounted(async () => {
     }
     
     console.log('✅ currentEvent確認完了:', currentEvent.value?.id)
+    
+    // 他のイベントのデータをクリアして、現在のイベントのデータのみ保持
+    clearOtherEventsData()
     
     // ブックマーク情報を並行して取得
     await fetchBookmarksWithCircles()
