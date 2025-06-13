@@ -80,6 +80,24 @@ export const useEditPermissions = () => {
 
     const permissionsRef = collection($firestore, 'circle_permissions')
     await addDoc(permissionsRef, permissionData)
+
+    // サークルのownerIdを更新（権限付与時）
+    // circleIdからeventIdを抽出（例: "geika32-038" -> "geika-32"）
+    const eventIdMatch = circleId.match(/^geika(\d+)-/)
+    if (eventIdMatch) {
+      const eventId = `geika-${eventIdMatch[1]}`
+      const circleRef = doc($firestore, 'events', eventId, 'circles', circleId)
+      
+      try {
+        await updateDoc(circleRef, {
+          ownerId: userId,
+          updatedAt: serverTimestamp()
+        })
+      } catch (error) {
+        console.error('サークルのownerId更新エラー:', error)
+        // 権限付与は成功させるため、エラーは記録のみ
+      }
+    }
   }
 
   // ユーザーの編集権限申請一覧を取得
