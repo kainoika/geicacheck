@@ -3,7 +3,7 @@
     <main class="container mx-auto px-4 py-8 max-w-4xl">
       <div class="bg-white rounded-lg shadow-md p-8">
         <h1 class="text-3xl font-bold mb-2">プライバシーポリシー</h1>
-        <p class="text-gray-600 mb-8">最終更新日: 2025年1月6日</p>
+        <p class="text-gray-600 mb-8">最終更新日: 2025年6月1日</p>
 
         <div class="prose prose-pink max-w-none space-y-8">
           <section>
@@ -175,22 +175,6 @@
               本プライバシーポリシーは、必要に応じて更新することがあります。<br>
               重要な変更がある場合は、サイト上でお知らせいたします。
             </p>
-          </section>
-
-          <section>
-            <h2 class="text-2xl font-bold text-pink-600 mb-4 flex items-center gap-2">
-              <ChatBubbleLeftRightIcon class="h-6 w-6" />
-              お問い合わせ
-            </h2>
-            <p class="text-gray-700 mb-4">
-              プライバシーに関するご質問やご不明な点がございましたら、以下までお問い合わせください。
-            </p>
-            <div class="p-4 bg-blue-50 rounded-lg">
-              <p class="text-sm">
-                Twitter: @geika_check（準備中）<br>
-                メール: privacy@geika-check.example.com（準備中）
-              </p>
-            </div>
           </section>
 
           <div class="mt-12 p-6 bg-pink-100 rounded-lg text-center">

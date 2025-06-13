@@ -260,16 +260,16 @@
           <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb; text-align: center;">
             <div style="font-size: 2rem; margin-bottom: 1rem;"><EnvelopeIcon style="width: 2rem; height: 2rem; color: #ff69b4; margin: 0 auto;" /></div>
             <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
-              メール
+              問い合わせ
             </h3>
             <p style="color: #6b7280; margin: 0 0 1rem 0;">
-              バグ報告や機能要望はメールでお送りください
+              バグ報告や機能要望はこちらからお送りください
             </p>
             <a 
-              href="mailto:support@geika-check.com"
+              href="https://marshmallow-qa.com/kainoika8?t=o3fyBa&utm_medium=url_text&utm_source=promotionm"
               style="color: #ff69b4; text-decoration: none; font-weight: 500;"
             >
-              support@geika-check.com
+              マシュマロ
             </a>
           </div>
 
@@ -282,7 +282,7 @@
               オープンソースプロジェクトとして開発しています
             </p>
             <a 
-              href="https://github.com/geika-check/geika-check" 
+              href="https://github.com/kainoika/geikacheck" 
               target="_blank" 
               rel="noopener noreferrer"
               style="color: #374151; text-decoration: none; font-weight: 500;"
