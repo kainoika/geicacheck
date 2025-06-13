@@ -24,31 +24,41 @@ export const useBookmarks = () => {
   const { $firestore } = useNuxtApp() as any;
   const { currentEvent } = useEvents();
 
-  // イベント別の状態管理キーを生成
-  const getStateKey = (baseKey: string, eventId?: string) => {
-    const targetEventId = eventId || currentEvent.value?.id || 'default'
-    return `${baseKey}.${targetEventId}`
+  // イベント別の状態管理
+  const bookmarksStore = ref<Record<string, Bookmark[]>>({})
+  const bookmarksWithCirclesStore = ref<Record<string, BookmarkWithCircle[]>>({})
+
+  // 現在のイベントのキーを取得
+  const getCurrentEventKey = () => {
+    return currentEvent.value?.id || 'default'
   }
 
-  // State - イベント別に分離
+  // 現在のイベントのブックマークを取得
   const bookmarks = computed(() => {
-    const key = getStateKey("bookmarks.list")
-    return useState<Bookmark[]>(key, () => []).value
+    const key = getCurrentEventKey()
+    return bookmarksStore.value[key] || []
   })
-  
-  const setBookmarks = (value: Bookmark[]) => {
-    const key = getStateKey("bookmarks.list")
-    useState<Bookmark[]>(key, () => []).value = value
-  }
 
   const bookmarksWithCircles = computed(() => {
-    const key = getStateKey("bookmarks.withCircles")
-    return useState<BookmarkWithCircle[]>(key, () => []).value
+    const key = getCurrentEventKey()
+    return bookmarksWithCirclesStore.value[key] || []
   })
-  
-  const setBookmarksWithCircles = (value: BookmarkWithCircle[]) => {
-    const key = getStateKey("bookmarks.withCircles")
-    useState<BookmarkWithCircle[]>(key, () => []).value = value
+
+  // 状態を設定する関数
+  const setBookmarks = (value: Bookmark[], eventId?: string) => {
+    const key = eventId || getCurrentEventKey()
+    bookmarksStore.value = {
+      ...bookmarksStore.value,
+      [key]: value
+    }
+  }
+
+  const setBookmarksWithCircles = (value: BookmarkWithCircle[], eventId?: string) => {
+    const key = eventId || getCurrentEventKey()
+    bookmarksWithCirclesStore.value = {
+      ...bookmarksWithCirclesStore.value,
+      [key]: value
+    }
   }
 
   const loading = useState<boolean>("bookmarks.loading", () => false);
@@ -80,11 +90,14 @@ export const useBookmarks = () => {
       console.log('🧹 Clearing bookmarks for event:', targetEventId)
       
       // 対象イベントの状態をクリア
-      const bookmarkKey = getStateKey("bookmarks.list", targetEventId)
-      const withCirclesKey = getStateKey("bookmarks.withCircles", targetEventId)
-      
-      useState<Bookmark[]>(bookmarkKey, () => []).value = []
-      useState<BookmarkWithCircle[]>(withCirclesKey, () => []).value = []
+      if (bookmarksStore.value[targetEventId]) {
+        delete bookmarksStore.value[targetEventId]
+        bookmarksStore.value = { ...bookmarksStore.value }
+      }
+      if (bookmarksWithCirclesStore.value[targetEventId]) {
+        delete bookmarksWithCirclesStore.value[targetEventId]
+        bookmarksWithCirclesStore.value = { ...bookmarksWithCirclesStore.value }
+      }
     }
   }
 
@@ -93,23 +106,14 @@ export const useBookmarks = () => {
     const currentEventId = currentEvent.value?.id
     if (!currentEventId) return
 
-    // 一般的なイベントIDのパターンをクリア
-    const eventIds = ['geika-31', 'geika-32', 'geika-33'] // 必要に応じて拡張
+    console.log('🧹 Clearing data for other events, keeping:', currentEventId)
     
-    eventIds.forEach(eventId => {
-      if (eventId !== currentEventId) {
-        console.log('🧹 Clearing data for other event:', eventId)
-        const bookmarkKey = `bookmarks.list.${eventId}`
-        const withCirclesKey = `bookmarks.withCircles.${eventId}`
-        
-        try {
-          useState<Bookmark[]>(bookmarkKey, () => []).value = []
-          useState<BookmarkWithCircle[]>(withCirclesKey, () => []).value = []
-        } catch (error) {
-          console.warn('Failed to clear data for event:', eventId, error)
-        }
-      }
-    })
+    // 現在のイベント以外のデータをクリア
+    const currentBookmarks = bookmarksStore.value[currentEventId] || []
+    const currentBookmarksWithCircles = bookmarksWithCirclesStore.value[currentEventId] || []
+    
+    bookmarksStore.value = { [currentEventId]: currentBookmarks }
+    bookmarksWithCirclesStore.value = { [currentEventId]: currentBookmarksWithCircles }
   }
 
   // ブックマーク一覧を取得
@@ -511,7 +515,12 @@ export const useBookmarks = () => {
       if (newEventId !== oldEventId && isAuthenticated.value) {
         console.log('🔄 Re-subscribing to bookmarks for new event:', newEventId);
         
-        // 他のイベントのデータをクリア
+        // 古いイベントのデータを明示的にクリア
+        if (oldEventId) {
+          clearBookmarksForEvent(oldEventId);
+        }
+        
+        // 他のイベントのデータもクリア
         clearOtherEventsData();
         
         cleanup();

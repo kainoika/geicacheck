@@ -638,19 +638,13 @@ const closeSidebar = () => {
   sidebarOpen.value = false
 }
 
-// ブックマーク関連
+// ブックマーク関連（ref-based storeは既にイベント別に分離されているため、追加フィルタリング不要）
 const eventBookmarks = computed(() => {
-  if (!currentEvent.value || !bookmarksWithCircles.value) {
-    console.log('📊 eventBookmarks: empty', { currentEvent: currentEvent.value?.id, bookmarks: bookmarksWithCircles.value?.length })
-    return []
-  }
-  const filtered = bookmarksWithCircles.value.filter(bookmark => bookmark.eventId === currentEvent.value.id)
-  console.log('📊 eventBookmarks computed:', { 
-    eventId: currentEvent.value.id, 
-    totalBookmarks: bookmarksWithCircles.value.length, 
-    eventBookmarks: filtered.length 
+  console.log('📊 eventBookmarks computed - using ref-based store:', { 
+    currentEvent: currentEvent.value?.id, 
+    bookmarks: bookmarksWithCircles.value?.length || 0 
   })
-  return filtered
+  return bookmarksWithCircles.value || []
 })
 
 const filteredBookmarks = computed(() => {
@@ -786,6 +780,9 @@ const loadMapForCurrentEvent = async () => {
 watch(() => currentEvent.value, async (newEvent, oldEvent) => {
   if (newEvent && newEvent.id !== oldEvent?.id) {
     console.log('🔄 マップページ: イベント変更検知:', oldEvent?.id, '→', newEvent.id)
+    
+    // 他のイベントのブックマークデータをクリア（重要）
+    clearOtherEventsData()
     
     // ブックマークデータを再取得
     await fetchBookmarksWithCircles()
