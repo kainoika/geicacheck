@@ -207,26 +207,60 @@ export const useSvgPins = (options: Partial<SvgPinOptions> = {}) => {
     circle.setAttribute('stroke-width', style.strokeWidth.toString())
     circle.setAttribute('class', 'pin-background')
     
+    // タッチ領域を拡大するための透明な円
+    const touchArea = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+    touchArea.setAttribute('cx', position.x.toString())
+    touchArea.setAttribute('cy', position.y.toString())
+    touchArea.setAttribute('r', (config.radius * 1.5).toString()) // タッチしやすいように1.5倍
+    touchArea.setAttribute('fill', 'transparent')
+    touchArea.setAttribute('class', 'pin-touch-area')
+    touchArea.style.cursor = 'pointer'
+    
     if (config.dropShadow) {
       circle.setAttribute('filter', 'url(#pin-drop-shadow)')
     }
     
     // クリックイベント
     circle.style.cursor = 'pointer'
-    circle.addEventListener('click', (e) => {
+    
+    // クリックハンドラー
+    const handleClick = (e: Event) => {
       e.stopPropagation()
+      e.preventDefault()
+      onPinClick(bookmark.circle)
+    }
+    
+    // タッチ領域にイベントを設定
+    touchArea.addEventListener('click', handleClick)
+    touchArea.addEventListener('touchend', (e) => {
+      e.stopPropagation()
+      e.preventDefault()
       onPinClick(bookmark.circle)
     })
     
-    // ホバー効果
-    circle.addEventListener('mouseenter', () => {
-      circle.style.transform = 'scale(1.1)'
-      circle.style.transition = 'transform 0.2s ease'
+    // 可視円にもイベントを設定（冗長性のため）
+    circle.addEventListener('click', handleClick)
+    circle.addEventListener('touchend', (e) => {
+      e.stopPropagation()
+      e.preventDefault()
+      onPinClick(bookmark.circle)
     })
     
-    circle.addEventListener('mouseleave', () => {
-      circle.style.transform = 'scale(1)'
-    })
+    // ホバー効果（デスクトップのみ）
+    const isTouchDevice = 'ontouchstart' in window
+    if (!isTouchDevice) {
+      // transformOriginを中心に設定
+      circle.style.transformOrigin = `${position.x}px ${position.y}px`
+      
+      circle.addEventListener('mouseenter', () => {
+        circle.style.transform = 'scale(1.05)' // より小さいスケールでブレを防止
+        circle.style.transition = 'transform 0.2s ease'
+      })
+      
+      circle.addEventListener('mouseleave', () => {
+        circle.style.transform = 'scale(1)'
+      })
+    }
     
     // アイコン
     const icon = document.createElementNS('http://www.w3.org/2000/svg', 'path')
@@ -246,8 +280,19 @@ export const useSvgPins = (options: Partial<SvgPinOptions> = {}) => {
       `translate(${position.x - iconOffset}, ${position.y - iconOffset}) scale(${iconSize / 24})`
     )
     
+    // グループにもイベントを設定（ピン全体をクリック可能に）
+    group.style.cursor = 'pointer'
+    group.addEventListener('click', handleClick)
+    group.addEventListener('touchend', (e) => {
+      e.stopPropagation()
+      e.preventDefault()
+      onPinClick(bookmark.circle)
+    })
+    
+    // 要素を追加（順序重要：タッチ領域を最前面に）
     group.appendChild(circle)
     group.appendChild(icon)
+    group.appendChild(touchArea) // タッチ領域を最後に追加して最前面に
     
     // アニメーション開始
     if (config.animated) {

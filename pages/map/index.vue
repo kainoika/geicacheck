@@ -533,6 +533,12 @@ const getTouchCenter = (touch1: Touch, touch2: Touch): { x: number; y: number } 
 }
 
 const handleTouchStart = (event: TouchEvent) => {
+  // ピンがタッチされた場合は処理しない
+  const target = event.target as Element
+  if (target.closest('.bookmark-pin')) {
+    return
+  }
+  
   event.preventDefault()
   touchActive.value = true
   touches.value = Array.from(event.touches)
@@ -554,6 +560,12 @@ const handleTouchStart = (event: TouchEvent) => {
 }
 
 const handleTouchMove = (event: TouchEvent) => {
+  // ピンがタッチされた場合は処理しない
+  const target = event.target as Element
+  if (target.closest('.bookmark-pin')) {
+    return
+  }
+  
   event.preventDefault()
   
   if (!touchActive.value) return
