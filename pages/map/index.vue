@@ -56,10 +56,22 @@
                 <div class="text-xs text-gray-600">合計</div>
               </div>
               <div class="text-center p-3 bg-blue-50 rounded-lg">
-                <div class="text-xl font-bold text-blue-600">
+                <div class="text-xl font-bold text-blue-500">
                   {{ getBookmarkCount('check') }}
                 </div>
                 <div class="text-xs text-gray-600">チェック</div>
+              </div>
+              <div class="text-center p-3 bg-amber-50 rounded-lg">
+                <div class="text-xl font-bold text-amber-600">
+                  {{ getBookmarkCount('interested') }}
+                </div>
+                <div class="text-xs text-gray-600">気になる</div>
+              </div>
+              <div class="text-center p-3 bg-red-50 rounded-lg">
+                <div class="text-xl font-bold text-red-500">
+                  {{ getBookmarkCount('priority') }}
+                </div>
+                <div class="text-xs text-gray-600">優先</div>
               </div>
             </div>
           </div>
