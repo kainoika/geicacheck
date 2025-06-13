@@ -20,6 +20,7 @@
     "import:event": "tsx scripts/importEvent.ts",
     "seed:emulator": "tsx scripts/seedEmulatorData.ts",
     "test:emulator": "tsx scripts/testEmulatorConnection.ts",
+    "migrate:owner-ids": "tsx scripts/migrateOwnerIds.ts",
     "emulators:start": "firebase emulators:start",
     "emulators:export": "firebase emulators:export ./emulator-data",
     "emulators:import": "firebase emulators:start --import=./emulator-data"

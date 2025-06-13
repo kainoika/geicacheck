@@ -3,7 +3,7 @@
     <main class="container mx-auto px-4 py-8 max-w-4xl">
       <div class="bg-white rounded-lg shadow-md p-8">
         <h1 class="text-3xl font-bold mb-2">利用規約</h1>
-        <p class="text-gray-600 mb-8">最終更新日: 2025年1月6日</p>
+        <p class="text-gray-600 mb-8">最終更新日: 2025年6月1日</p>
 
         <div class="prose prose-pink max-w-none space-y-8">
           <section>
@@ -12,7 +12,7 @@
               はじめに
             </h2>
             <p class="text-gray-700 leading-relaxed">
-              geika check!（ゲイカチェック）をご利用いただきありがとうございます。<br>
+              geika check!をご利用いただきありがとうございます。<br>
               このサービスは、同人イベント「芸カ」の参加サークル情報を管理・共有するためのツールです。<br>
               本規約をお読みいただき、同意の上でご利用ください。
             </p>
@@ -48,13 +48,6 @@
                 </div>
               </div>
               
-              <div class="flex items-start gap-3">
-                <ExclamationTriangleIcon class="h-6 w-6 text-pink-600 flex-shrink-0" />
-                <div>
-                  <h3 class="font-bold mb-1">成人向けコンテンツ</h3>
-                  <p class="text-sm text-gray-700">R18作品を扱う場合は、必ず「成人向け」マークを設定してください。</p>
-                </div>
-              </div>
             </div>
           </section>
 
@@ -115,22 +108,6 @@
                 <h3 class="font-bold mb-2">規約違反への対応</h3>
                 <p class="text-sm">規約に違反した場合、警告またはアカウント停止措置を行うことがあります。</p>
               </div>
-            </div>
-          </section>
-
-          <section>
-            <h2 class="text-2xl font-bold text-pink-600 mb-4 flex items-center gap-2">
-              <EnvelopeIcon class="h-6 w-6" />
-              お問い合わせ
-            </h2>
-            <p class="text-gray-700">
-              ご不明な点がございましたら、以下までお問い合わせください。
-            </p>
-            <div class="mt-4 p-4 bg-blue-50 rounded-lg">
-              <p class="text-sm">
-                Twitter: @geika_check（準備中）<br>
-                メール: support@geika-check.example.com（準備中）
-              </p>
             </div>
           </section>
 

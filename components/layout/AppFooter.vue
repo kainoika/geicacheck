@@ -84,7 +84,7 @@
                             </NuxtLink>
                         </li>
                         <li>
-                            <a href="https://github.com/geika-check/geika-check" target="_blank" rel="noopener noreferrer"
+                            <a href="https://github.com/kainoika/geikacheck" target="_blank" rel="noopener noreferrer"
                                 class="text-sm text-gray-600 hover:text-pink-600 transition-colors inline-flex items-center">
                                 <ComputerDesktopIcon class="h-4 w-4 mr-2" />
                                 GitHub
