@@ -42,14 +42,16 @@ This is a **Nuxt 3 SPA** application for managing circle information at Aikatsu 
 - Each domain has its own composable (`useAuth`, `useCircles`, `useBookmarks`, `useEvents`, `useEditPermissions`, `useCirclePermissions`)
 - State persists across navigation using `useState()` with unique keys
 - Follow the established pattern: state variables, computed properties, methods, return readonly refs
+- `useBookmarks` uses ref-based store for event-specific data isolation to prevent cross-event data leakage
 
 **Interactive Map System:**
 - `useEventMap()` - SVG map loading, caching, and event-based switching
-- `useSvgPins()` - SVG-native pin rendering with category-based styling and animations
+- `useSvgPins()` - SVG-native pin rendering with category-based styling and animations (optimized touch events for mobile)
 - `useTouch()` - Touch gesture recognition, pinch-to-zoom, and pan operations
 - `useCircleMapping()` - Circle position calculation and placement normalization
 - Intelligent caching system with automatic map switching based on current event
 - Performance-optimized for large datasets (1000+ bookmarks)
+- Mobile-specific optimizations: debounced rendering, improved touch areas, stable pin display
 
 **Firebase Integration:**
 - Firebase services initialized in `plugins/firebase.client.ts`
@@ -69,6 +71,7 @@ This is a **Nuxt 3 SPA** application for managing circle information at Aikatsu 
 - Manual admin approval for unmatched requests
 - Granular permissions (image upload, genre editing, etc.)
 - Request tracking and management system with status workflow
+- Automatic ownerId update when granting permissions to fix authorization issues
 
 **Component Organization:**
 - Feature-based component grouping (`circle/`, `bookmark/`, `layout/`, `ui/`, `map/`)
@@ -129,6 +132,8 @@ circle_permissions/        # Granted permissions
 6. **Testing**: Include comprehensive tests for map interactions and edge cases
 7. **Coordinate Mapping**: Use `data/mapConfigs.ts` for event-specific coordinate mappings
 8. **Error Handling**: Implement graceful fallbacks for map loading failures
+9. **Mobile Optimization**: Implement debounced watchers, add wait times for SVG rendering, and use larger touch areas
+10. **Map Statistics**: Display bookmark counts by category (total, check, interested, priority) in 2x2 grid
 
 **Firebase Operations:**
 - Always use server timestamps for created/updated fields
@@ -171,10 +176,11 @@ circle_permissions/        # Granted permissions
 - `nuxt.config.ts` - Main configuration (SPA mode, Firebase env vars, component settings)
 - `types/index.ts` - Complete type definitions including EditPermissionRequest and CirclePermission
 - `composables/` - Core business logic and state management
-  - `composables/useEditPermissions.ts` - Permission request management
+  - `composables/useEditPermissions.ts` - Permission request management (with ownerId update on grant)
   - `composables/useCirclePermissions.ts` - Permission checking and user permission cache
+  - `composables/useBookmarks.ts` - Bookmark management with ref-based store for event isolation
   - `composables/useEventMap.ts` - Map loading, caching, and event switching
-  - `composables/useSvgPins.ts` - SVG pin rendering and animation system
+  - `composables/useSvgPins.ts` - SVG pin rendering and animation system (mobile-optimized touch events)
   - `composables/useTouch.ts` - Touch gesture recognition and processing
 - `data/mapConfigs.ts` - Event-specific map configurations and coordinate mappings
 - `utils/placementUtils.ts` - Placement normalization and coordinate calculation utilities
@@ -183,7 +189,7 @@ circle_permissions/        # Granted permissions
 - `scripts/` - Data migration and management utilities
 - `components/map/EventMap.vue` - Interactive map component for event layouts
 - `components/ui/EditPermissionModal.vue` - Permission request modal with Twitter matching
-- `pages/map/index.vue` - Main map page with touch controls and bookmark integration
+- `pages/map/index.vue` - Main map page with touch controls, bookmark integration, and mobile optimizations
 - `pages/admin/edit-requests.vue` - Admin dashboard for permission management
 - `middleware/admin.ts` - Admin route protection middleware
 
