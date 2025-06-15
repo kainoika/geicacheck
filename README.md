@@ -59,8 +59,8 @@
 
 1. **リポジトリをクローン**
    ```bash
-   git clone https://github.com/your-username/geica-check.git
-   cd geica-check
+   git clone https://github.com/kainoika/geicacheck.git
+   cd geicacheck
    ```
 
 2. **依存関係をインストール**
@@ -374,9 +374,8 @@ npm run test:coverage
 
 ## 📞 サポート
 
-- **バグ報告・機能要望**: [Issues](https://github.com/your-username/geica-check/issues)
+- **バグ報告・機能要望**: [Issues](https://github.com/kainoika/geicacheck/issues)
 - **Twitter**: [@geica_check](https://twitter.com/geica_check)
-- **メール**: support@geica-check.com
 
 ---
 
