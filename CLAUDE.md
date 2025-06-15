@@ -60,7 +60,7 @@ This is a **Nuxt 3 SPA** application for managing circle information at Aikatsu 
 - Authentication via Twitter OAuth with user data stored in Firestore
 
 **Multi-Event Architecture:**
-- Events are first-class entities with unique IDs (`geika-1`, `geika-2`, etc.)
+- Events are first-class entities with unique IDs (`geica-1`, `geica-2`, etc.)
 - Circles belong to specific events via `eventId` field
 - Bookmarks are event-specific for data isolation
 - Event switching functionality throughout the application

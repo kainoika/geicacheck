@@ -79,7 +79,7 @@ async function importConvertedCircles() {
     console.log('🔥 変換済みサークルデータのFirestore投入を開始します...')
     
     // 変換済みJSONファイルを読み込み
-    const jsonPath = join(process.cwd(), 'data', 'geika31-circle-converted.json')
+    const jsonPath = join(process.cwd(), 'data', 'geica31-circle-converted.json')
     const jsonData = readFileSync(jsonPath, 'utf-8')
     const circles: CircleData[] = JSON.parse(jsonData)
     
@@ -94,7 +94,7 @@ async function importConvertedCircles() {
       
       try {
         // Firestoreドキュメント作成（インデックスベースのID）
-        const circleRef = doc(db, 'events', "geika-31", 'circles', `geika31-${String(i + 1).padStart(3, '0')}`)
+        const circleRef = doc(db, 'events', "geica-31", 'circles', `geica31-${String(i + 1).padStart(3, '0')}`)
         const firestoreData = convertToFirestoreFormat(circle, i + 1)
         
         console.log(firestoreData)

@@ -1,4 +1,4 @@
-# geika check! 
+# geica check! 
 
 > アイカツ！同人イベントサークルチェックアプリ
 
@@ -59,8 +59,8 @@
 
 1. **リポジトリをクローン**
    ```bash
-   git clone https://github.com/your-username/geika-check.git
-   cd geika-check
+   git clone https://github.com/your-username/geica-check.git
+   cd geica-check
    ```
 
 2. **依存関係をインストール**
@@ -178,7 +178,7 @@ npm run import:event
 ### プロジェクト構造
 
 ```
-geika-check/
+geica-check/
 ├── components/          # Vueコンポーネント
 │   ├── bookmark/        # ブックマーク関連
 │   ├── circle/          # サークル表示関連
@@ -374,9 +374,9 @@ npm run test:coverage
 
 ## 📞 サポート
 
-- **バグ報告・機能要望**: [Issues](https://github.com/your-username/geika-check/issues)
-- **Twitter**: [@geika_check](https://twitter.com/geika_check)
-- **メール**: support@geika-check.com
+- **バグ報告・機能要望**: [Issues](https://github.com/your-username/geica-check/issues)
+- **Twitter**: [@geica_check](https://twitter.com/geica_check)
+- **メール**: support@geica-check.com
 
 ---
 

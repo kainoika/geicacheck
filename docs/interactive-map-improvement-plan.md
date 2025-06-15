@@ -1,7 +1,7 @@
 # インタラクティブマップ改善計画
 
 ## 概要
-このドキュメントは、geika check!のインタラクティブマップ機能における課題と解決策をまとめたものです。
+このドキュメントは、geica check!のインタラクティブマップ機能における課題と解決策をまとめたものです。
 
 ## 現状の課題
 
@@ -33,8 +33,8 @@
 - **実装例**:
   ```json
   {
-    "eventId": "geika-33",
-    "mapFile": "map-geika33.svg",
+    "eventId": "geica-33",
+    "mapFile": "map-geica33.svg",
     "coordinateSystem": {
       "type": "grid",
       "areas": ["カ", "み", "ア", "ド"],

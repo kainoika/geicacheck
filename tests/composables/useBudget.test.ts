@@ -8,7 +8,7 @@ const mockPurchasePlans: PurchasePlan[] = [
     userId: 'user1',
     circleId: 'circle1',
     itemId: 'item1',
-    eventId: 'geika-1',
+    eventId: 'geica-1',
     quantity: 2,
     priceAtTime: 1000,
     circleName: 'テストサークル1',
@@ -21,7 +21,7 @@ const mockPurchasePlans: PurchasePlan[] = [
     userId: 'user1',
     circleId: 'circle2',
     itemId: 'item2',
-    eventId: 'geika-1',
+    eventId: 'geica-1',
     quantity: 1,
     priceAtTime: 500,
     circleName: 'テストサークル2',
@@ -34,7 +34,7 @@ const mockPurchasePlans: PurchasePlan[] = [
     userId: 'user1',
     circleId: 'circle1',
     itemId: 'item3',
-    eventId: 'geika-1',
+    eventId: 'geica-1',
     quantity: 3,
     priceAtTime: 800,
     circleName: 'テストサークル1',
@@ -141,9 +141,9 @@ describe('useBudget', () => {
 
   describe('calculateBudgetSummary', () => {
     it('正しく予算サマリーを計算する', () => {
-      const result = useBudget.calculateBudgetSummary(mockPurchasePlans, 'geika-1')
+      const result = useBudget.calculateBudgetSummary(mockPurchasePlans, 'geica-1')
 
-      expect(result.eventId).toBe('geika-1')
+      expect(result.eventId).toBe('geica-1')
       expect(result.totalItems).toBe(6) // 2 + 1 + 3
       expect(result.totalPrice).toBe(4900) // (1000*2) + (500*1) + (800*3)
       expect(result.byCircle).toHaveLength(2) // 2つのサークル
@@ -162,9 +162,9 @@ describe('useBudget', () => {
     })
 
     it('空の配列で正しく処理する', () => {
-      const result = useBudget.calculateBudgetSummary([], 'geika-1')
+      const result = useBudget.calculateBudgetSummary([], 'geica-1')
 
-      expect(result.eventId).toBe('geika-1')
+      expect(result.eventId).toBe('geica-1')
       expect(result.totalItems).toBe(0)
       expect(result.totalPrice).toBe(0)
       expect(result.byCircle).toHaveLength(0)

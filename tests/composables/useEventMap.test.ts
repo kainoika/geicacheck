@@ -25,9 +25,9 @@ describe('useEventMap', () => {
         text: () => Promise.resolve(mockSvgContent)
       })
 
-      const result = await eventMapHandler.loadEventMap('geika-32')
+      const result = await eventMapHandler.loadEventMap('geica-32')
 
-      expect(fetch).toHaveBeenCalledWith('/map-geika32.svg')
+      expect(fetch).toHaveBeenCalledWith('/map-geica32.svg')
       expect(result).toBe(mockSvgContent)
       expect(eventMapHandler.currentMapContent.value).toBe(mockSvgContent)
       expect(eventMapHandler.isLoading.value).toBe(false)
@@ -43,13 +43,13 @@ describe('useEventMap', () => {
         text: () => Promise.resolve(mockSvgContent)
       })
 
-      await eventMapHandler.loadEventMap('geika-32')
+      await eventMapHandler.loadEventMap('geica-32')
       
       // fetchをクリア
       vi.clearAllMocks()
       
       // 2回目の読み込み（キャッシュから）
-      const result = await eventMapHandler.loadEventMap('geika-32')
+      const result = await eventMapHandler.loadEventMap('geica-32')
 
       expect(fetch).not.toHaveBeenCalled()
       expect(result).toBe(mockSvgContent)
@@ -71,9 +71,9 @@ describe('useEventMap', () => {
 
   describe('getMapFileName', () => {
     it('正しいファイル名を返す', () => {
-      expect(eventMapHandler.getMapFileName('geika-31')).toBe('map-geika31.svg')
-      expect(eventMapHandler.getMapFileName('geika-32')).toBe('map-geika32.svg')
-      expect(eventMapHandler.getMapFileName('unknown')).toBe('map-geika32.svg') // デフォルト
+      expect(eventMapHandler.getMapFileName('geica-31')).toBe('map-geica31.svg')
+      expect(eventMapHandler.getMapFileName('geica-32')).toBe('map-geica32.svg')
+      expect(eventMapHandler.getMapFileName('unknown')).toBe('map-geica32.svg') // デフォルト
     })
   })
 
@@ -84,11 +84,11 @@ describe('useEventMap', () => {
         text: () => Promise.resolve('<svg>test</svg>')
       })
 
-      await eventMapHandler.preloadMaps(['geika-31', 'geika-32'])
+      await eventMapHandler.preloadMaps(['geica-31', 'geica-32'])
 
       expect(fetch).toHaveBeenCalledTimes(2)
-      expect(fetch).toHaveBeenCalledWith('/map-geika31.svg')
-      expect(fetch).toHaveBeenCalledWith('/map-geika32.svg')
+      expect(fetch).toHaveBeenCalledWith('/map-geica31.svg')
+      expect(fetch).toHaveBeenCalledWith('/map-geica32.svg')
     })
   })
 
@@ -99,12 +99,12 @@ describe('useEventMap', () => {
         text: () => Promise.resolve('<svg>test content</svg>')
       })
 
-      await eventMapHandler.loadEventMap('geika-32')
+      await eventMapHandler.loadEventMap('geica-32')
       
       const cacheInfo = eventMapHandler.getCacheInfo()
       
       expect(cacheInfo.size).toBe(1)
-      expect(cacheInfo.keys).toContain('geika-32')
+      expect(cacheInfo.keys).toContain('geica-32')
       expect(cacheInfo.totalSize).toBeGreaterThan(0)
     })
 
@@ -114,7 +114,7 @@ describe('useEventMap', () => {
         text: () => Promise.resolve('<svg>test</svg>')
       })
 
-      await eventMapHandler.loadEventMap('geika-32')
+      await eventMapHandler.loadEventMap('geica-32')
       eventMapHandler.clearCache()
       
       const cacheInfo = eventMapHandler.getCacheInfo()
@@ -142,7 +142,7 @@ describe('useCircleMapping', () => {
     }
 
     it('正常な配置で座標を取得する', () => {
-      const position = circleMappingHandler.getCirclePosition(mockCircle, 'geika-32')
+      const position = circleMappingHandler.getCirclePosition(mockCircle, 'geica-32')
       
       expect(position).toEqual(
         expect.objectContaining({
@@ -162,7 +162,7 @@ describe('useCircleMapping', () => {
         }
       }
 
-      const position = circleMappingHandler.getCirclePosition(mikuCircle, 'geika-32')
+      const position = circleMappingHandler.getCirclePosition(mikuCircle, 'geica-32')
       
       expect(position.x).toBe(85)
       expect(position.y).toBe(947)
@@ -178,7 +178,7 @@ describe('useCircleMapping', () => {
         }
       }
 
-      const position = circleMappingHandler.getCirclePosition(invalidCircle, 'geika-32')
+      const position = circleMappingHandler.getCirclePosition(invalidCircle, 'geica-32')
       const defaultPosition = circleMappingHandler.getDefaultPosition()
       
       expect(position).toEqual(defaultPosition)
@@ -190,7 +190,7 @@ describe('useCircleMapping', () => {
         placement: undefined
       }
 
-      const position = circleMappingHandler.getCirclePosition(circleWithoutPlacement as any, 'geika-32')
+      const position = circleMappingHandler.getCirclePosition(circleWithoutPlacement as any, 'geica-32')
       const defaultPosition = circleMappingHandler.getDefaultPosition()
       
       expect(position).toEqual(defaultPosition)

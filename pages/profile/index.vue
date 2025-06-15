@@ -774,7 +774,7 @@ watch(() => user.value, async (newUser, oldUser) => {
 
 // SEO
 useHead({
-  title: 'プロフィール - geika check!',
+  title: 'プロフィール - geica check!',
   meta: [
     { name: 'description', content: 'ユーザープロフィール、ブックマーク統計、編集権限の管理ページです。' }
   ]

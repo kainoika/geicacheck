@@ -12,7 +12,7 @@
               個人情報の取り扱いについて
             </h2>
             <p class="text-gray-700 leading-relaxed">
-              geika check!では、ユーザーの個人情報を適切に保護し、管理いたします。<br>
+              geica check!では、ユーザーの個人情報を適切に保護し、管理いたします。<br>
               本プライバシーポリシーでは、収集する情報の種類と利用目的について説明いたします。
             </p>
           </section>
@@ -182,7 +182,7 @@
               個人情報の保護に努めます
             </p>
             <p class="text-sm text-gray-600">
-              安心してgeika check!をご利用ください。
+              安心してgeica check!をご利用ください。
             </p>
           </div>
         </div>
@@ -210,11 +210,11 @@ import {
 } from '@heroicons/vue/24/outline'
 
 useHead({
-  title: 'プライバシーポリシー - geika check!',
+  title: 'プライバシーポリシー - geica check!',
   meta: [
     { 
       name: 'description', 
-      content: 'geika check!のプライバシーポリシーです。個人情報の取り扱いについて説明しています。' 
+      content: 'geica check!のプライバシーポリシーです。個人情報の取り扱いについて説明しています。' 
     }
   ]
 })

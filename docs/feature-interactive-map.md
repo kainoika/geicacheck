@@ -8,7 +8,7 @@
 - **ブックマークピン表示**: カテゴリ別色分けとアイコン表示
 - **サイドバー機能**: 統計、フィルター、リスト表示
 - **サークル詳細ポップアップ**: ピンクリックで詳細情報表示
-- **イベント切り替え**: geika-31/32対応完了
+- **イベント切り替え**: geica-31/32対応完了
 - **レスポンシブデザイン**: PC・タブレット・スマートフォン対応
 - **Heroicons統一**: 絵文字からHeroiconsへの完全移行
 - **Firestore連携**: リアルタイムブックマークデータ同期
@@ -88,8 +88,8 @@ pages/map/index.vue                    # メインマップページ
 composables/useEventMap.ts            # SVGマップ管理
 composables/useCircleMapping.ts       # サークル座標計算
 data/mapConfigs.ts                    # 座標マッピング設定
-public/map-geika31.svg                # げいか31会場マップ
-public/map-geika32.svg                # げいか32会場マップ
+public/map-geica31.svg                # げいか31会場マップ
+public/map-geica32.svg                # げいか32会場マップ
 ```
 
 ### 使用技術スタック

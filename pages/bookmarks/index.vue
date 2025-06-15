@@ -358,7 +358,7 @@ watch(currentEvent, async (newEvent, oldEvent) => {
 
 // SEO
 useHead({
-  title: 'ブックマーク - geika check!',
+  title: 'ブックマーク - geica check!',
   meta: [
     { name: 'description', content: 'お気に入りのサークルをカテゴリ別に管理できるブックマーク機能です。' }
   ]

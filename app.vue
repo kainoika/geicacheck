@@ -27,15 +27,15 @@ onMounted(() => {
 
 // メタ情報の設定
 useHead({
-  title: 'geika check! - アイカツ！同人イベントサークルチェックアプリ',
+  title: 'geica check! - アイカツ！同人イベントサークルチェックアプリ',
   meta: [
     { name: 'description', content: 'アイカツ！シリーズオンリー同人イベント「芸能人はカードが命！（芸カ）」のサークルチェックを効率化するWebアプリ' },
     { name: 'keywords', content: 'アイカツ,同人,イベント,サークル,チェック,ブックマーク' },
-    { property: 'og:title', content: 'geika check!' },
+    { property: 'og:title', content: 'geica check!' },
     { property: 'og:description', content: 'アイカツ！同人イベントサークルチェックアプリ' },
     { property: 'og:type', content: 'website' },
     { name: 'twitter:card', content: 'summary' },
-    { name: 'twitter:title', content: 'geika check!' },
+    { name: 'twitter:title', content: 'geica check!' },
     { name: 'twitter:description', content: 'アイカツ！同人イベントサークルチェックアプリ' }
   ],
   link: [

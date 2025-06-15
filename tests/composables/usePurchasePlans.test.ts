@@ -7,7 +7,7 @@ const mockPurchasePlan: PurchasePlan = {
   userId: 'user1',
   circleId: 'circle1',
   itemId: 'item1',
-  eventId: 'geika-1',
+  eventId: 'geica-1',
   quantity: 2,
   priceAtTime: 1000,
   circleName: 'テストサークル',
@@ -90,7 +90,7 @@ describe('usePurchasePlans', () => {
       const planId = await usePurchasePlans.addToPurchasePlan(
         'circle2',
         'item2',
-        'geika-1',
+        'geica-1',
         500,
         1,
         '新しいサークル',
@@ -105,7 +105,7 @@ describe('usePurchasePlans', () => {
       expect(newPlan).toBeDefined()
       expect(newPlan?.circleId).toBe('circle2')
       expect(newPlan?.itemId).toBe('item2')
-      expect(newPlan?.eventId).toBe('geika-1')
+      expect(newPlan?.eventId).toBe('geica-1')
       expect(newPlan?.priceAtTime).toBe(500)
       expect(newPlan?.quantity).toBe(1)
       expect(newPlan?.circleName).toBe('新しいサークル')
@@ -160,21 +160,21 @@ describe('usePurchasePlans', () => {
       const plan = await usePurchasePlans.getPurchasePlanByItem(
         'circle1',
         'item1',
-        'geika-1'
+        'geica-1'
       )
       
       expect(plan).toBeDefined()
       expect(plan?.id).toBe('plan1')
       expect(plan?.circleId).toBe('circle1')
       expect(plan?.itemId).toBe('item1')
-      expect(plan?.eventId).toBe('geika-1')
+      expect(plan?.eventId).toBe('geica-1')
     })
 
     it('該当しないアイテムでnullを返す', async () => {
       const plan = await usePurchasePlans.getPurchasePlanByItem(
         'circle999',
         'item999',
-        'geika-1'
+        'geica-1'
       )
       
       expect(plan).toBeNull()
@@ -187,14 +187,14 @@ describe('usePurchasePlans', () => {
       const otherEventPlan: PurchasePlan = {
         ...mockPurchasePlan,
         id: 'plan2',
-        eventId: 'geika-2'
+        eventId: 'geica-2'
       }
       mockPlans.push(otherEventPlan)
 
-      const plans = await usePurchasePlans.getUserPurchasePlans('geika-1')
+      const plans = await usePurchasePlans.getUserPurchasePlans('geica-1')
       
       expect(plans).toHaveLength(1)
-      expect(plans[0].eventId).toBe('geika-1')
+      expect(plans[0].eventId).toBe('geica-1')
     })
 
     it('該当するプランがない場合は空配列を返す', async () => {

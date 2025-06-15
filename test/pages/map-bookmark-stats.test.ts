@@ -13,12 +13,12 @@ vi.mock('#app', () => ({
 vi.mock('~/composables/useBookmarks', () => ({
   useBookmarks: () => ({
     bookmarksWithCircles: ref([
-      { id: '1', eventId: 'geika-32', category: 'check', circle: {} },
-      { id: '2', eventId: 'geika-32', category: 'check', circle: {} },
-      { id: '3', eventId: 'geika-32', category: 'interested', circle: {} },
-      { id: '4', eventId: 'geika-32', category: 'priority', circle: {} },
-      { id: '5', eventId: 'geika-32', category: 'priority', circle: {} },
-      { id: '6', eventId: 'geika-32', category: 'priority', circle: {} }
+      { id: '1', eventId: 'geica-32', category: 'check', circle: {} },
+      { id: '2', eventId: 'geica-32', category: 'check', circle: {} },
+      { id: '3', eventId: 'geica-32', category: 'interested', circle: {} },
+      { id: '4', eventId: 'geica-32', category: 'priority', circle: {} },
+      { id: '5', eventId: 'geica-32', category: 'priority', circle: {} },
+      { id: '6', eventId: 'geica-32', category: 'priority', circle: {} }
     ]),
     fetchBookmarksWithCircles: vi.fn()
   })
@@ -26,7 +26,7 @@ vi.mock('~/composables/useBookmarks', () => ({
 
 vi.mock('~/composables/useEvents', () => ({
   useEvents: () => ({
-    currentEvent: ref({ id: 'geika-32', name: '芸カ32' }),
+    currentEvent: ref({ id: 'geica-32', name: '芸カ32' }),
     fetchEvents: vi.fn()
   })
 }))

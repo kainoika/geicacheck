@@ -357,7 +357,7 @@ import type { Event, EventStats, Circle } from '~/types'
 
 // ミドルウェアで管理者権限をチェック
 definePageMeta({
-  title: 'サークルインポート - geika check!',
+  title: 'サークルインポート - geica check!',
   middleware: 'admin'
 })
 

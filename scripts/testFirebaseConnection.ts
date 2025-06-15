@@ -76,7 +76,7 @@ async function testFirebaseConnection() {
       const testRef4 = doc(collection(db, 'test'), 'circle-test')
       await setDoc(testRef4, {
         circleName: 'テストサークル',
-        eventId: 'geika-32',
+        eventId: 'geica-32',
         isPublic: true,
         createdAt: serverTimestamp()
       })
@@ -127,7 +127,7 @@ async function testFirebaseConnection() {
       await setDoc(testRef7, {
         circleName: 'しずみ荘',
         circleKana: 'シズミソウ',
-        eventId: 'geika-32',
+        eventId: 'geica-32',
         isPublic: true,
         isAdult: false,
         createdAt: serverTimestamp(),

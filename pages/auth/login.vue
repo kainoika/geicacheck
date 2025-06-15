@@ -5,7 +5,7 @@
       <div style="text-align: center; margin-bottom: 2rem;">
         <SparklesIcon style="width: 3rem; height: 3rem; color: #ff69b4; margin: 0 auto 1rem;" />
         <h1 style="font-size: 1.875rem; font-weight: 700; color: #111827; margin: 0 0 0.5rem 0;">
-          geika check!
+          geica check!
         </h1>
         <p style="color: #6b7280; margin: 0;">
           アイカツ！同人イベントサークルチェックアプリ
@@ -176,9 +176,9 @@ const handleSignOut = async () => {
 
 // SEO
 useHead({
-  title: 'ログイン - geika check!',
+  title: 'ログイン - geica check!',
   meta: [
-    { name: 'description', content: 'geika check! にログインして、ブックマーク機能やサークル情報の編集機能を利用しましょう。' }
+    { name: 'description', content: 'geica check! にログインして、ブックマーク機能やサークル情報の編集機能を利用しましょう。' }
   ]
 })
 </script>

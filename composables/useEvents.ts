@@ -69,7 +69,7 @@ export const useEvents = () => {
         console.log('❌ No events found')
         // フォールバック: ハードコードされたイベントデータを使用
         const fallbackEvent: Event = {
-          id: 'geika-32',
+          id: 'geica-32',
           name: '芸能人はカードが命！32',
           shortName: '芸カ32',
           eventDate: new Date('2025-03-23'),

@@ -23,9 +23,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 const db = getFirestore(app)
 
-const EVENT_ID = 'geika-31'
+const EVENT_ID = 'geica-32'
 
-const GEIKA_EVENT = {
+const GEICA_EVENT = {
   id: EVENT_ID,
   name: '芸能人はカードが命！31',
   shortName: '芸カ31',
@@ -35,9 +35,27 @@ const GEIKA_EVENT = {
     address: '東京都大田区平和島6丁目1−1 東京流通センター センタービル 2F',
     accessInfo: '東京モノレール「東京流通センター」駅より徒歩約1分'
   },
-  description: 'アイカツ！シリーズオンリー同人イベント第31回',
+  description: 'アイカツ！シリーズオンリーイベント「芸能人はカードが命！31」',
   status: 'completed',
   isDefault: false,
+  mapData: '',
+  createdAt: new Date('2025-06-02'),
+  updatedAt: new Date()
+}
+
+const GEICA32_EVENT = {
+  id: 'geica-32',
+  name: '芸能人はカードが命！32',
+  shortName: '芸カ32',
+  eventDate: new Date('2025-03-23'),
+  venue: {
+    name: '大田区産業プラザPiO',
+    address: '東京都大田区南蒲田1丁目20−20',
+    accessInfo: '京浜急行「京急蒲田」駅より徒歩約3分'
+  },
+  description: 'アイカツ！シリーズオンリーイベント「芸能人はカードが命！32」',
+  status: 'completed',
+  isDefault: true,
   mapData: '',
   createdAt: new Date('2025-06-02'),
   updatedAt: new Date()
@@ -58,7 +76,7 @@ async function createGeika32Event() {
       return
     }
 
-    await setDoc(eventRef, GEIKA_EVENT)
+    await setDoc(eventRef, GEICA32_EVENT)
     console.log('✅ 芸カイベントを作成しました')
   } catch (error) {
     console.error('❌ イベント作成エラー:', error)
@@ -77,10 +95,10 @@ async function upsertGeika32Event() {
     const existing = await getDoc(eventRef)
 
     if (existing.exists()) {
-      await updateDoc(eventRef, GEIKA_EVENT)
+      await updateDoc(eventRef, GEICA32_EVENT)
       console.log('🔄 芸カイベントを更新しました')
     } else {
-      await setDoc(eventRef, GEIKA_EVENT)
+      await setDoc(eventRef, GEICA32_EVENT)
       console.log('✅ 芸カイベントを新規作成しました')
     }
   } catch (error) {

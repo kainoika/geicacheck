@@ -66,13 +66,13 @@ export const useEventMap = () => {
   const getMapFileName = (eventId: string): string => {
     // イベントIDからマップファイル名を生成
     switch (eventId) {
-      case 'geika-31':
-        return 'map-geika31.svg'
-      case 'geika-32':
-        return 'map-geika32.svg'
+      case 'geica-31':
+        return 'map-geica31.svg'
+      case 'geica-32':
+        return 'map-geica32.svg'
       default:
         // デフォルトは最新のイベント
-        return 'map-geika32.svg'
+        return 'map-geica32.svg'
     }
   }
 
@@ -161,20 +161,20 @@ export const useCircleMapping = () => {
   }
 
   const calculatePositionFromPlacement = (placement: any, eventId: string): { x: number; y: number } => {
-    // geika-32での配置計算（既存のロジック）
-    if (eventId === 'geika-32') {
-      return calculateGeika32Position(placement)
+    // geica-32での配置計算（既存のロジック）
+    if (eventId === 'geica-32') {
+      return calculateGeica32Position(placement)
     }
 
-    // geika-31での配置計算
-    if (eventId === 'geika-31') {
-      return calculateGeika31Position(placement)
+    // geica-31での配置計算
+    if (eventId === 'geica-31') {
+      return calculateGeica31Position(placement)
     }
 
     return getDefaultPosition()
   }
 
-  const calculateGeika32Position = (placement: any): { x: number; y: number } => {
+  const calculateGeica32Position = (placement: any): { x: number; y: number } => {
     // みきエリアの処理
     if (placement.block === 'み' || placement.block === 'カ') {
       const num = parseInt(placement.number1)
@@ -217,10 +217,10 @@ export const useCircleMapping = () => {
     return getDefaultPosition()
   }
 
-  const calculateGeika31Position = (placement: any): { x: number; y: number } => {
-    // geika-31用の配置計算（必要に応じて実装）
-    // 現在はgeika-32と同じロジックを使用
-    return calculateGeika32Position(placement)
+  const calculateGeica31Position = (placement: any): { x: number; y: number } => {
+    // geica-31用の配置計算（必要に応じて実装）
+    // 現在はgeica-32と同じロジックを使用
+    return calculateGeica32Position(placement)
   }
 
   const getDefaultPosition = (): { x: number; y: number } => {

@@ -294,7 +294,7 @@ import type { Event, EventVenue } from '~/types'
 
 // ミドルウェアで管理者権限をチェック
 definePageMeta({
-  title: '新規イベント作成 - geika check!',
+  title: '新規イベント作成 - geica check!',
   middleware: 'admin'
 })
 

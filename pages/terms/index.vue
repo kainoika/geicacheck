@@ -12,7 +12,7 @@
               はじめに
             </h2>
             <p class="text-gray-700 leading-relaxed">
-              geika check!をご利用いただきありがとうございます。<br>
+              geica check!をご利用いただきありがとうございます。<br>
               このサービスは、同人イベント「芸カ」の参加サークル情報を管理・共有するためのツールです。<br>
               本規約をお読みいただき、同意の上でご利用ください。
             </p>
@@ -113,7 +113,7 @@
 
           <div class="mt-12 p-6 bg-pink-100 rounded-lg text-center">
             <p class="text-lg font-bold text-pink-700 mb-2">
-              geika check!をご利用いただき、ありがとうございます
+              geica check!をご利用いただき、ありがとうございます
             </p>
             <p class="text-sm text-gray-600">
               本利用規約は予告なく変更することがあります。<br>
@@ -141,11 +141,11 @@ import {
 } from '@heroicons/vue/24/outline'
 
 useHead({
-  title: '利用規約 - geika check!',
+  title: '利用規約 - geica check!',
   meta: [
     { 
       name: 'description', 
-      content: 'geika check!の利用規約です。サービスを安全にご利用いただくためのルールを定めています。' 
+      content: 'geica check!の利用規約です。サービスを安全にご利用いただくためのルールを定めています。' 
     }
   ]
 })

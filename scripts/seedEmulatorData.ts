@@ -73,7 +73,7 @@ const sampleCircles: Circle[] = [
     isAdult: false,
     ownerId: 'user-001',
     isPublic: true,
-    eventId: 'geika-32',
+    eventId: 'geica-32',
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -108,7 +108,7 @@ const sampleCircles: Circle[] = [
     isAdult: false,
     ownerId: 'user-002',
     isPublic: true,
-    eventId: 'geika-32',
+    eventId: 'geica-32',
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -132,7 +132,7 @@ const sampleCircles: Circle[] = [
     },
     isAdult: false,
     isPublic: true,
-    eventId: 'geika-32',
+    eventId: 'geica-32',
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -155,7 +155,7 @@ const sampleCircles: Circle[] = [
     },
     isAdult: false,
     isPublic: true,
-    eventId: 'geika-32',
+    eventId: 'geica-32',
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -179,7 +179,7 @@ const sampleCircles: Circle[] = [
     },
     isAdult: false,
     isPublic: true,
-    eventId: 'geika-32',
+    eventId: 'geica-32',
     createdAt: new Date(),
     updatedAt: new Date()
   }
@@ -222,8 +222,8 @@ const sampleUsers: User[] = [
     displayName: '管理者',
     photoURL: '',
     userType: 'admin',
-    twitterId: 'geika_admin',
-    twitterUsername: 'geika_admin',
+    twitterId: 'geica_admin',
+    twitterUsername: 'geica_admin',
     settings: {
       emailNotifications: true,
       adultContent: true
@@ -235,7 +235,7 @@ const sampleUsers: User[] = [
 
 const sampleEvents: Event[] = [
   {
-    id: 'geika-32',
+    id: 'geica-32',
     name: '第32回 芸能人はカードが命！',
     shortName: '芸カ32',
     eventDate: new Date('2024-06-15'),
@@ -255,7 +255,7 @@ const sampleEvents: Event[] = [
 const sampleBookmarks: Omit<Bookmark, 'id'>[] = [
   {
     userId: 'user-001',
-    eventId: 'geika-32',
+    eventId: 'geica-32',
     circleId: 'circle-002',
     category: 'check',
     memo: 'あおいちゃんの新刊楽しみ！',
@@ -264,7 +264,7 @@ const sampleBookmarks: Omit<Bookmark, 'id'>[] = [
   },
   {
     userId: 'user-001',
-    eventId: 'geika-32',
+    eventId: 'geica-32',
     circleId: 'circle-003',
     category: 'interested',
     memo: 'アンソロジー気になる',
@@ -273,7 +273,7 @@ const sampleBookmarks: Omit<Bookmark, 'id'>[] = [
   },
   {
     userId: 'admin-001',
-    eventId: 'geika-32',
+    eventId: 'geica-32',
     circleId: 'circle-001',
     category: 'priority',
     memo: '管理者チェック用',
@@ -284,7 +284,7 @@ const sampleBookmarks: Omit<Bookmark, 'id'>[] = [
 
 const samplePermissions: CirclePermission[] = [
   {
-    id: 'user-001_geika-32_circle-001',
+    id: 'user-001_geica-32_circle-001',
     userId: 'user-001',
     circleId: 'circle-001',
     permission: 'owner',
@@ -293,7 +293,7 @@ const samplePermissions: CirclePermission[] = [
     isActive: true
   },
   {
-    id: 'user-002_geika-32_circle-002',
+    id: 'user-002_geica-32_circle-002',
     userId: 'user-002',
     circleId: 'circle-002',
     permission: 'owner',
@@ -339,7 +339,7 @@ async function seedData() {
     for (const circle of sampleCircles) {
       const convertedCircle = convertDatesToTimestamps(circle)
       console.log(`  - ${circle.circleName} を登録中...`)
-      await setDoc(doc(db, 'events', 'geika-32', 'circles', circle.id), convertedCircle)
+      await setDoc(doc(db, 'events', 'geica-32', 'circles', circle.id), convertedCircle)
       console.log(`  ✓ ${circle.circleName} 登録完了`)
     }
 

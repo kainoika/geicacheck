@@ -413,7 +413,7 @@ const visibleCategories = ref<BookmarkCategory[]>(['check', 'interested', 'prior
 
 // 現在のイベントIDを取得（currentEventが利用可能になるまで待機）
 const selectedEventId = computed(() => {
-  const eventId = currentEvent.value?.id || 'geika-32'
+  const eventId = currentEvent.value?.id || 'geica-32'
   console.log('🎯 selectedEventId computed:', eventId, currentEvent.value)
   return eventId
 })
@@ -753,7 +753,7 @@ const loadMapForCurrentEvent = async () => {
   console.log('🔄 マップ読み込み:', selectedEventId.value)
   
   // SVGマップを現在のイベント用に読み込み
-  const mapFileName = selectedEventId.value === 'geika-31' ? 'map-geika31.svg' : 'map-geika32.svg'
+  const mapFileName = selectedEventId.value === 'geica-31' ? 'map-geica31.svg' : 'map-geica32.svg'
   
   try {
     svgLoaded.value = false
@@ -866,7 +866,7 @@ onMounted(async () => {
 
 // SEO
 useHead({
-  title: '会場マップ - geika check!',
+  title: '会場マップ - geica check!',
   meta: [
     { name: 'description', content: 'SVGマップの表示テストページです。' }
   ]

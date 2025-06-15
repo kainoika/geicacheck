@@ -53,8 +53,8 @@ async function migrateOwnerIds(dryRun = false) {
       const permission = docSnapshot.data()
       const { userId, circleId } = permission
 
-      // circleIdからeventIdを抽出（例: "geika32-038" -> "geika-32"）
-      const eventIdMatch = circleId.match(/^geika(\d+)-/)
+      // circleIdからeventIdを抽出（例: "geica32-038" -> "geica-32"）
+      const eventIdMatch = circleId.match(/^geica(\d+)-/)
       
       if (!eventIdMatch) {
         console.warn(`⚠️  無効なcircleId形式: ${circleId}`)
@@ -62,7 +62,7 @@ async function migrateOwnerIds(dryRun = false) {
         continue
       }
 
-      const eventId = `geika-${eventIdMatch[1]}`
+      const eventId = `geica-${eventIdMatch[1]}`
       const circleRef = doc(db, 'events', eventId, 'circles', circleId)
 
       try {

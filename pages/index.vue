@@ -17,7 +17,7 @@
                 style="background: linear-gradient(135deg, #ff69b4, #87ceeb); padding: 2rem; border-radius: 0.5rem; color: white;">
 
             <h2 style="font-size: 2rem; margin-bottom: 1rem; color: #ffffff;">
-                ようこそ geika check! へ
+                ようこそ geica check! へ
             </h2>
             <p style="font-size: 1.2rem; color: #ffffff; margin-bottom: 2rem;">
                 アイカツ！同人イベントをもっと楽しく、もっと効率的に
@@ -171,7 +171,7 @@
                     <div style="font-size: 2rem; margin-bottom: 1rem;"><InformationCircleIcon style="width: 2rem; height: 2rem; color: #ff69b4; margin: 0 auto;" /></div>
                     <h3 style="color: #ff69b4; margin-bottom: 0.5rem;">アプリについて</h3>
                     <p class="text-muted" style="margin-bottom: 1rem;">
-                        geika check! の詳細情報、使い方、技術情報を確認できます。
+                        geica check! の詳細情報、使い方、技術情報を確認できます。
                     </p>
                     <div style="color: #ff69b4; font-weight: 500; font-size: 0.9rem;">
                         → 詳細情報を見る
@@ -258,7 +258,7 @@ const startApp = () => {
 
 // SEO
 useHead({
-    title: 'geika check! - アイカツ！同人イベントサークルチェックアプリ',
+    title: 'geica check! - アイカツ！同人イベントサークルチェックアプリ',
     meta: [
         { name: 'description', content: 'アイカツ！シリーズオンリー同人イベント「芸能人はカードが命！（芸カ）」のサークル情報を効率的にチェックできるWebアプリです。' }
     ]

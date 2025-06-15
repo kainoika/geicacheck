@@ -145,7 +145,7 @@ export interface CirclePermission {
 
 // イベント関連の型定義
 export interface Event {
-  id: string;                    // 'geika-1', 'geika-2', 'geika-3'
+  id: string;                    // 'geica-1', 'geica-2', 'geica-3'
   name: string;                  // '第1回 芸能人はカードが命！'
   shortName: string;             // '芸カ1', '芸カ2'
   eventDate: Date;               // イベント開催日

@@ -355,7 +355,7 @@ onUnmounted(() => {
 
 // SEO
 useHead({
-  title: 'サークル一覧 - geika check!',
+  title: 'サークル一覧 - geica check!',
   meta: [
     { name: 'description', content: 'アイカツ！同人イベント「芸能人はカードが命！（芸カ）」参加サークルの一覧です。' }
   ]

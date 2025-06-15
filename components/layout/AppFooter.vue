@@ -6,7 +6,7 @@
                 <div class="col-span-1 md:col-span-2">
                     <div class="flex items-center space-x-2 mb-4">
                         <h3 class="text-lg font-bold text-pink-500">
-                            geika check!
+                            geica check!
                         </h3>
                     </div>
                     <p class="text-gray-600 text-sm mb-4">
@@ -84,7 +84,7 @@
                             </NuxtLink>
                         </li>
                         <li>
-                            <a href="https://github.com/kainoika/geikacheck" target="_blank" rel="noopener noreferrer"
+                            <a href="https://github.com/kainoika/geicacheck" target="_blank" rel="noopener noreferrer"
                                 class="text-sm text-gray-600 hover:text-pink-600 transition-colors inline-flex items-center">
                                 <ComputerDesktopIcon class="h-4 w-4 mr-2" />
                                 GitHub
@@ -107,7 +107,7 @@
                 <div class="flex flex-col md:flex-row justify-between items-center">
                     <!-- コピーライト -->
                     <div class="text-sm text-gray-500 mb-4 md:mb-0">
-                        © {{ currentYear }} geika check! All rights reserved.
+                        © {{ currentYear }} geica check! All rights reserved.
                     </div>
 
                     <!-- ソーシャルリンク -->
@@ -120,7 +120,7 @@
                             </svg>
                         </a>
 
-                        <a href="https://github.com/your-repo/geika-check" target="_blank" rel="noopener noreferrer"
+                        <a href="https://github.com/your-repo/geica-check" target="_blank" rel="noopener noreferrer"
                             class="text-gray-400 hover:text-pink-600 transition-colors" aria-label="GitHub">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                 <path

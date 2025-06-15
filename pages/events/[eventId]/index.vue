@@ -240,7 +240,7 @@ const eventId = route.params.eventId as string
 
 // メタデータ設定
 definePageMeta({
-  title: 'イベント詳細 - geika check!'
+  title: 'イベント詳細 - geica check!'
 })
 
 // イベント管理

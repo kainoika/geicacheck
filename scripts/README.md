@@ -2,7 +2,7 @@
 
 ## 概要
 
-このディレクトリには、geika check!アプリのFirestoreデータベースにデータを投入するためのスクリプトが含まれています。
+このディレクトリには、geica check!アプリのFirestoreデータベースにデータを投入するためのスクリプトが含まれています。
 
 ## 前提条件
 
@@ -35,7 +35,7 @@ npm run seed:events
 ```
 
 **機能:**
-- 基本的なイベントデータ（geika-1, geika-2, geika-3）をFirestoreに投入
+- 基本的なイベントデータ（geica-1, geica-2, geica-3）をFirestoreに投入
 - イベント統計情報の初期化
 
 **投入されるデータ:**
@@ -49,7 +49,7 @@ npm run import:circles
 ```
 
 **機能:**
-- `data/geika32-circle.json`のサークルデータをFirestoreに投入
+- `data/geica32-circle.json`のサークルデータをFirestoreに投入
 - JSONデータをFirestore形式に変換して保存
 
 **投入されるデータ:**
@@ -92,7 +92,7 @@ npm run migrate:multi-event
 
 ```typescript
 {
-  id: string              // 'geika-1', 'geika-2', etc.
+  id: string              // 'geica-1', 'geica-2', etc.
   name: string           // '第1回 芸能人はカードが命！'
   shortName: string      // '芸カ1'
   eventDate: Date        // イベント開催日
@@ -111,7 +111,7 @@ npm run migrate:multi-event
 
 ```typescript
 {
-  id: string                    // 'geika32-1', 'geika32-2', etc.
+  id: string                    // 'geica32-1', 'geica32-2', etc.
   circleName: string           // サークル名
   circleKana: string           // サークル名（カナ）
   genre: string[]              // ジャンル配列
@@ -126,7 +126,7 @@ npm run migrate:multi-event
   }
   isAdult: boolean             // 成人向けフラグ
   isPublic: boolean            // 公開フラグ
-  eventId: string              // 'geika-32'
+  eventId: string              // 'geica-32'
   // ...
 }
 ```

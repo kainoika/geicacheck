@@ -32,7 +32,7 @@ export default defineNuxtConfig({
   // アプリ設定
   app: {
     head: {
-      title: "geika check! - アイカツ！同人イベントサークルチェックアプリ",
+      title: "geica check! - アイカツ！同人イベントサークルチェックアプリ",
       meta: [
         { charset: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },

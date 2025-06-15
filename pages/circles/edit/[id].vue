@@ -626,7 +626,7 @@ onMounted(() => {
 
 // SEO
 useHead(() => ({
-  title: `${isNewCircle.value ? 'サークル情報を追加' : 'サークル情報を編集'} - geika check!`,
+  title: `${isNewCircle.value ? 'サークル情報を追加' : 'サークル情報を編集'} - geica check!`,
   meta: [
     { name: 'description', content: 'サークル情報の編集・追加ページです。' }
   ]

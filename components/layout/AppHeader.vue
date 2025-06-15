@@ -6,7 +6,7 @@
                 <div class="flex items-center space-x-4">
                     <NuxtLink to="/" class="flex items-center space-x-2">
                             <h1 class="text-xl font-bold text-pink-500">
-                                geika check!
+                                geica check!
                             </h1>
                     </NuxtLink>
                     

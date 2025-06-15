@@ -44,7 +44,7 @@
             <div style="font-size: 1.25rem; color: #dc2626; margin-bottom: 0.5rem; font-weight: 600;">マップの読み込みに失敗しました</div>
             <div style="font-size: 0.875rem; color: #991b1b; margin-bottom: 1rem;">{{ mapError }}</div>
             <button 
-              @click="loadEventMap(props.eventId || 'geika-32')"
+              @click="loadEventMap(props.eventId || 'geica-32')"
               style="padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; font-weight: 500;"
             >
               再試行
@@ -58,7 +58,7 @@
             <div style="font-size: 3rem; margin-bottom: 1rem; animation: pulse 2s infinite;">🗺️</div>
             <div style="font-size: 1.25rem; color: #6c757d; margin-bottom: 0.5rem;">マップを読み込み中...</div>
             <div style="font-size: 0.875rem; color: #adb5bd;">SVGデータの取得中</div>
-            <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.5rem;">イベントID: {{ props.eventId || 'geika-32' }}</div>
+            <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.5rem;">イベントID: {{ props.eventId || 'geica-32' }}</div>
           </div>
         </div>
         
@@ -367,7 +367,7 @@ const getCategoryColor = (category: BookmarkCategory) => {
 
 // サークル位置取得（useCircleMapping を使用）
 const getCirclePositionForMap = (circle: Circle) => {
-  const eventId = props.eventId || 'geika-32'
+  const eventId = props.eventId || 'geica-32'
   return getCirclePosition(circle, eventId)
 }
 
@@ -456,7 +456,7 @@ watch(() => props.eventId, async (newEventId) => {
 
 // 初期化
 onMounted(async () => {
-  const eventId = props.eventId || 'geika-32'
+  const eventId = props.eventId || 'geica-32'
   console.log('🗺️ EventMap component mounted')
   console.log('🎯 Props received:', {
     eventId: props.eventId,

@@ -46,14 +46,14 @@ describe('useEditPermissions - ownerId更新', () => {
 
       const { grantCirclePermission } = useEditPermissions()
       
-      await grantCirclePermission('user123', 'geika32-038', 'editor')
+      await grantCirclePermission('user123', 'geica32-038', 'editor')
 
       // circle_permissionsへの追加を確認
       expect(mockAddDoc).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
           userId: 'user123',
-          circleId: 'geika32-038',
+          circleId: 'geica32-038',
           permission: 'editor',
           grantedBy: 'admin123',
           isActive: true
@@ -64,9 +64,9 @@ describe('useEditPermissions - ownerId更新', () => {
       expect(mockDoc).toHaveBeenCalledWith(
         expect.anything(),
         'events',
-        'geika-32',
+        'geica-32',
         'circles',
-        'geika32-038'
+        'geica32-038'
       )
       
       expect(mockUpdateDoc).toHaveBeenCalledWith(
@@ -110,7 +110,7 @@ describe('useEditPermissions - ownerId更新', () => {
       
       // エラーが発生しても例外をthrowしない
       await expect(
-        grantCirclePermission('user123', 'geika32-038', 'editor')
+        grantCirclePermission('user123', 'geica32-038', 'editor')
       ).resolves.not.toThrow()
 
       // エラーログが出力される
@@ -135,7 +135,7 @@ describe('useEditPermissions - ownerId更新', () => {
         exists: () => true,
         data: () => ({
           userId: 'user123',
-          circleId: 'geika32-038'
+          circleId: 'geica32-038'
         })
       } as any)
       
@@ -160,7 +160,7 @@ describe('useEditPermissions - ownerId更新', () => {
         expect.anything(),
         expect.objectContaining({
           userId: 'user123',
-          circleId: 'geika32-038',
+          circleId: 'geica32-038',
           permission: 'editor'
         })
       )

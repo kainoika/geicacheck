@@ -113,7 +113,7 @@ import type { Event } from '~/types'
 
 // メタデータ設定
 definePageMeta({
-  title: 'イベント一覧 - geika check!'
+  title: 'イベント一覧 - geica check!'
 })
 
 // イベント管理

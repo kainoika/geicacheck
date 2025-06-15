@@ -1,4 +1,4 @@
-# Implementation Tasks - Geika Check
+# Implementation Tasks - geica check
 
 This document outlines incomplete implementations and necessary tasks to complete the Aikatsu doujinshi event management system.
 

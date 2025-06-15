@@ -82,10 +82,10 @@ export const useEditPermissions = () => {
     await addDoc(permissionsRef, permissionData)
 
     // サークルのownerIdを更新（権限付与時）
-    // circleIdからeventIdを抽出（例: "geika32-038" -> "geika-32"）
-    const eventIdMatch = circleId.match(/^geika(\d+)-/)
+    // circleIdからeventIdを抽出（例: "geica32-038" -> "geica-32"）
+    const eventIdMatch = circleId.match(/^geica(\d+)-/)
     if (eventIdMatch) {
-      const eventId = `geika-${eventIdMatch[1]}`
+      const eventId = `geica-${eventIdMatch[1]}`
       const circleRef = doc($firestore, 'events', eventId, 'circles', circleId)
       
       try {

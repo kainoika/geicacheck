@@ -13,8 +13,8 @@ const createCoordinateMapping = (
 
 export const mapConfigs: EventMapConfig[] = [
   {
-    eventId: 'geika-32',
-    svgPath: '/map-geika32.svg',
+    eventId: 'geica-32',
+    svgPath: '/map-geica32.svg',
     coordinateMapping: {
       // カ行（みきエリア上部）
       'カ-01': { x: 85, y: 247, width: 30, height: 25 },
@@ -204,8 +204,8 @@ export const mapConfigs: EventMapConfig[] = [
     }
   },
   {
-    eventId: 'geika-31',
-    svgPath: '/map-geika31.svg',
+    eventId: 'geica-31',
+    svgPath: '/map-geica31.svg',
     coordinateMapping: {
       // つエリア (左上) - つ-41からつ-44
       'つ-41': { x: 85, y: 152, width: 30, height: 25 },

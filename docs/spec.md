@@ -1,4 +1,4 @@
-# 02_geika check! システム仕様書
+# 02_geica check! システム仕様書
 
 # 
 
@@ -16,7 +16,7 @@
 
 ### 1.1 アプリケーション概要
 
-**アプリケーション名**: geika check!
+**アプリケーション名**: geica check!
 
 **種別**: Webアプリケーション（PWA対応予定）
 
@@ -558,7 +558,7 @@ interface CircleRegistration {
 
 ```tsx
 interface Event {
-  id: string;                    // 'geika-1', 'geika-2', 'geika-3'
+  id: string;                    // 'geica-1', 'geica-2', 'geica-3'
   name: string;                  // '第1回 芸能人はカードが命！'
   shortName: string;             // '芸カ1', '芸カ2'
   eventDate: Date;               // イベント開催日
@@ -1106,7 +1106,7 @@ font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ Pr
 
 ```
 ┌─────────────────────────┐
-│ [☰] geika check! [👤]   │
+│ [☰] geica check! [👤]   │
 ├─────────────────────────┤
 │ [🔍 サークル検索...]      │
 ├─────────────────────────┤
@@ -1133,7 +1133,7 @@ font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ Pr
 
 ```
 ┌───────────────────────────────────────┐
-│ geika check! - マップ表示              │
+│ geica check! - マップ表示              │
 ├───────────────────────────────────────┤
 │ [📖チェック予定] [⭐気になる] [🔥優先]  │
 ├───────────────────────────────────────┤
@@ -1509,18 +1509,18 @@ main (本番環境)
 ```
 開発環境 (Development)
 ├── ブランチ: develop
-├── URL: <https://dev-geika-check.vercel.app>
-└── Firebase Project: geika-check-dev
+├── URL: <https://dev-geica-check.vercel.app>
+└── Firebase Project: geica-check-dev
 
 ステージング環境 (Staging)
 ├── ブランチ: release/*
-├── URL: <https://staging-geika-check.vercel.app>
-└── Firebase Project: geika-check-staging
+├── URL: <https://staging-geica-check.vercel.app>
+└── Firebase Project: geica-check-staging
 
 本番環境 (Production)
 ├── ブランチ: main
-├── URL: <https://geika-check.com>
-└── Firebase Project: geika-check-prod
+├── URL: <https://geica-check.com>
+└── Firebase Project: geica-check-prod
 
 ```
 

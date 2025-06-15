@@ -121,8 +121,8 @@ async function convertData() {
     console.log('🔄 JSONデータの変換を開始します...')
     
     // 元のJSONファイルを読み込み
-    const inputPath = join(process.cwd(), 'data', 'geika31-circle.json')
-    const outputPath = join(process.cwd(), 'data', 'geika31-circle-converted.json')
+    const inputPath = join(process.cwd(), 'data', 'geica31-circle.json')
+    const outputPath = join(process.cwd(), 'data', 'geica31-circle-converted.json')
     
     console.log(`📖 読み込み: ${inputPath}`)
     const jsonData = readFileSync(inputPath, 'utf-8')

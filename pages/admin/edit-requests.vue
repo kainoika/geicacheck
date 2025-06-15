@@ -716,7 +716,7 @@ watch(() => isAdmin.value, (newIsAdmin) => {
 
 // SEO
 useHead({
-  title: '編集権限申請管理 - geika check!',
+  title: '編集権限申請管理 - geica check!',
   meta: [
     { name: 'description', content: 'サークル情報編集権限の申請を審査・管理する管理者ページです。' }
   ]

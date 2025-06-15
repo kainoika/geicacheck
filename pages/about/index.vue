@@ -5,7 +5,7 @@
       <div style="max-width: 1280px; margin: 0 auto; padding: 0 1rem; text-align: center;">
         <SparklesIcon style="width: 4rem; height: 4rem; margin: 0 auto 1rem; animation: sparkle 1.5s ease-in-out infinite; color: white;" />
         <h1 style="font-size: 3rem; font-weight: 700; margin: 0 0 1rem 0;">
-          geika check!
+          geica check!
         </h1>
         <p style="font-size: 1rem; opacity: 0.8; max-width: 600px; margin: 0 auto;">
           アイカツ！シリーズオンリーイベント「芸能人はカードが命！」のサークル情報を効率的にチェックして、<br>
@@ -153,7 +153,7 @@
       <!-- アイカツ！について -->
       <section style="margin-bottom: 4rem;">
         <h2 style="font-size: 2rem; font-weight: 700; color: #111827; text-align: center; margin: 0 0 3rem 0;">
-          <SparklesIcon style="width: 1.5rem; height: 1.5rem; display: inline; margin-right: 0.5rem; vertical-align: -0.25rem;" /> geika check!について
+          <SparklesIcon style="width: 1.5rem; height: 1.5rem; display: inline; margin-right: 0.5rem; vertical-align: -0.25rem;" /> geica check!について
         </h2>
         
         <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb;">
@@ -163,7 +163,7 @@
                 「fashion check!」からインスパイア
               </h3>
               <p style="color: #6b7280; line-height: 1.6; margin: 0 0 1rem 0;">
-                このアプリの名前「geika check!」は、アイカツ！の楽曲「fashion check!」をモチーフにしています。
+                このアプリの名前「geica check!」は、アイカツ！の楽曲「fashion check!」をモチーフにしています。
                 アイドルたちがファッションをチェックするように、私たちもサークルをチェックしましょう！
               </p>
 
@@ -248,12 +248,12 @@
               最新情報やお知らせはTwitterで配信しています
             </p>
             <a 
-              href="https://twitter.com/geika_check" 
+              href="https://twitter.com/geica_check" 
               target="_blank" 
               rel="noopener noreferrer"
               style="color: #1da1f2; text-decoration: none; font-weight: 500;"
             >
-              @geika_check
+              @geica_check
             </a>
           </div>
 
@@ -282,7 +282,7 @@
               オープンソースプロジェクトとして開発しています
             </p>
             <a 
-              href="https://github.com/kainoika/geikacheck" 
+              href="https://github.com/kainoika/geicacheck" 
               target="_blank" 
               rel="noopener noreferrer"
               style="color: #374151; text-decoration: none; font-weight: 500;"
@@ -395,11 +395,11 @@ import {
 } from '@heroicons/vue/24/outline'
 // SEO
 useHead({
-  title: 'このアプリについて - geika check!',
+  title: 'このアプリについて - geica check!',
   meta: [
-    { name: 'description', content: 'geika check! はアイカツ！シリーズオンリーイベント「芸能人はカードが命！」のサークルチェックを効率化するWebアプリです。' },
-    { name: 'keywords', content: 'アイカツ,同人,イベント,サークル,チェック,ブックマーク,芸カ,geika check' },
-    { property: 'og:title', content: 'このアプリについて - geika check!' },
+    { name: 'description', content: 'geica check! はアイカツ！シリーズオンリーイベント「芸能人はカードが命！」のサークルチェックを効率化するWebアプリです。' },
+    { name: 'keywords', content: 'アイカツ,同人,イベント,サークル,チェック,ブックマーク,芸カ,geica check' },
+    { property: 'og:title', content: 'このアプリについて - geica check!' },
     { property: 'og:description', content: 'アイカツ！同人イベントサークルチェックアプリの詳細情報' }
   ]
 })

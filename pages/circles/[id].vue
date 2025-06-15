@@ -379,7 +379,7 @@ const handleBookmark = async (category) => {
 const shareToTwitter = () => {
   if (!circle.value) return
   
-  const text = `${circle.value.circleName} | geika check!`
+  const text = `${circle.value.circleName} | geica check!`
   const url = window.location.href
   const hashtags = 'アイカツ,芸カ'
   
@@ -585,7 +585,7 @@ watch(user, async () => {
 
 // SEO
 useHead(() => ({
-  title: circle.value ? `${circle.value.circleName} - geika check!` : 'サークル詳細 - geika check!',
+  title: circle.value ? `${circle.value.circleName} - geica check!` : 'サークル詳細 - geica check!',
   meta: [
     { 
       name: 'description', 
