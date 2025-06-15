@@ -24,33 +24,12 @@ export const useBookmarks = () => {
   const { $firestore } = useNuxtApp() as any;
   const { currentEvent } = useEvents();
 
-  // イベント別の状態管理キーを生成
-  const getStateKey = (baseKey: string, eventId?: string) => {
-    const targetEventId = eventId || currentEvent.value?.id || 'default'
-    return `${baseKey}.${targetEventId}`
-  }
-
-  // State - イベント別に分離
-  const bookmarks = computed(() => {
-    const key = getStateKey("bookmarks.list")
-    return useState<Bookmark[]>(key, () => []).value
-  })
-  
-  const setBookmarks = (value: Bookmark[]) => {
-    const key = getStateKey("bookmarks.list")
-    useState<Bookmark[]>(key, () => []).value = value
-  }
-
-  const bookmarksWithCircles = computed(() => {
-    const key = getStateKey("bookmarks.withCircles")
-    return useState<BookmarkWithCircle[]>(key, () => []).value
-  })
-  
-  const setBookmarksWithCircles = (value: BookmarkWithCircle[]) => {
-    const key = getStateKey("bookmarks.withCircles")
-    useState<BookmarkWithCircle[]>(key, () => []).value = value
-  }
-
+  // State
+  const bookmarks = useState<Bookmark[]>("bookmarks.list", () => []);
+  const bookmarksWithCircles = useState<BookmarkWithCircle[]>(
+    "bookmarks.withCircles",
+    () => []
+  );
   const loading = useState<boolean>("bookmarks.loading", () => false);
   const error = useState<string | null>("bookmarks.error", () => null);
 
@@ -73,45 +52,6 @@ export const useBookmarks = () => {
   // リアルタイムリスナー
   let unsubscribe: Unsubscribe | null = null;
 
-  // イベント切り替え時にデータをクリア
-  const clearBookmarksForEvent = (eventId?: string) => {
-    const targetEventId = eventId || currentEvent.value?.id
-    if (targetEventId) {
-      console.log('🧹 Clearing bookmarks for event:', targetEventId)
-      
-      // 対象イベントの状態をクリア
-      const bookmarkKey = getStateKey("bookmarks.list", targetEventId)
-      const withCirclesKey = getStateKey("bookmarks.withCircles", targetEventId)
-      
-      useState<Bookmark[]>(bookmarkKey, () => []).value = []
-      useState<BookmarkWithCircle[]>(withCirclesKey, () => []).value = []
-    }
-  }
-
-  // 他のイベントのデータをクリア（現在のイベント以外）
-  const clearOtherEventsData = () => {
-    const currentEventId = currentEvent.value?.id
-    if (!currentEventId) return
-
-    // 一般的なイベントIDのパターンをクリア
-    const eventIds = ['geika-31', 'geika-32', 'geika-33'] // 必要に応じて拡張
-    
-    eventIds.forEach(eventId => {
-      if (eventId !== currentEventId) {
-        console.log('🧹 Clearing data for other event:', eventId)
-        const bookmarkKey = `bookmarks.list.${eventId}`
-        const withCirclesKey = `bookmarks.withCircles.${eventId}`
-        
-        try {
-          useState<Bookmark[]>(bookmarkKey, () => []).value = []
-          useState<BookmarkWithCircle[]>(withCirclesKey, () => []).value = []
-        } catch (error) {
-          console.warn('Failed to clear data for event:', eventId, error)
-        }
-      }
-    })
-  }
-
   // ブックマーク一覧を取得
   const fetchBookmarks = async (eventId?: string) => {
     console.log('🔄 fetchBookmarks called with eventId:', eventId);
@@ -119,7 +59,7 @@ export const useBookmarks = () => {
     
     if (!isAuthenticated.value || !user.value) {
       console.log('❌ Not authenticated, clearing bookmarks');
-      setBookmarks([]);
+      bookmarks.value = [];
       return;
     }
 
@@ -133,7 +73,7 @@ export const useBookmarks = () => {
       
       if (!targetEventId) {
         console.log('❌ No target event ID, clearing bookmarks');
-        setBookmarks([]);
+        bookmarks.value = [];
         return;
       }
 
@@ -169,7 +109,7 @@ export const useBookmarks = () => {
       });
 
       console.log('✅ Final bookmark list:', bookmarkList.length, 'items');
-      setBookmarks(bookmarkList);
+      bookmarks.value = bookmarkList;
     } catch (err) {
       console.error("Fetch bookmarks error:", err);
       error.value = "ブックマークの取得に失敗しました";
@@ -216,7 +156,7 @@ export const useBookmarks = () => {
           });
         });
 
-        setBookmarks(bookmarkList);
+        bookmarks.value = bookmarkList;
       },
       (err) => {
         console.error("Bookmarks subscription error:", err);
@@ -232,7 +172,7 @@ export const useBookmarks = () => {
     
     if (!isAuthenticated.value || !user.value) {
       console.log('❌ Not authenticated, clearing bookmarksWithCircles');
-      setBookmarksWithCircles([]);
+      bookmarksWithCircles.value = [];
       return;
     }
 
@@ -252,7 +192,7 @@ export const useBookmarks = () => {
       
       if (circleIds.length === 0) {
         console.log('❌ No circle IDs found, clearing bookmarksWithCircles');
-        setBookmarksWithCircles([]);
+        bookmarksWithCircles.value = [];
         return;
       }
 
@@ -280,7 +220,7 @@ export const useBookmarks = () => {
         .filter((item): item is BookmarkWithCircle => item !== null);
 
       console.log('✅ Final bookmarksWithCircles:', bookmarksWithCircleData.length);
-      setBookmarksWithCircles(bookmarksWithCircleData);
+      bookmarksWithCircles.value = bookmarksWithCircleData;
     } catch (err) {
       console.error("Fetch bookmarks with circles error:", err);
       error.value = "ブックマーク情報の取得に失敗しました";
@@ -331,14 +271,12 @@ export const useBookmarks = () => {
       };
 
       // 既存のブックマークを更新または追加
-      const currentBookmarks = [...bookmarks.value];
-      const existingIndex = currentBookmarks.findIndex(b => b.circleId === circleId);
+      const existingIndex = bookmarks.value.findIndex(b => b.circleId === circleId);
       if (existingIndex !== -1) {
-        currentBookmarks[existingIndex] = newBookmark;
+        bookmarks.value[existingIndex] = newBookmark;
       } else {
-        currentBookmarks.unshift(newBookmark);
+        bookmarks.value.unshift(newBookmark);
       }
-      setBookmarks(currentBookmarks);
 
       return newBookmark;
     } catch (err) {
@@ -366,15 +304,13 @@ export const useBookmarks = () => {
       await updateDoc(bookmarkRef, updateData);
 
       // ローカル状態を更新
-      const currentBookmarks = [...bookmarks.value];
-      const index = currentBookmarks.findIndex((b) => b.circleId === circleId);
+      const index = bookmarks.value.findIndex((b) => b.circleId === circleId);
       if (index !== -1) {
-        currentBookmarks[index] = {
-          ...currentBookmarks[index],
+        bookmarks.value[index] = {
+          ...bookmarks.value[index],
           ...updates,
           updatedAt: new Date(),
         };
-        setBookmarks(currentBookmarks);
       }
     } catch (err) {
       console.error("Update bookmark error:", err);
@@ -393,8 +329,7 @@ export const useBookmarks = () => {
       await deleteDoc(bookmarkRef);
 
       // ローカル状態を更新
-      const currentBookmarks = bookmarks.value.filter((b) => b.circleId !== circleId);
-      setBookmarks(currentBookmarks);
+      bookmarks.value = bookmarks.value.filter((b) => b.circleId !== circleId);
     } catch (err) {
       console.error("Remove bookmark error:", err);
       throw new Error("ブックマークの削除に失敗しました");
@@ -496,8 +431,8 @@ export const useBookmarks = () => {
         subscribeToBookmarks();
       } else {
         cleanup();
-        setBookmarks([]);
-        setBookmarksWithCircles([]);
+        bookmarks.value = [];
+        bookmarksWithCircles.value = [];
       }
     },
     { immediate: true }
@@ -510,16 +445,12 @@ export const useBookmarks = () => {
       console.log('🔄 currentEvent changed:', { oldEventId, newEventId });
       if (newEventId !== oldEventId && isAuthenticated.value) {
         console.log('🔄 Re-subscribing to bookmarks for new event:', newEventId);
-        
-        // 他のイベントのデータをクリア
-        clearOtherEventsData();
-        
         cleanup();
         if (newEventId) {
           subscribeToBookmarks(newEventId);
         } else {
-          setBookmarks([]);
-          setBookmarksWithCircles([]);
+          bookmarks.value = [];
+          bookmarksWithCircles.value = [];
         }
       }
     },
@@ -550,7 +481,5 @@ export const useBookmarks = () => {
     toggleBookmark,
     generateExportData,
     getCategoryLabel,
-    clearBookmarksForEvent,
-    clearOtherEventsData,
   };
 };
