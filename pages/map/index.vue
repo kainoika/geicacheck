@@ -782,9 +782,10 @@ const loadMapForCurrentEvent = async () => {
   }
 }
 
-// currentEvent変更時の自動切り替え（即座に反応）
+// currentEvent変更時の自動切り替え（初回も含めて反応）
 watch(() => currentEvent.value, async (newEvent, oldEvent) => {
-  if (newEvent && newEvent.id !== oldEvent?.id) {
+  // newEventが存在する場合は常に処理（初回表示時も含む）
+  if (newEvent) {
     console.log('🔄 マップページ: イベント変更検知:', oldEvent?.id, '→', newEvent.id)
     
     // ブックマークデータを再取得
@@ -794,7 +795,7 @@ watch(() => currentEvent.value, async (newEvent, oldEvent) => {
     // マップを更新
     await loadMapForCurrentEvent()
   }
-}, { immediate: false, flush: 'sync' })
+}, { immediate: true })
 
 // ブックマーク変更時の自動再描画
 watch(() => validBookmarks.value, async () => {
@@ -839,8 +840,10 @@ onMounted(async () => {
   console.log('🔍 初期currentEvent:', currentEvent.value?.id)
   
   try {
-    // まずイベント情報を取得
-    await fetchEvents()
+    // イベント情報を取得（まだ取得されていない場合のみ）
+    if (!currentEvent.value) {
+      await fetchEvents()
+    }
     
     // currentEventが設定されるまで待機
     const hasCurrentEvent = await waitForCurrentEvent()
@@ -852,11 +855,8 @@ onMounted(async () => {
     
     console.log('✅ currentEvent確認完了:', currentEvent.value?.id)
     
-    // ブックマーク情報を並行して取得
-    await fetchBookmarksWithCircles()
-    
-    // SVGマップを読み込み
-    await loadMapForCurrentEvent()
+    // watcherがimmediate: trueなので、ここでは何もしない
+    // watcherが自動的にブックマークとマップを読み込む
     
     console.log('✅ マップページ初期化完了')
   } catch (error) {
