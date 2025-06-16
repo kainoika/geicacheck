@@ -5,7 +5,6 @@
       <ImageViewer
         :src="modelValue"
         :alt="label"
-        :title="label"
         :can-edit="canEdit"
         image-class="w-full max-w-md h-auto"
         @remove="removeImage"

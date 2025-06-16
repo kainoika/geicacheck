@@ -149,11 +149,6 @@
                         @click.stop
                     />
 
-                    <!-- 画像タイトル -->
-                    <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white p-4 rounded-b-lg">
-                        <h3 class="text-lg font-medium">{{ circle.circleName }}</h3>
-                        <p class="text-sm text-gray-300 mt-1">サークルカット</p>
-                    </div>
                 </div>
             </div>
         </Teleport>
