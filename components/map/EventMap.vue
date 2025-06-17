@@ -217,6 +217,7 @@ import { nextTick } from 'vue'
 import type { Circle, BookmarkCategory } from '~/types'
 import { useTouch, MomentumScroll } from '~/composables/useTouch'
 import { useEventMap, useCircleMapping } from '~/composables/useEventMap'
+import { useLogger } from '~/composables/useLogger'
 
 interface Props {
   visibleBookmarks: any[]
@@ -229,6 +230,9 @@ interface Emits {
 
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
+
+// ロガー初期化
+const logger = useLogger('EventMap')
 
 // State
 const mapContainer = ref<HTMLElement | null>(null)
@@ -268,11 +272,11 @@ const onTouchStart = (event: TouchEvent) => {
     event,
     // ピンチ開始
     (distance, midpoint) => {
-      console.log('🤏 Pinch start:', { distance, midpoint })
+      logger.debug('Pinch start', { distance, midpoint })
     },
     // パン開始 
     (point) => {
-      console.log('👆 Pan start:', point)
+      logger.debug('Pan start', { point })
       isPanning.value = true
       lastPanPoint.value = point
       if (mapContainer.value) {
@@ -445,11 +449,11 @@ defineExpose({
 // プロパティの変更を監視してマップを再読み込み
 watch(() => props.eventId, async (newEventId) => {
   if (newEventId) {
-    console.log('🔄 Event ID changed, reloading map...', newEventId)
+    logger.info('Event ID changed, reloading map', { newEventId })
     try {
       await loadEventMap(newEventId)
     } catch (error) {
-      console.error('Failed to load map for event:', newEventId, error)
+      logger.error('Failed to load map for event', { eventId: newEventId, error })
     }
   }
 }, { immediate: true })
@@ -457,17 +461,15 @@ watch(() => props.eventId, async (newEventId) => {
 // 初期化
 onMounted(async () => {
   const eventId = props.eventId || 'geica-32'
-  console.log('🗺️ EventMap component mounted')
-  console.log('🎯 Props received:', {
+  logger.info('EventMap component mounted', {
     eventId: props.eventId,
-    visibleBookmarks: props.visibleBookmarks?.length || 0
+    visibleBookmarksCount: props.visibleBookmarks?.length || 0
   })
-  console.log('📍 Loading initial map for event:', eventId)
+  logger.debug('Loading initial map for event', { eventId })
   
   try {
     await loadEventMap(eventId)
-    console.log('✅ Map SVG loaded successfully')
-    console.log('📊 Map state after load:', {
+    logger.info('Map SVG loaded successfully', {
       isMapLoaded: isMapLoaded.value,
       mapSvgContentLength: mapSvgContent.value.length,
       error: mapError.value
@@ -475,23 +477,23 @@ onMounted(async () => {
     
     // マップを画面中央に初期配置
     nextTick(() => {
-      console.log('🎯 Centering map...')
+      logger.debug('Centering map...')
       centerMap()
-      console.log('✅ Map centered')
+      logger.debug('Map centered')
     })
   } catch (error) {
-    console.error('❌ Failed to load initial map:', error)
+    logger.error('Failed to load initial map', error)
   }
 })
 
 // マップを画面中央に配置する関数
 const centerMap = () => {
-  console.log('🎯 centerMap called')
+  logger.debug('centerMap called')
   if (mapContainer.value) {
     const containerWidth = mapContainer.value.clientWidth
     const containerHeight = mapContainer.value.clientHeight
     
-    console.log('📐 Center calculation:', {
+    logger.debug('Center calculation', {
       containerSize: { width: containerWidth, height: containerHeight },
       zoomLevel: zoomLevel.value,
       oldPan: { x: panX.value, y: panY.value }
@@ -501,9 +503,9 @@ const centerMap = () => {
     panX.value = 0
     panY.value = 0
     
-    console.log('✅ Map centered to (0,0)')
+    logger.debug('Map centered to (0,0)')
   } else {
-    console.log('❌ mapContainer.value is null, cannot center')
+    logger.warn('mapContainer.value is null, cannot center')
   }
 }
 

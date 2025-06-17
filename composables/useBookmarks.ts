@@ -18,8 +18,10 @@ import type {
   BookmarkWithCircle,
   Circle,
 } from "~/types";
+import { createLogger } from "~/utils/logger";
 
 export const useBookmarks = () => {
+  const logger = createLogger('useBookmarks');
   const { user, isAuthenticated } = useAuth();
   const { $firestore } = useNuxtApp() as any;
   const { currentEvent } = useEvents();
@@ -54,11 +56,11 @@ export const useBookmarks = () => {
 
   // ブックマーク一覧を取得
   const fetchBookmarks = async (eventId?: string) => {
-    console.log('🔄 fetchBookmarks called with eventId:', eventId);
-    console.log('🔍 Authentication status:', { isAuthenticated: isAuthenticated.value, hasUser: !!user.value });
+    logger.debug('fetchBookmarks called', { eventId });
+    logger.debug('Authentication status', { isAuthenticated: isAuthenticated.value, hasUser: !!user.value });
     
     if (!isAuthenticated.value || !user.value) {
-      console.log('❌ Not authenticated, clearing bookmarks');
+      logger.debug('Not authenticated, clearing bookmarks');
       bookmarks.value = [];
       return;
     }
@@ -68,18 +70,17 @@ export const useBookmarks = () => {
 
     try {
       const targetEventId = eventId || currentEvent.value?.id;
-      console.log('🔍 Target event ID:', targetEventId);
-      console.log('🔍 Current event:', currentEvent.value);
+      logger.debug('Target event ID', { targetEventId, currentEvent: currentEvent.value });
       
       if (!targetEventId) {
-        console.log('❌ No target event ID, clearing bookmarks');
+        logger.debug('No target event ID, clearing bookmarks');
         bookmarks.value = [];
         return;
       }
 
       // users/{userId}/bookmarks サブコレクションから取得
       const bookmarksPath = `users/${user.value.uid}/bookmarks`;
-      console.log('📡 Fetching from path:', bookmarksPath);
+      logger.debug('Fetching from path', { bookmarksPath });
       const bookmarksRef = collection($firestore, "users", user.value.uid, "bookmarks");
       let q = query(
         bookmarksRef,
@@ -87,15 +88,15 @@ export const useBookmarks = () => {
         orderBy("createdAt", "desc")
       );
 
-      console.log('📡 Executing query with eventId filter:', targetEventId);
+      logger.debug('Executing query with eventId filter', { targetEventId });
       const snapshot = await getDocs(q);
-      console.log('📡 Query result - document count:', snapshot.size);
+      logger.debug('Query result', { documentCount: snapshot.size });
       
       const bookmarkList: Bookmark[] = [];
 
       snapshot.forEach((doc) => {
         const data = doc.data();
-        console.log('📋 Processing bookmark document:', doc.id, data);
+        logger.debug('Processing bookmark document', { docId: doc.id, data });
         bookmarkList.push({
           id: doc.id,
           userId: user.value.uid,
@@ -108,10 +109,10 @@ export const useBookmarks = () => {
         });
       });
 
-      console.log('✅ Final bookmark list:', bookmarkList.length, 'items');
+      logger.info('Bookmarks fetched successfully', { count: bookmarkList.length });
       bookmarks.value = bookmarkList;
     } catch (err) {
-      console.error("Fetch bookmarks error:", err);
+      logger.error("Fetch bookmarks error", err);
       error.value = "ブックマークの取得に失敗しました";
     } finally {
       loading.value = false;
@@ -159,7 +160,7 @@ export const useBookmarks = () => {
         bookmarks.value = bookmarkList;
       },
       (err) => {
-        console.error("Bookmarks subscription error:", err);
+        logger.error("Bookmarks subscription error", err);
         error.value = "ブックマークの監視に失敗しました";
       }
     );
@@ -167,48 +168,46 @@ export const useBookmarks = () => {
 
   // サークル情報付きブックマークを取得
   const fetchBookmarksWithCircles = async () => {
-    console.log('🔄 fetchBookmarksWithCircles called');
-    console.log('🔍 Authentication status:', { isAuthenticated: isAuthenticated.value, hasUser: !!user.value });
+    logger.debug('fetchBookmarksWithCircles called');
+    logger.debug('Authentication status', { isAuthenticated: isAuthenticated.value, hasUser: !!user.value });
     
     if (!isAuthenticated.value || !user.value) {
-      console.log('❌ Not authenticated, clearing bookmarksWithCircles');
+      logger.debug('Not authenticated, clearing bookmarksWithCircles');
       bookmarksWithCircles.value = [];
       return;
     }
 
-    console.log('🔍 Current event:', currentEvent.value);
+    logger.debug('Current event', currentEvent.value);
     loading.value = true;
     error.value = null;
 
     try {
-      console.log('📋 Fetching bookmarks...');
+      logger.debug('Fetching bookmarks...');
       await fetchBookmarks();
 
-      console.log('📋 Bookmarks fetched:', bookmarks.value.length);
-      console.log('📋 Bookmarks data:', bookmarks.value);
+      logger.debug('Bookmarks fetched', { count: bookmarks.value.length, data: bookmarks.value });
 
       const circleIds = bookmarks.value.map((b) => b.circleId);
-      console.log('🔍 Circle IDs extracted:', circleIds);
+      logger.debug('Circle IDs extracted', { circleIds });
       
       if (circleIds.length === 0) {
-        console.log('❌ No circle IDs found, clearing bookmarksWithCircles');
+        logger.debug('No circle IDs found, clearing bookmarksWithCircles');
         bookmarksWithCircles.value = [];
         return;
       }
 
       // サークル情報を取得
-      console.log('📡 Fetching circles by IDs...');
+      logger.debug('Fetching circles by IDs...');
       const { fetchCirclesByIds } = useCircles();
       const circles = await fetchCirclesByIds(circleIds, currentEvent.value?.id);
-      console.log('📡 Circles fetched:', circles.length);
-      console.log('📡 Circles data:', circles);
+      logger.debug('Circles fetched', { count: circles.length, data: circles });
 
       // ブックマークとサークル情報を結合
-      console.log('🔗 Joining bookmarks with circles...');
+      logger.debug('Joining bookmarks with circles...');
       const bookmarksWithCircleData: BookmarkWithCircle[] = bookmarks.value
         .map((bookmark) => {
           const circle = circles.find((c) => c.id === bookmark.circleId);
-          console.log(`🔍 Looking for circle ${bookmark.circleId}:`, circle ? 'Found' : 'Not found');
+          logger.debug(`Looking for circle ${bookmark.circleId}`, { found: !!circle });
           if (circle) {
             return {
               ...bookmark,
@@ -219,10 +218,10 @@ export const useBookmarks = () => {
         })
         .filter((item): item is BookmarkWithCircle => item !== null);
 
-      console.log('✅ Final bookmarksWithCircles:', bookmarksWithCircleData.length);
+      logger.info('Bookmarks with circles fetched successfully', { count: bookmarksWithCircleData.length });
       bookmarksWithCircles.value = bookmarksWithCircleData;
     } catch (err) {
-      console.error("Fetch bookmarks with circles error:", err);
+      logger.error("Fetch bookmarks with circles error", err);
       error.value = "ブックマーク情報の取得に失敗しました";
     } finally {
       loading.value = false;
@@ -280,7 +279,7 @@ export const useBookmarks = () => {
 
       return newBookmark;
     } catch (err) {
-      console.error("Add bookmark error:", err);
+      logger.error("Add bookmark error", err);
       throw new Error("ブックマークの追加に失敗しました");
     }
   };
@@ -313,7 +312,7 @@ export const useBookmarks = () => {
         };
       }
     } catch (err) {
-      console.error("Update bookmark error:", err);
+      logger.error("Update bookmark error", err);
       throw new Error("ブックマークの更新に失敗しました");
     }
   };
@@ -331,7 +330,7 @@ export const useBookmarks = () => {
       // ローカル状態を更新
       bookmarks.value = bookmarks.value.filter((b) => b.circleId !== circleId);
     } catch (err) {
-      console.error("Remove bookmark error:", err);
+      logger.error("Remove bookmark error", err);
       throw new Error("ブックマークの削除に失敗しました");
     }
   };
@@ -442,9 +441,9 @@ export const useBookmarks = () => {
   watch(
     () => currentEvent.value?.id,
     (newEventId, oldEventId) => {
-      console.log('🔄 currentEvent changed:', { oldEventId, newEventId });
+      logger.debug('currentEvent changed', { oldEventId, newEventId });
       if (newEventId !== oldEventId && isAuthenticated.value) {
-        console.log('🔄 Re-subscribing to bookmarks for new event:', newEventId);
+        logger.debug('Re-subscribing to bookmarks for new event', { newEventId });
         cleanup();
         if (newEventId) {
           subscribeToBookmarks(newEventId);

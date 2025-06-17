@@ -15,7 +15,8 @@ export default defineNuxtConfig({
   // プラグイン
   plugins: [
     "~/plugins/firebase.client.ts",
-    "~/plugins/events.client.ts"
+    "~/plugins/events.client.ts",
+    "~/plugins/logger.client.ts"
   ],
 
   // CSS設定
@@ -70,6 +71,8 @@ export default defineNuxtConfig({
       firebaseMessagingSenderId: process.env.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
       firebaseAppId: process.env.NUXT_PUBLIC_FIREBASE_APP_ID,
       useFirebaseEmulator: process.env.NUXT_PUBLIC_USE_FIREBASE_EMULATOR === 'true',
+      // ログレベル設定
+      logLevel: process.env.NUXT_PUBLIC_LOG_LEVEL || (process.env.NODE_ENV === 'development' ? 'debug' : 'error'),
     },
   },
 

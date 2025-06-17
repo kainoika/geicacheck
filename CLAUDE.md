@@ -122,6 +122,10 @@ circle_permissions/        # Granted permissions
 7. Use proper authentication checks for admin-only features
 8. For edit permission features, always check both user authentication and circle ownership/permissions
 9. Use `useCirclePermissions()` for permission checks and `useEditPermissions()` for permission requests
+10. **IMPORTANT: Use the logging system instead of console.log**
+    - Use `useLogger('ComponentName')` in components and composables
+    - Use appropriate log levels: `debug()`, `info()`, `warn()`, `error()`
+    - Development logs are automatically disabled in production
 
 **Interactive Map Development:**
 1. **Event Switching**: Always use `currentEvent.value?.id` for event-specific operations
@@ -156,6 +160,10 @@ circle_permissions/        # Granted permissions
 - SPA mode configured for client-side rendering
 - Environment-specific Firebase projects for dev/staging/prod
 - Vite optimizations for estree-walker and global polyfills
+- **Logging Configuration:**
+  - Set `NUXT_PUBLIC_LOG_LEVEL` environment variable to control log output
+  - Available levels: `debug`, `info`, `warn`, `error`
+  - Defaults: `debug` in development, `error` in production
 
 ### Testing
 - Unit tests use Vitest
@@ -173,8 +181,9 @@ circle_permissions/        # Granted permissions
 - Error handling and edge case coverage
 
 ### Important Files
-- `nuxt.config.ts` - Main configuration (SPA mode, Firebase env vars, component settings)
+- `nuxt.config.ts` - Main configuration (SPA mode, Firebase env vars, component settings, logger config)
 - `types/index.ts` - Complete type definitions including EditPermissionRequest and CirclePermission
+- `utils/logger.ts` - Centralized logging system with environment-based log level control
 - `composables/` - Core business logic and state management
   - `composables/useEditPermissions.ts` - Permission request management (with ownerId update on grant)
   - `composables/useCirclePermissions.ts` - Permission checking and user permission cache
@@ -182,9 +191,11 @@ circle_permissions/        # Granted permissions
   - `composables/useEventMap.ts` - Map loading, caching, and event switching
   - `composables/useSvgPins.ts` - SVG pin rendering and animation system (mobile-optimized touch events)
   - `composables/useTouch.ts` - Touch gesture recognition and processing
+  - `composables/useLogger.ts` - Logger composable for components and other composables
 - `data/mapConfigs.ts` - Event-specific map configurations and coordinate mappings
 - `utils/placementUtils.ts` - Placement normalization and coordinate calculation utilities
 - `plugins/firebase.client.ts` - Firebase service initialization
+- `plugins/logger.client.ts` - Logger plugin for global access
 - `firestore.rules` - Database security rules including edit permission rules
 - `scripts/` - Data migration and management utilities
 - `components/map/EventMap.vue` - Interactive map component for event layouts
@@ -192,6 +203,7 @@ circle_permissions/        # Granted permissions
 - `pages/map/index.vue` - Main map page with touch controls, bookmark integration, and mobile optimizations
 - `pages/admin/edit-requests.vue` - Admin dashboard for permission management
 - `middleware/admin.ts` - Admin route protection middleware
+- `test/utils/logger.test.ts` - Comprehensive tests for the logging system
 
 ## Conversation Guidelines
 - 常に日本語で会話する

@@ -13,8 +13,10 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import type { User } from "~/types";
+import { createLogger } from "~/utils/logger";
 
 export const useAuth = () => {
+  const logger = createLogger('useAuth');
   const user = useState<User | null>("auth.user", () => null);
   const loading = useState<boolean>("auth.loading", () => true);
   const error = useState<string | null>("auth.error", () => null);
@@ -40,7 +42,7 @@ export const useAuth = () => {
             user.value = null;
           }
         } catch (err) {
-          console.error("Auth state change error:", err);
+          logger.error("Auth state change error", err);
           error.value = "認証状態の取得に失敗しました";
           user.value = null;
         } finally {
@@ -79,7 +81,7 @@ export const useAuth = () => {
         return appUser;
       }
     } catch (err: any) {
-      console.error("Twitter sign in error:", err);
+      logger.error("Twitter sign in error", err);
       error.value = getAuthErrorMessage(err.code);
       throw err;
     } finally {
@@ -104,7 +106,7 @@ export const useAuth = () => {
         localStorage.removeItem("searchHistory");
       }
     } catch (err: any) {
-      console.error("Sign out error:", err);
+      logger.error("Sign out error", err);
       error.value = "ログアウトに失敗しました";
       throw err;
     } finally {
@@ -138,7 +140,7 @@ export const useAuth = () => {
 
       return user.value;
     } catch (err) {
-      console.error("Update user profile error:", err);
+      logger.error("Update user profile error", err);
       throw new Error("プロフィールの更新に失敗しました");
     }
   };
@@ -271,7 +273,7 @@ export const useAuth = () => {
 
       return undefined;
     } catch (err) {
-      console.error("Failed to get Twitter ID:", err);
+      logger.error("Failed to get Twitter ID", err);
       return undefined;
     }
   };

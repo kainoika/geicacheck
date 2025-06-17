@@ -375,11 +375,15 @@ import {
   XCircleIcon,
   SparklesIcon
 } from '@heroicons/vue/24/outline'
+import { useLogger } from '~/composables/useLogger'
 
 // ミドルウェアで管理者権限をチェック
 definePageMeta({
   middleware: 'admin'
 })
+
+// ロガー初期化
+const logger = useLogger('AdminEditRequests')
 
 // 認証と管理者権限チェック
 const { user, isAdmin } = useAuth()
@@ -573,7 +577,7 @@ const confirmApprove = async () => {
     showApproveModal.value = false
     selectedRequestId.value = null
   } catch (error) {
-    console.error('承認エラー:', error)
+    logger.error('承認エラー', error)
     alert('承認処理に失敗しました')
   }
 }
@@ -593,7 +597,7 @@ const confirmReject = async () => {
     rejectNote.value = ''
     rejectValidationError.value = false
   } catch (error) {
-    console.error('却下エラー:', error)
+    logger.error('却下エラー', error)
     alert('却下処理に失敗しました')
   }
 }
@@ -610,7 +614,7 @@ const processAllAutoApproved = async () => {
     await loadEditRequests() // データを再読み込み
     alert(`処理完了: ${results.success}件成功, ${results.failed}件失敗`)
   } catch (error) {
-    console.error('自動承認一括処理エラー:', error)
+    logger.error('自動承認一括処理エラー', error)
     alert('自動承認の一括処理に失敗しました')
   } finally {
     processingAutoApproved.value = false
@@ -629,7 +633,7 @@ const loadEditRequests = async () => {
       autoChecks: generateAutoChecks(request)
     }))
   } catch (err) {
-    console.error('編集権限申請取得エラー:', err)
+    logger.error('編集権限申請取得エラー', err)
     error.value = '申請データの取得に失敗しました'
   } finally {
     loading.value = false
@@ -670,18 +674,18 @@ const generateAutoChecks = (request) => {
 // 管理者権限チェック
 const checkAdminAccess = () => {
   if (!user.value) {
-    console.log('🚫 User not authenticated, redirecting to login')
+    logger.debug('User not authenticated, redirecting to login')
     navigateTo('/auth/login')
     return false
   }
   
   if (!isAdmin.value) {
-    console.log('🚫 User is not admin, redirecting to home')
+    logger.debug('User is not admin, redirecting to home')
     navigateTo('/')
     return false
   }
   
-  console.log('✅ Admin access granted')
+  logger.debug('Admin access granted')
   return true
 }
 
