@@ -370,6 +370,7 @@ import {
 } from '@heroicons/vue/24/outline'
 
 // Composables
+const logger = useLogger('AppHeader')
 const { user, isAuthenticated, isAdmin, signInWithTwitter, signOut } = useAuth()
 const { bookmarkCount } = useBookmarks()
 const router = useRouter()
@@ -423,10 +424,10 @@ const toggleEventMenu = () => {
 }
 
 const selectEvent = (eventId: string) => {
-    console.log('🔄 AppHeader: イベント切り替え開始:', currentEvent.value?.id, '→', eventId)
+    logger.debug('Event switching started', { from: currentEvent.value?.id, to: eventId })
     setCurrentEvent(eventId)
     showEventMenu.value = false
-    console.log('✅ AppHeader: イベント切り替え完了:', currentEvent.value?.id)
+    logger.debug('Event switching completed', { currentEventId: currentEvent.value?.id })
 }
 
 const formatEventDate = (date: Date) => {
@@ -443,11 +444,11 @@ const toggleMobileEventMenu = () => {
 }
 
 const selectEventMobile = (eventId: string) => {
-    console.log('🔄 AppHeader(Mobile): イベント切り替え開始:', currentEvent.value?.id, '→', eventId)
+    logger.debug('Mobile event switching started', { from: currentEvent.value?.id, to: eventId })
     setCurrentEvent(eventId)
     showMobileEventMenu.value = false
     showMobileMenu.value = false
-    console.log('✅ AppHeader(Mobile): イベント切り替え完了:', currentEvent.value?.id)
+    logger.debug('Mobile event switching completed', { currentEventId: currentEvent.value?.id })
 }
 
 // Close menus when route changes

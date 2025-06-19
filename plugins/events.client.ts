@@ -1,5 +1,8 @@
+import { createLogger } from '~/utils/logger'
+
 export default defineNuxtPlugin(async () => {
-  console.log('🔌 Events plugin loading...')
+  const logger = createLogger('EventsPlugin')
+  logger.info('Events plugin loading...')
   
   // useEventsが利用可能になるまで待つ
   const { fetchEvents, currentEvent } = useEvents()
@@ -7,13 +10,13 @@ export default defineNuxtPlugin(async () => {
   try {
     // イベントデータを読み込む
     if (!currentEvent.value) {
-      console.log('🔄 Plugin: Loading events...')
+      logger.info('Loading events...')
       await fetchEvents()
-      console.log('✅ Plugin: Events loaded, currentEvent:', currentEvent.value?.id)
+      logger.info('Events loaded successfully', { currentEventId: currentEvent.value?.id })
     } else {
-      console.log('✅ Plugin: Events already loaded')
+      logger.info('Events already loaded')
     }
   } catch (error) {
-    console.error('❌ Plugin: Failed to load events:', error)
+    logger.error('Failed to load events', error)
   }
 })

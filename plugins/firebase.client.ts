@@ -2,8 +2,10 @@ import { initializeApp } from "firebase/app";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 import { getStorage, connectStorageEmulator } from "firebase/storage";
+import { createLogger } from "~/utils/logger";
 
 export default defineNuxtPlugin(() => {
+  const logger = createLogger('FirebasePlugin')
   const config = useRuntimeConfig();
 
   const firebaseConfig = {
@@ -45,7 +47,7 @@ export default defineNuxtPlugin(() => {
       connectStorageEmulator(storage, "localhost", 9199);
     }
 
-    console.log("Firebase Emulator Suite connected");
+    logger.info("Firebase Emulator Suite connected");
   }
 
   return {

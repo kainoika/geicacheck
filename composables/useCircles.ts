@@ -11,8 +11,10 @@ import {
 } from "firebase/firestore";
 import type { Circle, SearchParams, SearchResult, PlacementInfo } from "~/types";
 import { normalizePlacement, formatPlacementDisplay } from "~/utils/placementUtils";
+import { createLogger } from "~/utils/logger";
 
 export const useCircles = () => {
+  const logger = createLogger('useCircles');
   const { $firestore } = useNuxtApp() as any;
   const { currentEvent } = useEvents();
 
@@ -59,7 +61,7 @@ export const useCircles = () => {
     const q = query(circlesRef, where("isPublic", "==", true));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      console.log('🔄 Realtime update received for event:', eventId);
+      logger.debug('Realtime update received', { eventId, size: snapshot.size });
       
       const updatedCircles: Circle[] = [];
       snapshot.forEach((doc) => {
@@ -76,7 +78,7 @@ export const useCircles = () => {
         circles.value = updatedCircles;
       }
     }, (error) => {
-      console.error('Realtime sync error:', error);
+      logger.error('Realtime sync error', error);
     });
 
     // unsubscribe関数を保存

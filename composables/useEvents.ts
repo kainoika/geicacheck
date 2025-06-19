@@ -13,8 +13,10 @@ import {
   type Timestamp
 } from 'firebase/firestore'
 import type { Event, EventStats, EventHistory } from '~/types'
+import { createLogger } from '~/utils/logger'
 
 export const useEvents = () => {
+  const logger = createLogger('useEvents')
   const { $firestore } = useNuxtApp() as any
 
   // State - useState を使用してグローバル状態にする
@@ -25,7 +27,7 @@ export const useEvents = () => {
 
   // Methods
   const fetchEvents = async () => {
-    console.log('🔄 useEvents.fetchEvents called')
+    logger.debug('fetchEvents called')
     loading.value = true
     error.value = null
     
@@ -34,7 +36,7 @@ export const useEvents = () => {
       const q = query(eventsRef, orderBy('eventDate', 'desc'))
       const snapshot = await getDocs(q)
       
-      console.log('📄 Events snapshot size:', snapshot.size)
+      logger.debug('Events snapshot retrieved', { size: snapshot.size })
       
       const eventList: Event[] = []
       snapshot.forEach((doc) => {
@@ -55,18 +57,18 @@ export const useEvents = () => {
       })
       
       events.value = eventList
-      console.log('📊 Events loaded:', eventList.length)
+      logger.info('Events loaded successfully', { count: eventList.length })
       
       // デフォルトイベントを設定
       const defaultEvent = events.value.find(event => event.isDefault)
       if (defaultEvent) {
         currentEvent.value = defaultEvent
-        console.log('✅ Default event set:', defaultEvent.id, defaultEvent)
+        logger.info('Default event set', { eventId: defaultEvent.id, event: defaultEvent })
       } else if (events.value.length > 0) {
         currentEvent.value = events.value[0]
-        console.log('✅ First event set as current:', events.value[0].id, events.value[0])
+        logger.info('First event set as current', { eventId: events.value[0].id, event: events.value[0] })
       } else {
-        console.log('❌ No events found')
+        logger.warn('No events found')
         // フォールバック: ハードコードされたイベントデータを使用
         const fallbackEvent: Event = {
           id: 'geica-32',
@@ -87,11 +89,11 @@ export const useEvents = () => {
         }
         events.value = [fallbackEvent]
         currentEvent.value = fallbackEvent
-        console.log('⚠️ Using fallback event data:', fallbackEvent.id)
+        logger.warn('Using fallback event data', { eventId: fallbackEvent.id })
       }
     } catch (err) {
       error.value = 'イベント情報の取得に失敗しました'
-      console.error('Error fetching events:', err)
+      logger.error('Error fetching events', err)
     } finally {
       loading.value = false
     }
@@ -110,9 +112,9 @@ export const useEvents = () => {
       if (process.client) {
         localStorage.setItem('selectedEventId', eventId)
       }
-      console.log('✅ Current event set:', oldEventId, '→', eventId, event)
+      logger.info('Current event changed', { from: oldEventId, to: eventId, event })
     } else {
-      console.warn('⚠️ Event not found:', eventId, 'Available events:', events.value.map(e => e.id))
+      logger.warn('Event not found', { eventId, availableEvents: events.value.map(e => e.id) })
     }
   }
 
@@ -164,7 +166,7 @@ export const useEvents = () => {
       return newEvent
     } catch (err) {
       error.value = 'イベントの作成に失敗しました'
-      console.error('Error creating event:', err)
+      logger.error('Error creating event', err)
       throw err
     } finally {
       loading.value = false

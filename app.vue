@@ -16,13 +16,16 @@
 <script setup lang="ts">
 import AppHeader from '~/components/layout/AppHeader.vue'
 import AppFooter from '~/components/layout/AppFooter.vue'
+import { useLogger } from '~/composables/useLogger'
 
 // TODO: イベントデータの初期化は各ページで行う
 // const { fetchEvents, currentEvent, loading } = useEvents()
 
+const logger = useLogger('App')
+
 // アプリ起動時の設定
 onMounted(() => {
-  console.log('🚀 App mounted')
+  logger.info('App mounted')
 })
 
 // メタ情報の設定
