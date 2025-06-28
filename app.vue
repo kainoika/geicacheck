@@ -1,5 +1,8 @@
 <template>
   <div id="app" style="min-height: 100vh; display: flex; flex-direction: column;">
+    <!-- オフラインインジケーター -->
+    <OfflineIndicator />
+    
     <!-- ヘッダー -->
     <AppHeader />
     
@@ -10,6 +13,10 @@
     
     <!-- フッター -->
     <AppFooter />
+    
+    <!-- PWA関連UI -->
+    <PWAInstallButton />
+    <PWAUpdateNotification />
   </div>
 </template>
 
@@ -22,10 +29,15 @@ import { useLogger } from '~/composables/useLogger'
 // const { fetchEvents, currentEvent, loading } = useEvents()
 
 const logger = useLogger('App')
+const { initialize: initializePWA } = usePWA()
 
 // アプリ起動時の設定
 onMounted(() => {
   logger.info('App mounted')
+  
+  // PWA機能の初期化
+  initializePWA()
+  logger.info('PWA initialized')
 })
 
 // メタ情報の設定
