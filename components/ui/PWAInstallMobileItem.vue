@@ -25,7 +25,13 @@ const isInstallable = useState('pwa.installable', () => false)
 const isInstalled = useState('pwa.installed', () => false)
 const showInstallPrompt = useState('pwa.showInstallPrompt', () => () => {})
 
-const canInstall = computed(() => isInstallable.value && !isInstalled.value)
+const canInstall = computed(() => {
+  // 開発環境では常に表示（テスト用）
+  if (process.env.NODE_ENV === 'development') {
+    return true
+  }
+  return isInstallable.value && !isInstalled.value
+})
 
 // インストール状態
 const isInstalling = ref(false)
@@ -62,6 +68,19 @@ const handleInstall = async () => {
 
 // コンポーネント初期化時にログ出力
 onMounted(() => {
-  logger.debug('PWAInstallMobileItem mounted', { canInstall: canInstall.value })
+  logger.debug('PWAInstallMobileItem mounted', { 
+    canInstall: canInstall.value,
+    isInstallable: isInstallable.value,
+    isInstalled: isInstalled.value
+  })
+})
+
+// 状態変化の監視（デバッグ用）
+watch([isInstallable, isInstalled, canInstall], ([installable, installed, can]) => {
+  logger.debug('PWA mobile state changed', { 
+    isInstallable: installable,
+    isInstalled: installed,
+    canInstall: can
+  })
 })
 </script>
