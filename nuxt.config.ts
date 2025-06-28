@@ -17,6 +17,7 @@ export default defineNuxtConfig({
     "~/plugins/firebase.client.ts",
     "~/plugins/events.client.ts",
     "~/plugins/logger.client.ts",
+    "~/plugins/pwa-head.client.ts",
     "~/plugins/pwa.client.ts"
   ],
 
@@ -94,6 +95,55 @@ export default defineNuxtConfig({
   // PWA設定
   pwa: {
     registerType: 'autoUpdate',
+    strategies: 'generateSW',
+    injectRegister: 'auto',
+    manifest: {
+      name: 'geica check! - アイカツ！同人イベントサークルチェックアプリ',
+      short_name: 'geica check!',
+      description: 'アイカツ！シリーズオンリー同人イベント「芸能人はカードが命！（芸カ）」のサークルチェックを効率化するWebアプリ',
+      theme_color: '#FF69B4',
+      background_color: '#f8f9fa',
+      display: 'standalone',
+      orientation: 'portrait-primary',
+      scope: '/',
+      start_url: '/',
+      lang: 'ja',
+      categories: ['entertainment', 'lifestyle'],
+      icons: [
+        {
+          src: 'pwa-192x192.png',
+          sizes: '192x192',
+          type: 'image/png'
+        },
+        {
+          src: 'pwa-512x512.png',
+          sizes: '512x512',
+          type: 'image/png'
+        },
+        {
+          src: 'pwa-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'any maskable'
+        }
+      ],
+      shortcuts: [
+        {
+          name: 'ブックマーク',
+          short_name: 'ブックマーク',
+          description: '保存したサークルをチェック',
+          url: '/bookmarks',
+          icons: [{ src: 'pwa-192x192.png', sizes: '192x192' }]
+        },
+        {
+          name: '会場マップ',
+          short_name: 'マップ',
+          description: 'イベント会場マップを表示',
+          url: '/map',
+          icons: [{ src: 'pwa-192x192.png', sizes: '192x192' }]
+        }
+      ]
+    },
     workbox: {
       globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
       cleanupOutdatedCaches: true,
@@ -142,53 +192,6 @@ export default defineNuxtConfig({
               maxAgeSeconds: 60 * 60 * 24 * 365 // 1年
             }
           }
-        }
-      ]
-    },
-    manifest: {
-      name: 'geica check! - アイカツ！同人イベントサークルチェックアプリ',
-      short_name: 'geica check!',
-      description: 'アイカツ！シリーズオンリー同人イベント「芸能人はカードが命！（芸カ）」のサークルチェックを効率化するWebアプリ',
-      theme_color: '#FF69B4',
-      background_color: '#f8f9fa',
-      display: 'standalone',
-      orientation: 'portrait-primary',
-      scope: '/',
-      start_url: '/',
-      lang: 'ja',
-      categories: ['entertainment', 'lifestyle'],
-      icons: [
-        {
-          src: 'pwa-192x192.png',
-          sizes: '192x192',
-          type: 'image/png'
-        },
-        {
-          src: 'pwa-512x512.png',
-          sizes: '512x512',
-          type: 'image/png'
-        },
-        {
-          src: 'pwa-512x512.png',
-          sizes: '512x512',
-          type: 'image/png',
-          purpose: 'any maskable'
-        }
-      ],
-      shortcuts: [
-        {
-          name: 'ブックマーク',
-          short_name: 'ブックマーク',
-          description: '保存したサークルをチェック',
-          url: '/bookmarks',
-          icons: [{ src: 'pwa-192x192.png', sizes: '192x192' }]
-        },
-        {
-          name: '会場マップ',
-          short_name: 'マップ',
-          description: 'イベント会場マップを表示',
-          url: '/map',
-          icons: [{ src: 'pwa-192x192.png', sizes: '192x192' }]
         }
       ]
     },
