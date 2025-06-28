@@ -15,7 +15,6 @@
     <AppFooter />
     
     <!-- PWA関連UI -->
-    <PWAInstallButton />
     <PWAUpdateNotification />
   </div>
 </template>

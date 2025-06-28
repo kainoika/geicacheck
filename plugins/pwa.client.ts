@@ -39,6 +39,25 @@ function setupInstallPrompt() {
     useState('pwa.installable', () => true)
   })
 
+  // 開発・テスト環境でのPWAインストール状態確認
+  setTimeout(() => {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                        (window.navigator as any).standalone === true
+    
+    if (isStandalone) {
+      logger.info('PWA is already installed')
+      useState('pwa.installed', () => true)
+    } else {
+      logger.debug('PWA not installed, checking for installability')
+      
+      // 開発環境でのテスト用：手動でインストール可能状態をシミュレート
+      if (process.env.NODE_ENV === 'development') {
+        logger.debug('Development mode: enabling install button for testing')
+        useState('pwa.installable', () => true)
+      }
+    }
+  }, 1000)
+
   // PWAがインストールされた時の処理
   window.addEventListener('appinstalled', () => {
     logger.info('PWA installed successfully')

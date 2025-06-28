@@ -4,7 +4,7 @@
             <div class="flex justify-between items-center h-16">
                 <!-- ロゴ・タイトル -->
                 <div class="flex items-center space-x-4">
-                    <NuxtLink to="/" class="flex items-center space-x-2">
+                    <NuxtLink :to="isAuthenticated ? '/circles' : '/'" class="flex items-center space-x-2">
                             <h1 class="text-xl font-bold text-pink-500">
                                 geica check!
                             </h1>
@@ -150,6 +150,10 @@
                                         <InformationCircleIcon class="h-4 w-4 mr-2" />
                                         アプリについて
                                     </NuxtLink>
+                                    
+                                    <!-- PWAインストール項目 -->
+                                    <PWAInstallMenuItem @install="showUserMenu = false" />
+                                    
                                     <hr class="my-1">
                                     <button @click="handleSignOut"
                                         class="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
@@ -336,6 +340,9 @@
                         <InformationCircleIcon class="h-5 w-5 mr-2" />
                         アプリについて
                     </NuxtLink>
+                    
+                    <!-- PWAインストール項目 -->
+                    <PWAInstallMobileItem @install="showMobileMenu = false" />
                     
                     <!-- ログアウト -->
                     <div v-if="isAuthenticated" class="border-t border-gray-200 mt-4 pt-4">
