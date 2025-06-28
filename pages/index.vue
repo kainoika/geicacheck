@@ -202,6 +202,7 @@ import {
 
 // 認証状態の確認とリダイレクト
 const { user } = useAuth()
+const logger = useLogger('IndexPage')
 
 // リダイレクト状態管理
 const isRedirecting = ref(false)
@@ -209,7 +210,7 @@ const isRedirecting = ref(false)
 // ログイン済みユーザーはサークル一覧ページにリダイレクト
 const checkAuthAndRedirect = () => {
   if (user.value) {
-    console.log('User is authenticated, redirecting to circles page')
+    logger.info('User is authenticated, redirecting to circles page')
     isRedirecting.value = true
     // 少し遅延を入れてスムーズなUXを提供
     setTimeout(() => {
@@ -230,7 +231,7 @@ onMounted(() => {
 watch(() => user.value, (newUser, oldUser) => {
   // undefinedから実際の値に変わった時のみ処理
   if (oldUser === undefined && newUser) {
-    console.log('User logged in, redirecting to circles page')
+    logger.info('User logged in, redirecting to circles page')
     isRedirecting.value = true
     setTimeout(() => {
       navigateTo('/circles')

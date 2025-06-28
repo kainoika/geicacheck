@@ -216,7 +216,7 @@ export const useEvents = () => {
       throw new Error('イベントが見つかりません')
     } catch (err) {
       error.value = 'イベントの更新に失敗しました'
-      console.error('Error updating event:', err)
+      logger.error('Error updating event', err)
       throw err
     } finally {
       loading.value = false
@@ -241,7 +241,7 @@ export const useEvents = () => {
       }
     } catch (err) {
       error.value = 'イベントの削除に失敗しました'
-      console.error('Error deleting event:', err)
+      logger.error('Error deleting event', err)
       throw err
     } finally {
       loading.value = false
@@ -273,7 +273,7 @@ export const useEvents = () => {
       // 統計情報が存在しない場合は動的に計算
       return await calculateEventStats(eventId)
     } catch (err) {
-      console.error('Error fetching event stats:', err)
+      logger.error('Error fetching event stats', err)
       return null
     }
   }
@@ -333,7 +333,7 @@ export const useEvents = () => {
 
       return stats
     } catch (err) {
-      console.error('Error calculating event stats:', err)
+      logger.error('Error calculating event stats', err)
       throw err
     }
   }
@@ -362,7 +362,7 @@ export const useEvents = () => {
       
       return history
     } catch (err) {
-      console.error('Error fetching user event history:', err)
+      logger.error('Error fetching user event history', err)
       return []
     }
   }
@@ -375,7 +375,7 @@ export const useEvents = () => {
         const savedEvent = getEventById(savedEventId)
         if (savedEvent && savedEvent.id !== currentEvent.value?.id) {
           currentEvent.value = savedEvent
-          console.log('🔄 Event restored from localStorage:', savedEventId, savedEvent)
+          logger.debug('Event restored from localStorage', { savedEventId, savedEvent })
         }
       }
     }

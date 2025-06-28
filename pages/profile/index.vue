@@ -406,6 +406,7 @@ import {
 
 // Composables
 const { user, isAuthenticated } = useAuth()
+const logger = useLogger('ProfilePage')
 const { bookmarks } = useBookmarks()
 const { 
   submitEditPermissionRequest,
@@ -542,7 +543,7 @@ const exportBookmarks = async () => {
     // const { exportToCSV } = useBookmarks()
     // await exportToCSV()
     
-    console.log('Exporting bookmarks to CSV...')
+    logger.info('Exporting bookmarks to CSV...')
     
     // ダミーデータでCSVエクスポートのシミュレーション
     const csvContent = generateDummyCSV()
@@ -599,7 +600,7 @@ const handleSignOut = async () => {
     // const { signOut } = useAuth()
     // await signOut()
     
-    console.log('Signing out user...')
+    logger.info('Signing out user...')
     await navigateTo('/auth/login')
     
   } catch (err) {
@@ -619,7 +620,7 @@ const deleteAccount = async () => {
     // const { deleteAccount } = useAuth()
     // await deleteAccount()
     
-    console.log('Deleting account...')
+    logger.info('Deleting account...')
     
     // アカウント削除のシミュレーション
     await new Promise(resolve => setTimeout(resolve, 1000))
@@ -639,7 +640,7 @@ const deleteAccount = async () => {
 const loadUserEditPermissions = async () => {
   // 認証状態とFirebase初期化をチェック
   if (!user.value || !isAuthenticated.value) {
-    console.log('🚫 User not authenticated, skipping edit permissions load')
+    logger.info('🚫 User not authenticated, skipping edit permissions load')
     // データをクリア
     circlePermissions.value = []
     editPermissionRequests.value = []
@@ -655,10 +656,10 @@ const loadUserEditPermissions = async () => {
     loading.value = true
     error.value = null
     
-    console.log('📊 Loading edit permissions for authenticated user:', user.value.uid)
+    logger.info('📊 Loading edit permissions for authenticated user:', user.value.uid)
     
     // シーケンシャルにデータを取得（エラー追跡を改善）
-    console.log('📂 Fetching circle permissions...')
+    logger.info('📂 Fetching circle permissions...')
     const permissions = await getUserCirclePermissions(user.value.uid).catch(err => {
       console.error('🚨 getUserCirclePermissions error:', err)
       if (err.code === 'permission-denied') {
@@ -667,7 +668,7 @@ const loadUserEditPermissions = async () => {
       return []
     })
     
-    console.log('📄 Fetching permission requests...')
+    logger.info('📄 Fetching permission requests...')
     const requests = await getUserEditPermissionRequests(user.value.uid).catch(err => {
       console.error('🚨 getUserEditPermissionRequests error:', err)
       if (err.code === 'permission-denied') {
@@ -676,8 +677,8 @@ const loadUserEditPermissions = async () => {
       return []
     })
     
-    console.log('✅ Loaded permissions:', permissions?.length || 0, 'items')
-    console.log('✅ Loaded requests:', requests?.length || 0, 'items')
+    logger.info('✅ Loaded permissions:', permissions?.length || 0, 'items')
+    logger.info('✅ Loaded requests:', requests?.length || 0, 'items')
     
     circlePermissions.value = permissions || []
     editPermissionRequests.value = requests || []
@@ -705,12 +706,12 @@ const loadUserEditPermissions = async () => {
 // 権限データのリフレッシュ
 const refreshEditPermissions = async () => {
   try {
-    console.log('🔄 Refreshing edit permissions...')
+    logger.info('🔄 Refreshing edit permissions...')
     await Promise.all([
       loadUserEditPermissions(),
       loadUserPermissions() // useCirclePermissions の関数を使用
     ])
-    console.log('✅ Edit permissions refreshed')
+    logger.info('✅ Edit permissions refreshed')
   } catch (err) {
     console.error('🚨 Permission refresh error:', err)
   }
@@ -718,13 +719,13 @@ const refreshEditPermissions = async () => {
 
 // 初期化（認証状態を正しくチェック）
 onMounted(async () => {
-  console.log('🚀 Profile page mounted')
-  console.log('👤 User:', user.value?.uid || 'Not logged in')
-  console.log('🔐 Authenticated:', isAuthenticated.value)
+  logger.info('🚀 Profile page mounted')
+  logger.info('👤 User:', user.value?.uid || 'Not logged in')
+  logger.info('🔐 Authenticated:', isAuthenticated.value)
   
   // 認証状態をチェック
   if (!isAuthenticated.value || !user.value) {
-    console.log('🚫 User not authenticated, redirecting to login')
+    logger.info('🚫 User not authenticated, redirecting to login')
     await navigateTo('/auth/login')
     return
   }
@@ -736,7 +737,7 @@ onMounted(async () => {
   }
   
   // ユーザーデータを読み込み
-  console.log('📊 Starting to load user edit permissions')
+  logger.info('📊 Starting to load user edit permissions')
   await loadUserEditPermissions()
 })
 
@@ -750,21 +751,21 @@ const checkFirebaseInit = () => {
     return false
   }
   
-  console.log('✅ Firestore is initialized')
+  logger.info('✅ Firestore is initialized')
   return true
 }
 
 // ユーザー状態監視
 watch(() => user.value, async (newUser, oldUser) => {
-  console.log('🔍 User state changed:', { old: oldUser?.uid, new: newUser?.uid })
+  logger.info('🔍 User state changed:', { old: oldUser?.uid, new: newUser?.uid })
   
   if (newUser && newUser !== oldUser) {
-    console.log('👤 User logged in, loading permissions')
+    logger.info('👤 User logged in, loading permissions')
     if (checkFirebaseInit()) {
       await loadUserEditPermissions()
     }
   } else if (!newUser && oldUser) {
-    console.log('🚪 User logged out, clearing state')
+    logger.info('🚪 User logged out, clearing state')
     // ユーザーがログアウトした場合、状態をクリア
     editPermissionRequests.value = []
     circlePermissions.value = []

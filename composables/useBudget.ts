@@ -12,6 +12,7 @@ export const useBudget = () => {
   const { $firestore } = useNuxtApp()
   const { user } = useAuth()
   const { purchasePlans, getUserPurchasePlans, validateAndCleanupPurchasePlans } = usePurchasePlans()
+  const logger = useLogger('useBudget')
   
   // 予算サマリーの状態管理
   const budgetSummary = useState<BudgetSummary | null>('budgetSummary', () => null)
@@ -34,12 +35,12 @@ export const useBudget = () => {
    */
   const getBudgetSummary = async (eventId: string): Promise<BudgetSummary | null> => {
     if (!user.value) {
-      console.warn('ユーザーが認証されていません')
+      logger.warn('ユーザーが認証されていません')
       return null
     }
     
     if (!$firestore) {
-      console.warn('Firestoreが初期化されていません')
+      logger.warn('Firestoreが初期化されていません')
       return null
     }
 
@@ -57,7 +58,7 @@ export const useBudget = () => {
           removedCount: cleanupResult.removedCount,
           lastCleanupAt: new Date()
         }
-        console.log(`💰 予算に影響: ${cleanupResult.removedCount}件の頒布物が削除されました`)
+        logger.info(`💰 予算に影響: ${cleanupResult.removedCount}件の頒布物が削除されました`)
       }
 
       // 購入予定を取得（クリーンアップ後）
@@ -72,7 +73,7 @@ export const useBudget = () => {
 
       return summary
     } catch (err) {
-      console.error('予算サマリー取得エラー:', err)
+      logger.error('予算サマリー取得エラー:', err)
       error.value = '予算サマリーの取得に失敗しました'
       return null
     } finally {
@@ -130,12 +131,12 @@ export const useBudget = () => {
    */
   const saveBudgetSummary = async (summary: BudgetSummary): Promise<void> => {
     if (!user.value) {
-      console.warn('ユーザーが認証されていません')
+      logger.warn('ユーザーが認証されていません')
       return
     }
     
     if (!$firestore) {
-      console.warn('Firestoreが初期化されていません')
+      logger.warn('Firestoreが初期化されていません')
       return
     }
 
@@ -153,7 +154,7 @@ export const useBudget = () => {
         updatedAt: serverTimestamp()
       })
     } catch (err: any) {
-      console.error('予算サマリー保存エラー:', err)
+      logger.error('予算サマリー保存エラー:', err)
     }
   }
 
@@ -244,12 +245,12 @@ export const useBudget = () => {
    */
   const getCachedBudgetSummary = async (eventId: string): Promise<BudgetSummary | null> => {
     if (!user.value) {
-      console.warn('ユーザーが認証されていません')
+      logger.warn('ユーザーが認証されていません')
       return null
     }
     
     if (!$firestore) {
-      console.warn('Firestoreが初期化されていません')
+      logger.warn('Firestoreが初期化されていません')
       return null
     }
 
@@ -271,7 +272,7 @@ export const useBudget = () => {
         updatedAt: data.updatedAt?.toDate()
       } as BudgetSummary
     } catch (err) {
-      console.error('キャッシュ取得エラー:', err)
+      logger.error('キャッシュ取得エラー:', err)
       return null
     }
   }

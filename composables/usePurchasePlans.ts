@@ -16,6 +16,7 @@ import type { PurchasePlan } from '~/types'
 export const usePurchasePlans = () => {
   const { $firestore } = useNuxtApp()
   const { user, isAuthenticated } = useAuth()
+  const logger = useLogger('usePurchasePlans')
   
   // 購入予定の状態管理
   const purchasePlans = useState<PurchasePlan[]>('purchasePlans', () => [])
@@ -30,13 +31,13 @@ export const usePurchasePlans = () => {
       return true
     }
 
-    console.log('⏳ Firebase認証状態を待機中...')
+    logger.info('⏳ Firebase認証状態を待機中...')
     let waited = 0
     const interval = 100
 
     while (waited < maxWait) {
       if (isAuthenticated.value && user.value) {
-        console.log('✅ Firebase認証完了')
+        logger.info('✅ Firebase認証完了')
         return true
       }
       
@@ -44,7 +45,7 @@ export const usePurchasePlans = () => {
       waited += interval
     }
 
-    console.warn('⚠️ Firebase認証タイムアウト')
+    logger.warn('⚠️ Firebase認証タイムアウト')
     return false
   }
 
@@ -99,7 +100,7 @@ export const usePurchasePlans = () => {
 
       return docRef.id
     } catch (err: any) {
-      console.error('購入予定追加エラー:', err)
+      logger.error('購入予定追加エラー:', err)
       throw err
     }
   }
@@ -120,7 +121,7 @@ export const usePurchasePlans = () => {
       const planRef = doc($firestore, 'users', user.value.uid, 'purchase_plans', planId)
       await deleteDoc(planRef)
     } catch (err) {
-      console.error('購入予定削除エラー:', err)
+      logger.error('購入予定削除エラー:', err)
       throw err
     }
   }
@@ -150,7 +151,7 @@ export const usePurchasePlans = () => {
         updatedAt: serverTimestamp()
       })
     } catch (err) {
-      console.error('購入数量更新エラー:', err)
+      logger.error('購入数量更新エラー:', err)
       throw err
     }
   }
@@ -160,12 +161,12 @@ export const usePurchasePlans = () => {
    */
   const getUserPurchasePlans = async (eventId?: string): Promise<PurchasePlan[]> => {
     if (!user.value) {
-      console.warn('ユーザーが認証されていません')
+      logger.warn('ユーザーが認証されていません')
       return []
     }
     
     if (!$firestore) {
-      console.warn('Firestoreが初期化されていません')
+      logger.warn('Firestoreが初期化されていません')
       return []
     }
 
@@ -191,7 +192,7 @@ export const usePurchasePlans = () => {
       purchasePlans.value = plans
       return plans
     } catch (err: any) {
-      console.error('購入予定取得エラー:', err)
+      logger.error('購入予定取得エラー:', err)
       
       if (err.code === 'permission-denied') {
         error.value = 'アクセス権限がありません。ログイン状態を確認してください。'
@@ -215,12 +216,12 @@ export const usePurchasePlans = () => {
     eventId: string
   ): Promise<PurchasePlan | null> => {
     if (!user.value) {
-      console.warn('ユーザーが認証されていません')
+      logger.warn('ユーザーが認証されていません')
       return null
     }
     
     if (!$firestore) {
-      console.warn('Firestoreが初期化されていません')
+      logger.warn('Firestoreが初期化されていません')
       return null
     }
 
@@ -244,7 +245,7 @@ export const usePurchasePlans = () => {
         updatedAt: doc.data().updatedAt?.toDate()
       } as PurchasePlan
     } catch (err) {
-      console.error('購入予定取得エラー:', err)
+      logger.error('購入予定取得エラー:', err)
       return null
     }
   }
@@ -290,12 +291,12 @@ export const usePurchasePlans = () => {
     callback: (plans: PurchasePlan[]) => void
   ): (() => void) => {
     if (!user.value) {
-      console.warn('ユーザーが認証されていません')
+      logger.warn('ユーザーが認証されていません')
       return () => {}
     }
     
     if (!$firestore) {
-      console.warn('Firestoreが初期化されていません')
+      logger.warn('Firestoreが初期化されていません')
       return () => {}
     }
 
@@ -313,7 +314,7 @@ export const usePurchasePlans = () => {
       purchasePlans.value = plans
       callback(plans)
     }, (err) => {
-      console.error('リアルタイム更新エラー:', err)
+      logger.error('リアルタイム更新エラー:', err)
       error.value = 'リアルタイム更新に失敗しました'
     })
 
@@ -325,12 +326,12 @@ export const usePurchasePlans = () => {
    */
   const clearPurchasePlans = async (eventId: string): Promise<void> => {
     if (!user.value) {
-      console.warn('ユーザーが認証されていません')
+      logger.warn('ユーザーが認証されていません')
       return
     }
     
     if (!$firestore) {
-      console.warn('Firestoreが初期化されていません')
+      logger.warn('Firestoreが初期化されていません')
       return
     }
 
@@ -338,7 +339,7 @@ export const usePurchasePlans = () => {
       const plans = await getUserPurchasePlans(eventId)
       await Promise.all(plans.map(plan => removeFromPurchasePlan(plan.id)))
     } catch (err) {
-      console.error('購入予定クリアエラー:', err)
+      logger.error('購入予定クリアエラー:', err)
       throw err
     }
   }
@@ -348,7 +349,7 @@ export const usePurchasePlans = () => {
    */
   const checkItemExists = async (circleId: string, itemId: string, eventId: string): Promise<boolean> => {
     if (!$firestore) {
-      console.warn('Firestoreが初期化されていません')
+      logger.warn('Firestoreが初期化されていません')
       return false
     }
 
@@ -367,7 +368,7 @@ export const usePurchasePlans = () => {
       // 頒布物IDが存在するかチェック
       return items.some((item: any) => item.id === itemId)
     } catch (err) {
-      console.error('頒布物存在確認エラー:', err)
+      logger.error('頒布物存在確認エラー:', err)
       return false
     }
   }
@@ -380,17 +381,17 @@ export const usePurchasePlans = () => {
     removedPlans: PurchasePlan[];
   }> => {
     if (!user.value) {
-      console.warn('ユーザーが認証されていません')
+      logger.warn('ユーザーが認証されていません')
       return { removedCount: 0, removedPlans: [] }
     }
     
     if (!$firestore) {
-      console.warn('Firestoreが初期化されていません')
+      logger.warn('Firestoreが初期化されていません')
       return { removedCount: 0, removedPlans: [] }
     }
 
     try {
-      console.log('🔍 購入予定データの整合性チェックを開始...')
+      logger.info('🔍 購入予定データの整合性チェックを開始...')
       
       // 購入予定一覧を取得
       const plans = await getUserPurchasePlans(eventId)
@@ -400,14 +401,14 @@ export const usePurchasePlans = () => {
       for (const plan of plans) {
         const exists = await checkItemExists(plan.circleId, plan.itemId, plan.eventId)
         if (!exists) {
-          console.log(`❌ 無効な購入予定を検出: ${plan.circleName} - ${plan.itemName}`)
+          logger.info(`❌ 無効な購入予定を検出: ${plan.circleName} - ${plan.itemName}`)
           invalidPlans.push(plan)
         }
       }
       
       // 無効な購入予定を削除
       if (invalidPlans.length > 0) {
-        console.log(`🗑️ ${invalidPlans.length}件の無効な購入予定を削除中...`)
+        logger.info(`🗑️ ${invalidPlans.length}件の無効な購入予定を削除中...`)
         await Promise.all(invalidPlans.map(plan => removeFromPurchasePlan(plan.id)))
         
         // 購入予定リストを更新
@@ -416,9 +417,9 @@ export const usePurchasePlans = () => {
         )
         purchasePlans.value = updatedPlans
         
-        console.log(`✅ データクリーンアップ完了: ${invalidPlans.length}件削除`)
+        logger.info(`✅ データクリーンアップ完了: ${invalidPlans.length}件削除`)
       } else {
-        console.log('✅ 購入予定データに問題はありません')
+        logger.info('✅ 購入予定データに問題はありません')
       }
       
       return { 
@@ -426,7 +427,7 @@ export const usePurchasePlans = () => {
         removedPlans: invalidPlans 
       }
     } catch (err) {
-      console.error('購入予定整合性チェックエラー:', err)
+      logger.error('購入予定整合性チェックエラー:', err)
       throw err
     }
   }

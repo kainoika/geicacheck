@@ -414,12 +414,13 @@ const visibleCategories = ref<BookmarkCategory[]>(['check', 'interested', 'prior
 // 現在のイベントIDを取得（currentEventが利用可能になるまで待機）
 const selectedEventId = computed(() => {
   const eventId = currentEvent.value?.id || 'geica-32'
-  console.log('🎯 selectedEventId computed:', eventId, currentEvent.value)
+  logger.debug('🎯 selectedEventId computed:', eventId, currentEvent.value)
   return eventId
 })
 
 // Composables
 const { bookmarksWithCircles, fetchBookmarksWithCircles } = useBookmarks()
+const logger = useLogger('MapPage')
 const { currentEvent, fetchEvents } = useEvents()
 const { formatPlacement } = useCircles()
 const { getCirclePosition } = useCircleMapping()
@@ -452,19 +453,19 @@ const loadSvg = async () => {
 const zoomIn = () => {
   const newZoom = Math.min(zoomLevel.value + ZOOM_STEP, MAX_ZOOM)
   zoomLevel.value = newZoom
-  console.log('🔍 ズームイン:', newZoom)
+  logger.debug('🔍 ズームイン:', newZoom)
 }
 
 const zoomOut = () => {
   const newZoom = Math.max(zoomLevel.value - ZOOM_STEP, MIN_ZOOM)
   zoomLevel.value = newZoom
-  console.log('🔍 ズームアウト:', newZoom)
+  logger.debug('🔍 ズームアウト:', newZoom)
 }
 
 const resetZoom = () => {
   zoomLevel.value = 1
   centerMap()
-  console.log('🔄 ズームリセット')
+  logger.debug('🔄 ズームリセット')
 }
 
 // マップ中央配置
@@ -473,7 +474,7 @@ const centerMap = () => {
     const containerRect = mapContainer.value.getBoundingClientRect()
     panX.value = 0
     panY.value = 0
-    console.log('📍 マップを中央配置:', { containerRect })
+    logger.info('📍 マップを中央配置:', { containerRect })
   }
 }
 
@@ -487,14 +488,14 @@ const handleZoom = (event: WheelEvent) => {
   // マウス位置を基準にズーム（将来的な拡張用）
   zoomLevel.value = newZoom
   
-  console.log('🖱️ ホイールズーム:', newZoom)
+  logger.debug('🖱️ ホイールズーム:', newZoom)
 }
 
 // パン操作開始
 const startPan = (event: MouseEvent) => {
   isPanning.value = true
   lastPanPoint.value = { x: event.clientX, y: event.clientY }
-  console.log('👆 パン開始:', lastPanPoint.value)
+  logger.info('👆 パン開始:', lastPanPoint.value)
 }
 
 // パン操作中
@@ -514,7 +515,7 @@ const handlePan = (event: MouseEvent) => {
 const endPan = () => {
   if (isPanning.value) {
     isPanning.value = false
-    console.log('👆 パン終了:', { panX: panX.value, panY: panY.value })
+    logger.info('👆 パン終了:', { panX: panX.value, panY: panY.value })
   }
 }
 
@@ -547,7 +548,7 @@ const handleTouchStart = (event: TouchEvent) => {
     // ピンチズーム開始
     lastTouchDistance.value = getTouchDistance(touches.value[0], touches.value[1])
     lastTouchCenter.value = getTouchCenter(touches.value[0], touches.value[1])
-    console.log('🤏 ピンチズーム開始')
+    logger.info('🤏 ピンチズーム開始')
   } else if (touches.value.length === 1) {
     // パン開始
     lastPanPoint.value = { 
@@ -555,7 +556,7 @@ const handleTouchStart = (event: TouchEvent) => {
       y: touches.value[0].clientY 
     }
     isPanning.value = true
-    console.log('👆 タッチパン開始')
+    logger.info('👆 タッチパン開始')
   }
 }
 
@@ -609,7 +610,7 @@ const handleTouchMove = (event: TouchEvent) => {
 }
 
 const handleTouchEnd = (event: TouchEvent) => {
-  console.log('🖐️ タッチ終了')
+  logger.info('🖐️ タッチ終了')
   
   if (event.touches.length === 0) {
     touchActive.value = false
@@ -631,7 +632,7 @@ const handleTouchEnd = (event: TouchEvent) => {
 // サイドバー関数
 const toggleSidebar = () => {
   sidebarOpen.value = !sidebarOpen.value
-  console.log('📱 サイドバートグル:', sidebarOpen.value)
+  logger.info('📱 サイドバートグル:', sidebarOpen.value)
 }
 
 const closeSidebar = () => {
@@ -641,11 +642,11 @@ const closeSidebar = () => {
 // ブックマーク関連
 const eventBookmarks = computed(() => {
   if (!currentEvent.value || !bookmarksWithCircles.value) {
-    console.log('📊 eventBookmarks: empty', { currentEvent: currentEvent.value?.id, bookmarks: bookmarksWithCircles.value?.length })
+    logger.info('📊 eventBookmarks: empty', { currentEvent: currentEvent.value?.id, bookmarks: bookmarksWithCircles.value?.length })
     return []
   }
   const filtered = bookmarksWithCircles.value.filter(bookmark => bookmark.eventId === currentEvent.value.id)
-  console.log('📊 eventBookmarks computed:', { 
+  logger.info('📊 eventBookmarks computed:', { 
     eventId: currentEvent.value.id, 
     totalBookmarks: bookmarksWithCircles.value.length, 
     eventBookmarks: filtered.length 
@@ -666,7 +667,7 @@ const validBookmarks = computed(() => {
 
 const getBookmarkCount = (category: BookmarkCategory): number => {
   const count = eventBookmarks.value.filter(bookmark => bookmark.category === category).length
-  console.log('📊 getBookmarkCount:', { category, count, eventBookmarks: eventBookmarks.value.length })
+  logger.info('📊 getBookmarkCount:', { category, count, eventBookmarks: eventBookmarks.value.length })
   return count
 }
 
@@ -676,7 +677,7 @@ const getCategoryColor = (category: BookmarkCategory): string => {
 
 
 const focusOnCircle = (bookmark: BookmarkWithCircle) => {
-  console.log('📍 サークルにフォーカス:', bookmark.circle.circleName)
+  logger.info('📍 サークルにフォーカス:', bookmark.circle.circleName)
   const position = getCirclePositionForMap(bookmark.circle)
   
   // マップを該当サークルの位置に移動
@@ -709,7 +710,7 @@ const initializeSvgPins = async () => {
   const svgElement = svgMapContainer.value.querySelector('svg')
   if (svgElement) {
     await initializePins(svgElement)
-    console.log('✅ SVGピンが初期化されました')
+    logger.info('✅ SVGピンが初期化されました')
   } else {
     console.warn('⚠️ SVG要素が見つかりません')
   }
@@ -727,7 +728,7 @@ const renderBookmarkPins = async () => {
     showCircleInfo
   )
   
-  console.log('✅ ブックマークピンを描画しました:', validBookmarks.value.length)
+  logger.info('✅ ブックマークピンを描画しました:', validBookmarks.value.length)
 }
 
 // サークル位置取得
@@ -745,12 +746,12 @@ const selectedCircle = ref<Circle | null>(null)
 
 const showCircleInfo = (circle: Circle) => {
   selectedCircle.value = circle
-  console.log('📋 サークル詳細表示:', circle.circleName)
+  logger.info('📋 サークル詳細表示:', circle.circleName)
 }
 
 // SVGマップの読み込み（現在のイベントに基づく）
 const loadMapForCurrentEvent = async () => {
-  console.log('🔄 マップ読み込み:', selectedEventId.value)
+  logger.info('🔄 マップ読み込み:', selectedEventId.value)
   
   // SVGマップを現在のイベント用に読み込み
   const mapFileName = selectedEventId.value === 'geica-31' ? 'map-geica31.svg' : 'map-geica32.svg'
@@ -775,7 +776,7 @@ const loadMapForCurrentEvent = async () => {
       await renderBookmarkPins()
     })
     
-    console.log('✅ マップ読み込み完了:', selectedEventId.value)
+    logger.info('✅ マップ読み込み完了:', selectedEventId.value)
   } catch (err) {
     console.error('❌ マップ読み込みエラー:', err)
     error.value = err instanceof Error ? err.message : 'Unknown error'
@@ -786,11 +787,11 @@ const loadMapForCurrentEvent = async () => {
 watch(() => currentEvent.value, async (newEvent, oldEvent) => {
   // newEventが存在する場合は常に処理（初回表示時も含む）
   if (newEvent) {
-    console.log('🔄 マップページ: イベント変更検知:', oldEvent?.id, '→', newEvent.id)
+    logger.info('🔄 マップページ: イベント変更検知:', oldEvent?.id, '→', newEvent.id)
     
     // ブックマークデータを再取得
     await fetchBookmarksWithCircles()
-    console.log('✅ ブックマークデータ再取得完了:', bookmarksWithCircles.value?.length || 0)
+    logger.info('✅ ブックマークデータ再取得完了:', bookmarksWithCircles.value?.length || 0)
     
     // マップを更新
     await loadMapForCurrentEvent()
@@ -818,7 +819,7 @@ const waitForCurrentEvent = async (): Promise<boolean> => {
     
     if (attempts === 10) {
       // 1秒後にfetchEventsを試す
-      console.log('🔄 Attempting to fetch events...')
+      logger.info('🔄 Attempting to fetch events...')
       try {
         await fetchEvents()
       } catch (error) {
@@ -827,7 +828,7 @@ const waitForCurrentEvent = async (): Promise<boolean> => {
     }
     
     if (attempts % 10 === 0) {
-      console.log(`⏳ Still waiting for currentEvent... (${attempts * 100}ms)`)
+      logger.info(`⏳ Still waiting for currentEvent... (${attempts * 100}ms)`)
     }
   }
   
@@ -836,8 +837,8 @@ const waitForCurrentEvent = async (): Promise<boolean> => {
 
 // 初期化
 onMounted(async () => {
-  console.log('🚀 マップページがマウントされました')
-  console.log('🔍 初期currentEvent:', currentEvent.value?.id)
+  logger.info('🚀 マップページがマウントされました')
+  logger.info('🔍 初期currentEvent:', currentEvent.value?.id)
   
   try {
     // イベント情報を取得（まだ取得されていない場合のみ）
@@ -853,12 +854,12 @@ onMounted(async () => {
       return
     }
     
-    console.log('✅ currentEvent確認完了:', currentEvent.value?.id)
+    logger.info('✅ currentEvent確認完了:', currentEvent.value?.id)
     
     // watcherがimmediate: trueなので、ここでは何もしない
     // watcherが自動的にブックマークとマップを読み込む
     
-    console.log('✅ マップページ初期化完了')
+    logger.info('✅ マップページ初期化完了')
   } catch (error) {
     console.error('❌ 初期化エラー:', error)
   }

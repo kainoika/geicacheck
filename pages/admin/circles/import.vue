@@ -364,6 +364,7 @@ definePageMeta({
 // Composables
 const { events, fetchEvents, getEventStats } = useEvents()
 const { fetchCircles } = useCircles()
+const logger = useLogger('AdminCirclesImport')
 
 // State
 const selectedEventId = ref('')
@@ -573,7 +574,7 @@ const startImport = async () => {
         }
         
         // サークルを保存（実際の実装ではFirestoreに保存）
-        console.log('Importing circle:', circle.circleName)
+        logger.info('Importing circle:', circle.circleName)
         
         success++
         importProgress.current = i + 1

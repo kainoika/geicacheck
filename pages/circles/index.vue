@@ -141,6 +141,7 @@ import {
 const { circles, loading, error, fetchCircles, searchCircles, performSearch, getPopularGenres } = useCircles()
 const { addBookmark, removeBookmark } = useBookmarks()
 const { currentEvent, fetchEvents } = useEvents()
+const logger = useLogger('CirclesPage')
 
 // State
 const searchQuery = ref('')
@@ -221,25 +222,25 @@ const addGenreToSearch = (genre: string) => {
 }
 
 const fetchData = async () => {
-  console.log('fetchData called')
-  console.log('currentEvent.value:', currentEvent.value)
+  logger.info('fetchData called')
+  logger.info('currentEvent.value:', currentEvent.value)
   
   if (!currentEvent.value) {
-    console.log('No current event, skipping fetch')
+    logger.info('No current event, skipping fetch')
     return
   }
   
   try {
-    console.log('Fetching circles for event:', currentEvent.value.id)
+    logger.info('Fetching circles for event:', currentEvent.value.id)
     const result = await fetchCircles({
       page: currentPage.value,
       limit: itemsPerPage.value
     }, currentEvent.value.id)
     
-    console.log('Circles fetched successfully')
-    console.log('Result:', result)
-    console.log('circles.value.length:', circles.value.length)
-    console.log('circles.value:', circles.value)
+    logger.info('Circles fetched successfully')
+    logger.info('Result:', result)
+    logger.info('circles.value.length:', circles.value.length)
+    logger.info('circles.value:', circles.value)
   } catch (err) {
     console.error('Fetch data error:', err)
   }
@@ -252,10 +253,10 @@ const fetchPopularGenres = async () => {
   }
   
   try {
-    console.log('Fetching popular genres for event:', currentEvent.value.id)
+    logger.info('Fetching popular genres for event:', currentEvent.value.id)
     const genres = await getPopularGenres(currentEvent.value.id, 10)
     popularGenres.value = genres
-    console.log('Popular genres fetched:', genres)
+    logger.info('Popular genres fetched:', genres)
   } catch (err) {
     console.error('Fetch popular genres error:', err)
   }
@@ -279,7 +280,7 @@ const waitForCurrentEvent = async (): Promise<boolean> => {
     
     if (attempts === 10) {
       // 1秒後にfetchEventsを試す
-      console.log('🔄 Attempting to fetch events...')
+      logger.info('🔄 Attempting to fetch events...')
       try {
         await fetchEvents()
       } catch (error) {
@@ -288,7 +289,7 @@ const waitForCurrentEvent = async (): Promise<boolean> => {
     }
     
     if (attempts % 10 === 0) {
-      console.log(`⏳ Still waiting for currentEvent... (${attempts * 100}ms)`)
+      logger.info(`⏳ Still waiting for currentEvent... (${attempts * 100}ms)`)
     }
   }
   
@@ -297,8 +298,8 @@ const waitForCurrentEvent = async (): Promise<boolean> => {
 
 // 初期データ読み込み
 onMounted(async () => {
-  console.log('🚀 Circles page mounted')
-  console.log('🔍 初期currentEvent:', currentEvent.value?.id)
+  logger.info('🚀 Circles page mounted')
+  logger.info('🔍 初期currentEvent:', currentEvent.value?.id)
   
   // 画面サイズをチェック
   checkMobileSize()
@@ -320,13 +321,13 @@ onMounted(async () => {
       return
     }
     
-    console.log('✅ currentEvent確認完了:', currentEvent.value?.id)
+    logger.info('✅ currentEvent確認完了:', currentEvent.value?.id)
     
     // データを読み込み
     await fetchData()
     await fetchPopularGenres()
     
-    console.log('✅ Circlesページ初期化完了')
+    logger.info('✅ Circlesページ初期化完了')
   } catch (error) {
     console.error('❌ 初期化エラー:', error)
   }
@@ -335,7 +336,7 @@ onMounted(async () => {
 // イベント変更時にデータを再読み込み
 watch(currentEvent, async (newEvent, oldEvent) => {
   if (newEvent && newEvent.id !== oldEvent?.id) {
-    console.log('🔄 Circlesページ: イベント変更検知:', oldEvent?.id, '→', newEvent.id)
+    logger.info('🔄 Circlesページ: イベント変更検知:', oldEvent?.id, '→', newEvent.id)
     await fetchData()
     await fetchPopularGenres()
   }

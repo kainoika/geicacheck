@@ -45,6 +45,7 @@ const DEFAULT_OPTIONS: SvgPinOptions = {
 
 export const useSvgPins = (options: Partial<SvgPinOptions> = {}) => {
   const config = { ...DEFAULT_OPTIONS, ...options }
+  const logger = useLogger('useSvgPins')
   
   // 状態管理
   const svgElement = ref<SVGElement | null>(null)
@@ -107,7 +108,7 @@ export const useSvgPins = (options: Partial<SvgPinOptions> = {}) => {
     pinsGroup.value = group
     isInitialized.value = true
     
-    console.log('✅ SVG pins initialized')
+    logger.info('✅ SVG pins initialized')
   }
   
   /**
@@ -155,7 +156,7 @@ export const useSvgPins = (options: Partial<SvgPinOptions> = {}) => {
     onPinClick: (circle: any) => void
   ) => {
     if (!isInitialized.value || !pinsGroup.value) {
-      console.warn('SVG pins not initialized')
+      logger.warn('SVG pins not initialized')
       return
     }
     
@@ -171,7 +172,7 @@ export const useSvgPins = (options: Partial<SvgPinOptions> = {}) => {
       pinsGroup.value!.appendChild(pinGroup)
     })
     
-    console.log(`✅ Rendered ${bookmarks.length} SVG pins`)
+    logger.info(`✅ Rendered ${bookmarks.length} SVG pins`)
   }
   
   /**

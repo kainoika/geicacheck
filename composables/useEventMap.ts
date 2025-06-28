@@ -2,20 +2,22 @@ import { ref, computed, readonly } from 'vue'
 import type { EventMapConfig } from '~/types'
 import { getMapConfig as getConfigFromData } from '~/data/mapConfigs'
 import { normalizePlacement, parsePlacementString } from '~/utils/placementUtils'
+import { useLogger } from '~/composables/useLogger'
 
 export const useEventMap = () => {
+  const logger = useLogger('useEventMap')
   const mapCache = new Map<string, string>()
   const currentMapContent = ref<string>('')
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
   const loadEventMap = async (eventId: string): Promise<string> => {
-    console.log('🔄 loadEventMap called for:', eventId)
+    logger.debug('loadEventMap called', { eventId })
     
     // キャッシュから取得を試行
     if (mapCache.has(eventId)) {
       const cachedContent = mapCache.get(eventId)!
-      console.log('💾 Using cached map content:', cachedContent.length, 'chars')
+      logger.debug('Using cached map content', { length: cachedContent.length })
       currentMapContent.value = cachedContent
       return cachedContent
     }
@@ -23,13 +25,13 @@ export const useEventMap = () => {
     try {
       isLoading.value = true
       error.value = null
-      console.log('📡 Loading map from server...')
+      logger.debug('Loading map from server')
 
       const mapFileName = getMapFileName(eventId)
-      console.log('📁 Map filename:', mapFileName)
+      logger.debug('Map filename', { mapFileName })
       
       const response = await fetch(`/${mapFileName}`)
-      console.log('📥 Fetch response:', {
+      logger.debug('Fetch response', {
         status: response.status,
         statusText: response.statusText,
         ok: response.ok
@@ -40,7 +42,7 @@ export const useEventMap = () => {
       }
 
       const svgContent = await response.text()
-      console.log('📄 SVG content loaded:', {
+      logger.debug('SVG content loaded', {
         length: svgContent.length,
         starts: svgContent.substring(0, 100),
         containsSvg: svgContent.includes('<svg')
@@ -49,17 +51,17 @@ export const useEventMap = () => {
       // キャッシュに保存
       mapCache.set(eventId, svgContent)
       currentMapContent.value = svgContent
-      console.log('✅ Map loaded and cached successfully')
+      logger.info('Map loaded and cached successfully')
       
       return svgContent
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error'
       error.value = `マップの読み込みに失敗しました: ${errorMessage}`
-      console.error('❌ Map loading error:', err)
+      logger.error('Map loading error', err)
       throw err
     } finally {
       isLoading.value = false
-      console.log('🏁 loadEventMap finished')
+      logger.debug('loadEventMap finished')
     }
   }
 
@@ -85,9 +87,9 @@ export const useEventMap = () => {
     const loadPromises = eventIds.map(async (eventId) => {
       try {
         await loadEventMap(eventId)
-        console.log(`✅ Preloaded map for event: ${eventId}`)
+        logger.debug('Preloaded map for event', { eventId })
       } catch (err) {
-        console.warn(`⚠️ Failed to preload map for event: ${eventId}`, err)
+        logger.warn('Failed to preload map for event', { eventId, error: err })
       }
     })
 

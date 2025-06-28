@@ -172,7 +172,7 @@ export const useCircles = () => {
     eventId?: string,
     forceRefresh: boolean = false
   ): Promise<SearchResult> => {
-    console.log('🔄 useCircles.fetchCircles called (optimized version)');
+    logger.debug('useCircles.fetchCircles called (optimized version)');
     
     const targetEventId = eventId || currentEvent.value?.id;
     if (!targetEventId) {
@@ -181,7 +181,7 @@ export const useCircles = () => {
 
     // キャッシュから取得可能かチェック
     if (!forceRefresh && isCacheValid(targetEventId)) {
-      console.log('📋 Using cached data for event:', targetEventId);
+      logger.debug('Using cached data for event', { eventId: targetEventId });
       const cachedData = circlesCache.value[targetEventId].data;
       const filteredList = applyClientSideFilters(cachedData, params);
       
@@ -203,7 +203,7 @@ export const useCircles = () => {
       const circlesRef = collection($firestore, "events", targetEventId, "circles");
       const q = query(circlesRef, where("isPublic", "==", true));
       
-      console.log('📡 Fetching from Firestore:', `events/${targetEventId}/circles`);
+      logger.debug('Fetching from Firestore', { path: `events/${targetEventId}/circles` });
       const snapshot = await getDocs(q);
       
       let circleList: Circle[] = [];
@@ -223,7 +223,7 @@ export const useCircles = () => {
       const filteredList = applyClientSideFilters(circleList, params);
       circles.value = filteredList;
 
-      console.log('✅ Fetched and cached', circleList.length, 'circles');
+      logger.info('Fetched and cached circles', { count: circleList.length });
 
       return {
         circles: filteredList,
@@ -233,7 +233,7 @@ export const useCircles = () => {
         hasMore: false,
       };
     } catch (err) {
-      console.error("Fetch circles error:", err);
+      logger.error('Fetch circles error', err);
       error.value = "サークル情報の取得に失敗しました";
       throw err;
     } finally {
@@ -253,13 +253,13 @@ export const useCircles = () => {
     if (cached && isCacheValid(targetEventId)) {
       const cachedCircle = cached.data.find(c => c.id === circleId);
       if (cachedCircle) {
-        console.log('📋 Using cached circle data:', circleId);
+        logger.debug('Using cached circle data', { circleId });
         return cachedCircle;
       }
     }
 
     // キャッシュにない場合のみFirestoreから取得
-    console.log('📡 Fetching circle from Firestore:', circleId);
+    logger.debug('Fetching circle from Firestore', { circleId });
     try {
       const circleRef = doc($firestore, "events", targetEventId, "circles", circleId);
       const circleDoc = await getDoc(circleRef);
@@ -271,7 +271,7 @@ export const useCircles = () => {
 
       return null;
     } catch (err) {
-      console.error("Fetch circle by ID error:", err);
+      logger.error('Fetch circle by ID error', err);
       throw new Error("サークル詳細の取得に失敗しました");
     }
   };
@@ -290,7 +290,7 @@ export const useCircles = () => {
     if (cached && isCacheValid(targetEventId)) {
       const cachedCircles = cached.data.filter(c => circleIds.includes(c.id));
       if (cachedCircles.length === circleIds.length) {
-        console.log('📋 Using cached circles data for all:', circleIds.length, 'circles');
+        logger.debug('Using cached circles data for all', { count: circleIds.length });
         return cachedCircles;
       }
     }
@@ -314,7 +314,7 @@ export const useCircles = () => {
 
     // キャッシュにないものだけFirestoreから取得
     if (missingIds.length > 0) {
-      console.log('📡 Fetching missing circles from Firestore:', missingIds.length);
+      logger.debug('Fetching missing circles from Firestore', { count: missingIds.length });
       
       for (const circleId of missingIds) {
         try {
@@ -326,7 +326,7 @@ export const useCircles = () => {
             results.push(mapDocumentToCircle(circleDoc.id, data, targetEventId));
           }
         } catch (err) {
-          console.error(`Fetch circle by ID error (${circleId}):`, err);
+          logger.error('Fetch circle by ID error', { circleId, error: err });
         }
       }
     }
@@ -450,7 +450,7 @@ export const useCircles = () => {
       const normalized = normalizePlacement(placement);
       return formatPlacementDisplay(normalized);
     } catch (error) {
-      console.warn('配置番号のフォーマットに失敗:', error);
+      logger.warn('配置番号のフォーマットに失敗', error);
       // フォールバック処理
       const number2 = placement.number2 ? placement.number2 : "";
       if (number2 === "") {
@@ -478,11 +478,11 @@ export const useCircles = () => {
       };
       
       await updateDoc(circleRef, updateData);
-      console.log('✅ Circle updated:', circleId);
+      logger.info('Circle updated', { circleId });
       
       // リアルタイム同期により自動的にキャッシュが更新される
     } catch (err) {
-      console.error("Update circle error:", err);
+      logger.error('Update circle error', err);
       throw new Error("サークル情報の更新に失敗しました");
     }
   };

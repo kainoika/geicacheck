@@ -440,6 +440,7 @@
 // Route params
 const route = useRoute()
 const circleId = route.params.id
+const logger = useLogger('CircleEditPage')
 
 // State
 const isNewCircle = computed(() => circleId === 'new')
@@ -558,7 +559,7 @@ const handleSubmit = async () => {
     // 実際の実装では API に送信
     await new Promise(resolve => setTimeout(resolve, 1000)) // シミュレーション
     
-    console.log('Save circle:', form.value)
+    logger.info('Save circle:', form.value)
     alert(isNewCircle.value ? 'サークル情報を登録しました' : 'サークル情報を更新しました')
     
     // 詳細ページにリダイレクト

@@ -179,13 +179,14 @@ const props = withDefaults(defineProps<Props>(), {
 const { user, isAuthenticated } = useAuth()
 const { getBudgetSummary, getBudgetStatistics, exportBudgetAsCSV, dataChanges, hasDataChanges, clearDataChanges } = useBudget()
 const { getUserPurchasePlans } = usePurchasePlans()
+const logger = useLogger('BudgetSummary')
 
 // Methods
 const dismissChanges = (): void => {
-  console.log('🔄 dismissChanges called')
-  console.log('📊 Current dataChanges state:', dataChanges.value)
+  logger.debug('🔄 dismissChanges called')
+  logger.debug('📊 Current dataChanges state:', dataChanges.value)
   clearDataChanges()
-  console.log('✅ dataChanges cleared, new state:', dataChanges.value)
+  logger.debug('✅ dataChanges cleared, new state:', dataChanges.value)
 }
 
 // State
@@ -222,7 +223,7 @@ const loadBudget = async () => {
     // サマリーを取得
     budgetSummary.value = await getBudgetSummary(props.eventId)
   } catch (err) {
-    console.error('予算情報取得エラー:', err)
+    logger.error('予算情報取得エラー:', err)
     error.value = '予算情報の取得に失敗しました'
   } finally {
     loading.value = false
@@ -258,7 +259,7 @@ const exportCSV = async () => {
     
     URL.revokeObjectURL(url)
   } catch (err) {
-    console.error('CSVエクスポートエラー:', err)
+    logger.error('CSVエクスポートエラー:', err)
     alert('CSVエクスポートに失敗しました')
   }
 }
