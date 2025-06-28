@@ -6,7 +6,7 @@
       :disabled="isInstalling"
       class="flex items-center w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-pink-600 hover:bg-gray-50 transition-colors"
     >
-      <PhoneIcon class="h-5 w-5 mr-2" />
+      <ArrowDownTrayIcon class="h-5 w-5 mr-2" />
       <span>
         {{ isInstalling ? 'インストール中...' : 'アプリをインストール' }}
       </span>
@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { PhoneIcon } from '@heroicons/vue/24/outline'
+import { ArrowDownTrayIcon } from '@heroicons/vue/24/outline'
 
 // PWA機能とインストールプロンプトを利用
 const logger = useLogger('PWAInstallMobileItem')
