@@ -8,7 +8,7 @@
     leave-to-class="transform translate-y-full opacity-0"
   >
     <div
-      v-if="needsUpdate && !dismissed"
+      v-if="needRefresh && !dismissed"
       class="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-white border border-pink-200 rounded-lg shadow-lg z-50 p-4"
     >
       <div class="flex items-start space-x-3">
@@ -58,8 +58,8 @@
 <script setup lang="ts">
 import { ArrowPathIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 
-// PWA機能を利用
-const { needsUpdate, applyUpdate } = usePWA()
+// @vite-pwa/nuxtのPWA機能を利用
+const { needRefresh, updateServiceWorker } = usePWA()
 const logger = useLogger('PWAUpdateNotification')
 
 // 通知状態
@@ -74,8 +74,8 @@ const handleUpdate = async () => {
     isUpdating.value = true
     logger.info('PWA update initiated by user')
     
-    // 更新適用
-    await applyUpdate.value()
+    // @vite-pwa/nuxtの更新関数を使用
+    await updateServiceWorker()
     
   } catch (error) {
     logger.error('PWA update failed:', error)
@@ -91,8 +91,8 @@ const dismiss = () => {
   logger.debug('PWA update notification dismissed')
 }
 
-// needsUpdateが変更されたら通知を再表示
-watch(needsUpdate, (newValue) => {
+// needRefreshが変更されたら通知を再表示
+watch(needRefresh, (newValue) => {
   if (newValue) {
     dismissed.value = false
     logger.info('PWA update notification shown')
@@ -101,7 +101,7 @@ watch(needsUpdate, (newValue) => {
 
 // コンポーネント初期化時にログ出力
 onMounted(() => {
-  logger.debug('PWAUpdateNotification mounted', { needsUpdate: needsUpdate.value })
+  logger.debug('PWAUpdateNotification mounted', { needRefresh: needRefresh.value })
 })
 </script>
 

@@ -16,9 +16,15 @@
 <script setup lang="ts">
 import { PhoneIcon } from '@heroicons/vue/24/outline'
 
-// PWA機能を利用
-const { canInstall, promptInstall } = usePWA()
+// PWA機能とインストールプロンプトを利用
 const logger = useLogger('PWAInstallButton')
+
+// インストール状態管理
+const isInstallable = useState('pwa.installable', () => false)
+const isInstalled = useState('pwa.installed', () => false)
+const showInstallPrompt = useState('pwa.showInstallPrompt', () => () => {})
+
+const canInstall = computed(() => isInstallable.value && !isInstalled.value)
 
 // インストール状態
 const isInstalling = ref(false)
@@ -31,7 +37,8 @@ const handleInstall = async () => {
     isInstalling.value = true
     logger.info('PWA install button clicked')
     
-    await promptInstall()
+    // インストールプロンプトを表示
+    showInstallPrompt.value()
     
     // インストール完了の待機
     setTimeout(() => {

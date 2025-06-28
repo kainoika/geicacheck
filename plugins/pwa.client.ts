@@ -1,65 +1,22 @@
 /**
- * PWA Service Worker登録プラグイン
- * ブラウザでのみ実行されるクライアントサイドプラグイン
+ * PWA機能拡張プラグイン
+ * @vite-pwa/nuxtと連携してPWA機能を拡張
  */
 
 import { useLogger } from '~/composables/useLogger'
 
-export default defineNuxtPlugin(async () => {
+export default defineNuxtPlugin(() => {
   const logger = useLogger('PWA')
   
-  // Service Workerサポートの確認
-  if (!('serviceWorker' in navigator)) {
-    logger.warn('Service Worker is not supported')
-    return
-  }
-
-  try {
-    // Service Worker登録
-    const registration = await navigator.serviceWorker.register('/sw.js', {
-      scope: '/'
-    })
-    
-    logger.info('Service Worker registered successfully', {
-      scope: registration.scope,
-      state: registration.installing?.state || registration.waiting?.state || registration.active?.state
-    })
-
-    // 更新チェック
-    registration.addEventListener('updatefound', () => {
-      logger.info('Service Worker update found')
-      const newWorker = registration.installing
-      
-      if (newWorker) {
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            logger.info('New Service Worker installed, ready to activate')
-            // ここで更新通知UIを表示することができます
-            showUpdateNotification()
-          }
-        })
-      }
-    })
-
-    // Service Workerからのメッセージ処理
-    navigator.serviceWorker.addEventListener('message', (event) => {
-      logger.debug('Message from Service Worker:', event.data)
-      
-      switch (event.data.type) {
-        case 'CACHE_UPDATED':
-          logger.info('Cache updated')
-          break
-        case 'OFFLINE_READY':
-          logger.info('App ready for offline use')
-          break
-      }
-    })
-
-    // PWAインストール促進
+  // ブラウザ環境でのみ実行
+  if (process.client) {
+    // PWAインストール促進の設定
     setupInstallPrompt()
-
-  } catch (error) {
-    logger.error('Service Worker registration failed:', error)
+    
+    // ネットワーク状態の初期化
+    initializeNetworkStatus()
+    
+    logger.info('PWA plugin initialized with @vite-pwa/nuxt')
   }
 })
 
@@ -110,26 +67,25 @@ function setupInstallPrompt() {
 }
 
 /**
- * Service Worker更新通知の表示
+ * ネットワーク状態の初期化
  */
-function showUpdateNotification() {
-  const logger = useLogger('PWA-Update')
+function initializeNetworkStatus() {
+  const logger = useLogger('PWA-Network')
   
-  // 更新通知状態をグローバルに設定
-  useState('pwa.updateAvailable', () => true)
+  // 初期状態を設定
+  useState('pwa.online', () => navigator.onLine)
   
-  logger.info('Update notification shown')
-  
-  // 更新を適用する関数をグローバルに提供
-  useState('pwa.applyUpdate', () => {
-    return () => {
-      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        // 新しいService Workerに制御を移譲
-        navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' })
-        
-        // ページリロード
-        window.location.reload()
-      }
-    }
-  })
+  // ネットワーク状態の変更を監視
+  const handleOnline = () => {
+    logger.info('Network status: online')
+    useState('pwa.online', () => true)
+  }
+
+  const handleOffline = () => {
+    logger.warn('Network status: offline')
+    useState('pwa.online', () => false)
+  }
+
+  window.addEventListener('online', handleOnline)
+  window.addEventListener('offline', handleOffline)
 }

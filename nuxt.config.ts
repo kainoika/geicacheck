@@ -10,7 +10,7 @@ export default defineNuxtConfig({
   },
 
   // モジュール
-  modules: ["@nuxtjs/tailwindcss"],
+  modules: ["@nuxtjs/tailwindcss", "@vite-pwa/nuxt"],
 
   // プラグイン
   plugins: [
@@ -89,6 +89,116 @@ export default defineNuxtConfig({
     },
     define: {
       global: 'globalThis'
+    }
+  },
+
+  // PWA設定
+  pwa: {
+    registerType: 'autoUpdate',
+    workbox: {
+      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+      cleanupOutdatedCaches: true,
+      clientsClaim: true,
+      skipWaiting: true,
+      runtimeCaching: [
+        {
+          urlPattern: /^https:\/\/.*\.firebaseapp\.com\/.*/i,
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'firebase-cache',
+            expiration: {
+              maxEntries: 10,
+              maxAgeSeconds: 60 * 60 * 24 * 7 // 1週間
+            },
+            cacheableResponse: {
+              statuses: [0, 200]
+            }
+          }
+        },
+        {
+          urlPattern: /^https:\/\/firestore\.googleapis\.com\/.*/i,
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'firestore-cache',
+            expiration: {
+              maxEntries: 50,
+              maxAgeSeconds: 60 * 10 // 10分
+            }
+          }
+        },
+        {
+          urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+          handler: 'StaleWhileRevalidate',
+          options: {
+            cacheName: 'google-fonts-stylesheets'
+          }
+        },
+        {
+          urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'google-fonts-webfonts',
+            expiration: {
+              maxEntries: 30,
+              maxAgeSeconds: 60 * 60 * 24 * 365 // 1年
+            }
+          }
+        }
+      ]
+    },
+    manifest: {
+      name: 'geica check! - アイカツ！同人イベントサークルチェックアプリ',
+      short_name: 'geica check!',
+      description: 'アイカツ！シリーズオンリー同人イベント「芸能人はカードが命！（芸カ）」のサークルチェックを効率化するWebアプリ',
+      theme_color: '#FF69B4',
+      background_color: '#f8f9fa',
+      display: 'standalone',
+      orientation: 'portrait-primary',
+      scope: '/',
+      start_url: '/',
+      lang: 'ja',
+      categories: ['entertainment', 'lifestyle'],
+      icons: [
+        {
+          src: 'pwa-192x192.png',
+          sizes: '192x192',
+          type: 'image/png'
+        },
+        {
+          src: 'pwa-512x512.png',
+          sizes: '512x512',
+          type: 'image/png'
+        },
+        {
+          src: 'pwa-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'any maskable'
+        }
+      ],
+      shortcuts: [
+        {
+          name: 'ブックマーク',
+          short_name: 'ブックマーク',
+          description: '保存したサークルをチェック',
+          url: '/bookmarks',
+          icons: [{ src: 'pwa-192x192.png', sizes: '192x192' }]
+        },
+        {
+          name: '会場マップ',
+          short_name: 'マップ',
+          description: 'イベント会場マップを表示',
+          url: '/map',
+          icons: [{ src: 'pwa-192x192.png', sizes: '192x192' }]
+        }
+      ]
+    },
+    devOptions: {
+      enabled: true,
+      suppressWarnings: true,
+      navigateFallback: '/',
+      navigateFallbackAllowlist: [/^\/$/],
+      type: 'module'
     }
   },
 

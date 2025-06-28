@@ -22,9 +22,10 @@
 <script setup lang="ts">
 import { WifiIcon } from '@heroicons/vue/24/outline'
 
-// PWA機能を利用
-const { isOffline } = usePWA()
+// オンライン状態を管理
 const logger = useLogger('OfflineIndicator')
+const isOnline = useState('pwa.online', () => true)
+const isOffline = computed(() => !isOnline.value)
 
 // オフライン状態の変更を監視
 watch(isOffline, (newValue) => {
