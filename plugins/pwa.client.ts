@@ -10,7 +10,8 @@ export default defineNuxtPlugin(() => {
   
   // ブラウザ環境でのみ実行
   if (process.client) {
-    // PWAインストール促進の設定
+    // 重要：イベントリスナーは即座に設定する必要がある
+    // beforeinstallpromptイベントは早期に発火する可能性があるため
     setupInstallPrompt()
     
     // ネットワーク状態の初期化
@@ -39,24 +40,16 @@ function setupInstallPrompt() {
     useState('pwa.installable', () => true)
   })
 
-  // 開発・テスト環境でのPWAインストール状態確認
-  setTimeout(() => {
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
-                        (window.navigator as any).standalone === true
-    
-    if (isStandalone) {
-      logger.info('PWA is already installed')
-      useState('pwa.installed', () => true)
-    } else {
-      logger.debug('PWA not installed, checking for installability')
-      
-      // 開発環境でのテスト用：手動でインストール可能状態をシミュレート
-      if (process.env.NODE_ENV === 'development') {
-        logger.debug('Development mode: enabling install button for testing')
-        useState('pwa.installable', () => true)
-      }
-    }
-  }, 1000)
+  // PWAインストール状態確認（即座に実行）
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                      (window.navigator as any).standalone === true
+  
+  if (isStandalone) {
+    logger.info('PWA is already installed')
+    useState('pwa.installed', () => true)
+  } else {
+    logger.debug('PWA not installed, waiting for installability check')
+  }
 
   // PWAがインストールされた時の処理
   window.addEventListener('appinstalled', () => {
