@@ -45,6 +45,21 @@ export default defineNuxtConfig({
             "アイカツ！シリーズオンリー同人イベント「芸能人はカードが命！（芸カ）」のサークルチェックを効率化するWebアプリ",
         },
         { name: "theme-color", content: "#FF69B4" },
+        {
+          'http-equiv': 'Content-Security-Policy',
+          content: [
+            "default-src 'self'",
+            "script-src 'self' 'unsafe-inline' https://apis.google.com https://www.gstatic.com https://*.firebaseapp.com https://*.googleapis.com",
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+            "font-src 'self' https://fonts.gstatic.com",
+            "img-src 'self' data: https: blob:",
+            "connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com wss://*.firebaseio.com https://firestore.googleapis.com https://securetoken.googleapis.com",
+            "frame-src 'none'",
+            "object-src 'none'",
+            "base-uri 'self'",
+            "form-action 'self'"
+          ].join('; ')
+        }
       ],
       link: [
         { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },

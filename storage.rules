@@ -3,22 +3,34 @@ rules_version = '2';
 // Cloud Storage Security Rules
 service firebase.storage {
   match /b/{bucket}/o {
+    // 管理者チェック関数
+    function isAdmin() {
+      return request.auth != null && 
+             firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.userType == 'admin';
+    }
+    
+    // サークル権限チェック関数
+    function hasCirclePermission(circleId) {
+      return request.auth != null && 
+             firestore.exists(/databases/(default)/documents/circle_permissions/$(circleId)) &&
+             firestore.get(/databases/(default)/documents/circle_permissions/$(circleId)).data.userId == request.auth.uid;
+    }
     // Profile images - authenticated users can upload their own
     match /profile-images/{userId}/{allPaths=**} {
       allow read: if true; // Public read for profile images
       allow write: if request.auth != null && request.auth.uid == userId;
     }
     
-    // Event images - authenticated users (admin check in application)
+    // Event images - authenticated users (admin check in Firebase Rules)
     match /event-images/{allPaths=**} {
       allow read: if true; // Public read for event images
-      allow write: if request.auth != null; // Admin check handled in application
+      allow write: if isAdmin(); // Admin check handled in Firebase Rules
     }
     
-    // Circle images - authenticated users (permission check handled in application)
+    // Circle images - authenticated users (permission check handled in Firebase Rules)
     match /circle-images/{eventId}/{circleId}/{allPaths=**} {
       allow read: if true; // Public read for circle images
-      allow write: if request.auth != null; // Permission check handled in application
+      allow write: if isAdmin() || hasCirclePermission(circleId); // Permission check handled in Firebase Rules
     }
     
     // Temporary uploads - authenticated users only
