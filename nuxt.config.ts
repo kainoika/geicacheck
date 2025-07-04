@@ -79,19 +79,33 @@ export default defineNuxtConfig({
   baseURL: '/'
   },
 
-  // ランタイム設定
+  // ランタイム設定（セキュリティ強化）
   runtimeConfig: {
     public: {
+      // Firebase設定（必要最小限のみ公開）
       firebaseApiKey: process.env.NUXT_PUBLIC_FIREBASE_API_KEY,
       firebaseAuthDomain: process.env.NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
       firebaseProjectId: process.env.NUXT_PUBLIC_FIREBASE_PROJECT_ID,
       firebaseStorageBucket: process.env.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
       firebaseMessagingSenderId: process.env.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
       firebaseAppId: process.env.NUXT_PUBLIC_FIREBASE_APP_ID,
-      useFirebaseEmulator: process.env.NUXT_PUBLIC_USE_FIREBASE_EMULATOR === 'true',
-      // ログレベル設定
-      logLevel: process.env.NUXT_PUBLIC_LOG_LEVEL || (process.env.NODE_ENV === 'development' ? 'debug' : 'error'),
+      
+      // 開発環境のみエミュレーター設定を公開
+      useFirebaseEmulator: process.env.NODE_ENV === 'development' ? 
+        (process.env.NUXT_PUBLIC_USE_FIREBASE_EMULATOR === 'true') : false,
+      
+      // ログレベル設定（本番環境では厳格に制御）
+      logLevel: process.env.NUXT_PUBLIC_LOG_LEVEL || 
+               (process.env.NODE_ENV === 'development' ? 'debug' : 'error'),
+      
+      // 暗号化キー（開発環境のみ、本番では環境変数必須）
+      encryptionKey: process.env.NODE_ENV === 'development' ? 
+        'geica-check-dev-key-2025' : process.env.NUXT_PUBLIC_ENCRYPTION_KEY,
     },
+    // プライベート設定（サーバーサイドのみ）
+    private: {
+      // センシティブな設定はここに配置（将来的な拡張用）
+    }
   },
 
   // ビルド設定
