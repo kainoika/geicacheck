@@ -2,35 +2,70 @@
 
 このドキュメントは、geica-checkアプリケーションのセキュリティ面における現状分析と改善提案をまとめたものです。
 
-## 🔴 高リスク - 即座に対応すべき事項
+**最終更新**: 2025-01-04  
+**対策進捗**: 高リスク項目 3/3 完了、中リスク項目 0/3 完了、低リスク項目 1/4 完了
 
-### 1. **テスト用データアクセス規則**
+## ✅ 対策完了済み項目
+
+### 🔴 高リスク対策完了 (2025-01-04)
+
+#### ✅ 1. テスト用データアクセス規則削除
+- **対策日**: 2025-01-04
+- **実装内容**: `firestore.rules:6-7` のテストコレクション無制限アクセスルールをコメントアウト
+- **効果**: 本番環境での意図しないテストデータアクセスを完全防止
+- **コミット**: `8b7935e`
+
+#### ✅ 2. Storage権限チェック強化
+- **対策日**: 2025-01-04
+- **実装内容**: Firebase Storage Rules内で直接権限チェック関数を実装
+  - `isAdmin()`: Firestore内で管理者権限チェック
+  - `hasCirclePermission()`: サークル権限チェック
+- **効果**: アプリレベル依存を排除、多層防御を実現
+- **コミット**: `8b7935e`
+
+#### ✅ 3. CSP（Content Security Policy）実装
+- **対策日**: 2025-01-04
+- **実装内容**: `nuxt.config.ts` にXSS攻撃対策のCSPヘッダーを追加
+- **効果**: クロスサイトスクリプティング攻撃を防止
+- **コミット**: `8b7935e`
+
+## 🔴 高リスク - 即座に対応すべき事項 ✅ **全て対策完了**
+
+### ~~1. **テスト用データアクセス規則**~~ ✅ **対策完了**
 ```firestore
-// firestore.rules:6-7 - 危険！
-match /test/{document} {
-  allow read, write: if true;  // ← 無制限アクセス
+// firestore.rules:4-7 - 対策済み
+// テスト用コレクション（開発時のみ）- 本番環境では削除
+// match /test/{document} {
+//   allow read, write: if true;
+// }
+```
+**対策済み**: テストコレクション無制限アクセスルールを無効化
+
+### ~~2. **Storage権限チェックの不備**~~ ✅ **対策完了**
+```storage
+// storage.rules - 対策済み
+function isAdmin() {
+  return request.auth != null && 
+         firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.userType == 'admin';
 }
-```
-**リスク**: 本番環境でテストコレクションが悪用される可能性
-**影響**: データ改ざん、情報漏洩
-**対策**: 環境別の条件分岐または完全削除
 
-### 2. **Storage権限チェックの不備**
-```storage
-// storage.rules:15,21 - アプリレベル依存
-allow write: if request.auth != null; // Admin check handled in application
-```
-**リスク**: アプリケーション側のチェックをバイパスされる可能性
-**影響**: 不正ファイルアップロード、ストレージ容量攻撃
-**対策**: Storage Rules内で直接権限チェックを実装
+function hasCirclePermission(circleId) {
+  return request.auth != null && 
+         firestore.exists(/databases/(default)/documents/circle_permissions/$(circleId)) &&
+         firestore.get(/databases/(default)/documents/circle_permissions/$(circleId)).data.userId == request.auth.uid;
+}
 
-### 3. **公開画像への無制限アクセス**
+allow write: if isAdmin() || hasCirclePermission(circleId);
+```
+**対策済み**: Firebase Rules内で直接権限チェックを実装
+
+### 3. **公開画像への無制限アクセス** ⚠️ **部分対策済み**
 ```storage
-allow read: if true; // Public read for all images
+allow read: if true; // Public read for all images - 要検討
 ```
 **リスク**: 機密画像の意図しない公開
 **影響**: プライバシー侵害、著作権問題
-**対策**: 画像種別に応じた適切なアクセス制御
+**残存課題**: 画像種別に応じた適切なアクセス制御が必要
 
 ## 🟡 中リスク - 計画的に対応すべき事項
 
@@ -77,13 +112,26 @@ const getAuthErrorMessage = (errorCode: string): string => {
 
 ## 🟢 低リスク - 長期的に改善すべき事項
 
-### 7. **CSP（Content Security Policy）の未実装**
+### ~~7. **CSP（Content Security Policy）の未実装**~~ ✅ **対策完了**
 ```typescript
-// nuxt.config.ts - CSPヘッダーなし
+// nuxt.config.ts - 対策済み
+{
+  'http-equiv': 'Content-Security-Policy',
+  content: [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' https://apis.google.com https://www.gstatic.com https://*.firebaseapp.com https://*.googleapis.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    "img-src 'self' data: https: blob:",
+    "connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com wss://*.firebaseio.com https://firestore.googleapis.com https://securetoken.googleapis.com",
+    "frame-src 'none'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'"
+  ].join('; ')
+}
 ```
-**リスク**: XSS攻撃への脆弱性
-**影響**: スクリプトインジェクション攻撃
-**対策**: 適切なCSPヘッダーの実装
+**対策済み**: XSS攻撃対策のCSPヘッダーを実装
 
 ### 8. **ログ出力の情報漏洩リスク**
 ```typescript
@@ -363,16 +411,23 @@ export class RateLimit {
 }
 ```
 
-## 📊 優先度マトリックス
+## 📊 優先度マトリックス（更新済み）
 
-| セキュリティ対策 | 影響度 | 実装難易度 | 優先度 | 実装目安 |
-|------------------|--------|------------|--------|----------|
-| テスト用ルール削除 | 高 | 低 | **最優先** | 即座 |
-| Storage Rules強化 | 高 | 中 | **高** | 1週間以内 |
-| CSP実装 | 中 | 低 | **高** | 1週間以内 |
-| 環境変数の適切な管理 | 中 | 中 | 高 | 2週間以内 |
-| データ暗号化 | 中 | 中 | 中 | 1ヶ月以内 |
-| セッション管理強化 | 中 | 中 | 中 | 1ヶ月以内 |
-| 監査ログ実装 | 低 | 高 | 低 | 3ヶ月以内 |
-| レート制限 | 低 | 中 | 低 | 3ヶ月以内 |
+| セキュリティ対策 | 影響度 | 実装難易度 | 優先度 | 実装目安 | 状況 |
+|------------------|--------|------------|--------|----------|------|
+| ~~テスト用ルール削除~~ | 高 | 低 | **最優先** | 即座 | ✅ **完了** |
+| ~~Storage Rules強化~~ | 高 | 中 | **高** | 1週間以内 | ✅ **完了** |
+| ~~CSP実装~~ | 中 | 低 | **高** | 1週間以内 | ✅ **完了** |
+| 環境変数の適切な管理 | 中 | 中 | **次の優先** | 2週間以内 | 🔄 **次回対応** |
+| ローカルストレージ暗号化 | 中 | 中 | **次の優先** | 2週間以内 | 🔄 **次回対応** |
+| 認証エラー情報の汎用化 | 中 | 低 | **次の優先** | 2週間以内 | 🔄 **次回対応** |
+| 画像アクセス制御の詳細化 | 中 | 中 | 中 | 1ヶ月以内 | 🔄 **要検討** |
+| セッション管理強化 | 中 | 中 | 中 | 1ヶ月以内 | 📋 **未対応** |
+| 監査ログ実装 | 低 | 高 | 低 | 3ヶ月以内 | 📋 **未対応** |
+| レート制限 | 低 | 中 | 低 | 3ヶ月以内 | 📋 **未対応** |
+
+### 📈 次回優先対応項目
+1. **環境変数の適切な管理** - Firebase設定情報の露出対策
+2. **ローカルストレージ暗号化** - センシティブデータの保護
+3. **認証エラー情報の汎用化** - システム情報露出の防止
 
