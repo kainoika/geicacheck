@@ -230,12 +230,12 @@ circle_permissions/        # Granted permissions
 
 - Do not use emojis in the appearance of your application, always use Heroicons
 
-## 定期的なドキュメントの更新
-- README.mdとCLAUDE.mdも更新して、新しい機能とその使い方を記載してください。
+## Regular documentation updates
+- Please also update README.md and CLAUDE.md to describe the new features and how to use them.
 
-## 理解困難なコードへの対処
-- IMPORTANT: 複雑な型定義には必ず使用例とコメントを追加
-- YOU MUST: 生成したコードの動作原理を説明できること
+## Dealing with difficult-to-understand code
+- IMPORTANT: Add usage examples and comments to all complex type definitions
+- YOU MUST: Be able to explain the operating principle of the generated code
 
 ## 🎯 Development Philosophy
 

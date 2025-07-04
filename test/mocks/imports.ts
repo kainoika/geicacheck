@@ -12,6 +12,20 @@ export const onMounted = vi.fn()
 export const onUnmounted = vi.fn()
 export const nextTick = vi.fn()
 
+// Composables のモック
+export const useAuth = vi.fn(() => ({
+  user: { value: { uid: 'test-user-123' } },
+  signIn: vi.fn(),
+  signOut: vi.fn()
+}))
+
+export const useLogger = vi.fn(() => ({
+  info: vi.fn(),
+  warn: vi.fn(),
+  debug: vi.fn(),
+  error: vi.fn()
+}))
+
 export default {
   ref,
   reactive,
@@ -20,5 +34,7 @@ export default {
   watchEffect,
   onMounted,
   onUnmounted,
-  nextTick
+  nextTick,
+  useAuth,
+  useLogger
 }

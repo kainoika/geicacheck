@@ -1,13 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { addDoc, updateDoc, serverTimestamp, doc, getDoc } from 'firebase/firestore'
 
-// モックを先に設定
-vi.mock('#app', () => ({
-  useNuxtApp: () => ({
-    $firestore: {}
-  })
-}))
-
+// Firebase Firestore のモック
 vi.mock('firebase/firestore', () => ({
   collection: vi.fn(),
   addDoc: vi.fn(),
@@ -21,18 +15,22 @@ vi.mock('firebase/firestore', () => ({
   orderBy: vi.fn()
 }))
 
-vi.mock('~/composables/useAuth', () => ({
-  useAuth: vi.fn(() => ({
-    user: { value: { uid: 'admin123' } }
-  }))
-}))
-
-// モック設定後にインポート
-const { useEditPermissions } = await import('~/composables/useEditPermissions')
+import { useEditPermissions } from '~/composables/useEditPermissions'
 
 describe('useEditPermissions - ownerId更新', () => {
+  let mockFirestore: any
+  let mockAuth: any
+  
   beforeEach(() => {
     vi.clearAllMocks()
+    
+    // テスト用の依存関係をセットアップ
+    mockFirestore = {
+      // collection, doc などのFirestore関数をモック
+    }
+    mockAuth = {
+      user: { value: { uid: 'admin123' } }
+    }
   })
 
   describe('grantCirclePermission', () => {
@@ -44,19 +42,26 @@ describe('useEditPermissions - ownerId更新', () => {
       mockAddDoc.mockResolvedValue({ id: 'permission123' } as any)
       mockDoc.mockReturnValue({ id: 'mockDocRef' } as any)
 
-      const { grantCirclePermission } = useEditPermissions()
+      // 依存性注入を使用してcomposableを作成
+      // Firestoreモックを直接$firestoreとして渡す
+      const { grantCirclePermission } = useEditPermissions({
+        firestore: { $firestore: mockFirestore },
+        auth: mockAuth
+      })
       
       await grantCirclePermission('user123', 'geica32-038', 'editor')
 
       // circle_permissionsへの追加を確認
+      // 最初のパラメータはcollection()の結果なので、undefinedでも問題ない
       expect(mockAddDoc).toHaveBeenCalledWith(
-        expect.anything(),
+        undefined, // collection(mockFirestore, 'circle_permissions')の結果
         expect.objectContaining({
           userId: 'user123',
           circleId: 'geica32-038',
           permission: 'editor',
           grantedBy: 'admin123',
-          isActive: true
+          isActive: true,
+          grantedAt: 'server-timestamp'
         })
       )
 
@@ -84,7 +89,10 @@ describe('useEditPermissions - ownerId更新', () => {
       
       mockAddDoc.mockResolvedValue({ id: 'permission123' } as any)
 
-      const { grantCirclePermission } = useEditPermissions()
+      const { grantCirclePermission } = useEditPermissions({
+        firestore: { $firestore: mockFirestore },
+        auth: mockAuth
+      })
       
       await grantCirclePermission('user123', 'invalid-format-123', 'editor')
 
@@ -106,7 +114,10 @@ describe('useEditPermissions - ownerId更新', () => {
 
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-      const { grantCirclePermission } = useEditPermissions()
+      const { grantCirclePermission } = useEditPermissions({
+        firestore: { $firestore: mockFirestore },
+        auth: mockAuth
+      })
       
       // エラーが発生しても例外をthrowしない
       await expect(
@@ -141,12 +152,17 @@ describe('useEditPermissions - ownerId更新', () => {
       
       mockDoc.mockReturnValue({ id: 'mockDocRef' } as any)
       mockAddDoc.mockResolvedValue({ id: 'permission123' } as any)
+      // updateDocのモックを成功に設定
+      mockUpdateDoc.mockResolvedValue({} as any)
 
-      const { approveEditPermissionRequest } = useEditPermissions()
+      const { approveEditPermissionRequest } = useEditPermissions({
+        firestore: { $firestore: mockFirestore },
+        auth: mockAuth
+      })
       
       await approveEditPermissionRequest('request123')
 
-      // 申請の更新
+      // 申請の更新（最初の呼び出し）
       expect(mockUpdateDoc).toHaveBeenCalledWith(
         expect.anything(),
         expect.objectContaining({
@@ -157,16 +173,20 @@ describe('useEditPermissions - ownerId更新', () => {
 
       // 権限付与（grantCirclePermissionが呼ばれる）
       expect(mockAddDoc).toHaveBeenCalledWith(
-        expect.anything(),
+        undefined, // collection(mockFirestore, 'circle_permissions')の結果
         expect.objectContaining({
           userId: 'user123',
           circleId: 'geica32-038',
-          permission: 'editor'
+          permission: 'editor',
+          grantedAt: 'server-timestamp',
+          grantedBy: 'admin123',
+          isActive: true
         })
       )
 
-      // サークルのownerId更新も含まれる
-      expect(mockUpdateDoc).toHaveBeenCalledWith(
+      // サークルのownerId更新も含まれる（2回目の呼び出し）
+      expect(mockUpdateDoc).toHaveBeenNthCalledWith(
+        2,
         expect.anything(),
         expect.objectContaining({
           ownerId: 'user123'

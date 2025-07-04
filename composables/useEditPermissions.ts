@@ -12,9 +12,14 @@ import {
 } from 'firebase/firestore'
 import type { EditPermissionRequest, PermissionStatus } from '~/types'
 
-export const useEditPermissions = () => {
-  const { $firestore } = useNuxtApp()
-  const { user } = useAuth()
+interface EditPermissionsDependencies {
+  firestore?: any
+  auth?: ReturnType<typeof useAuth>
+}
+
+export const useEditPermissions = (deps?: EditPermissionsDependencies) => {
+  const { $firestore } = deps?.firestore ? { $firestore: deps.firestore } : useNuxtApp()
+  const { user } = deps?.auth ?? useAuth()
 
   // 編集権限申請を送信
   const submitEditPermissionRequest = async (data: {

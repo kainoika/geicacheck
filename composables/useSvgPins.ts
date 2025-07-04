@@ -43,9 +43,16 @@ const DEFAULT_OPTIONS: SvgPinOptions = {
   animated: true
 }
 
-export const useSvgPins = (options: Partial<SvgPinOptions> = {}) => {
+interface SvgPinsDependencies {
+  logger?: ReturnType<typeof useLogger>
+}
+
+export const useSvgPins = (
+  options: Partial<SvgPinOptions> = {},
+  deps?: SvgPinsDependencies
+) => {
   const config = { ...DEFAULT_OPTIONS, ...options }
-  const logger = useLogger('useSvgPins')
+  const logger = deps?.logger ?? useLogger('useSvgPins')
   
   // 状態管理
   const svgElement = ref<SVGElement | null>(null)
