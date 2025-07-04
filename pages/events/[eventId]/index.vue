@@ -138,17 +138,17 @@
             <div class="bg-white rounded-lg shadow p-6">
               <h2 class="text-lg font-semibold text-gray-900 mb-4">クイックアクション</h2>
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <NuxtLink :to="`/events/${event.id}/circles`"
+                <NuxtLink :to="`/circles`"
                           class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
                   <BookOpenIcon class="h-5 w-5 mr-2 text-gray-400" />
                   <span class="text-sm font-medium">サークル一覧</span>
                 </NuxtLink>
-                <NuxtLink :to="`/events/${event.id}/map`"
+                <NuxtLink :to="`/map`"
                           class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
                   <MapIcon class="h-5 w-5 mr-2 text-gray-400" />
                   <span class="text-sm font-medium">マップ</span>
                 </NuxtLink>
-                <NuxtLink :to="`/events/${event.id}/bookmarks`"
+                <NuxtLink :to="`/bookmarks`"
                           class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
                   <StarIcon class="h-5 w-5 mr-2 text-gray-400" />
                   <span class="text-sm font-medium">ブックマーク</span>

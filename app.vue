@@ -1,5 +1,8 @@
 <template>
   <div id="app" style="min-height: 100vh; display: flex; flex-direction: column;">
+    <!-- オフラインインジケーター -->
+    <OfflineIndicator />
+    
     <!-- ヘッダー -->
     <AppHeader />
     
@@ -10,6 +13,9 @@
     
     <!-- フッター -->
     <AppFooter />
+    
+    <!-- PWA関連UI -->
+    <PWAUpdateNotification />
   </div>
 </template>
 
