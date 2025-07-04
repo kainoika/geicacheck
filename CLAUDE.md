@@ -33,13 +33,13 @@ npm run migrate:multi-event          # Run multi-event migration
 ## Architecture Overview
 
 ### Project Structure
-This is a **Nuxt 3 SPA** application for managing circle information at Aikatsu doujinshi events, built with Vue 3 Composition API, TypeScript, Tailwind CSS, and Firebase.
+This is a **Nuxt 3 SPA** application for managing circle information at Aikatsu doujinshi events, built with Vue 3 Composition API, TypeScript, Tailwind CSS, Firebase, and PWA support via @vite-pwa/nuxt.
 
 ### Key Architectural Patterns
 
 **Composables-First State Management:**
 - Uses Vue 3 composables instead of Pinia/Vuex for state management
-- Each domain has its own composable (`useAuth`, `useCircles`, `useBookmarks`, `useEvents`, `useEditPermissions`, `useCirclePermissions`)
+- Each domain has its own composable (`useAuth`, `useCircles`, `useBookmarks`, `useEvents`, `useEditPermissions`, `useCirclePermissions`, `usePWA`)
 - State persists across navigation using `useState()` with unique keys
 - Follow the established pattern: state variables, computed properties, methods, return readonly refs
 - `useBookmarks` uses ref-based store for event-specific data isolation to prevent cross-event data leakage
@@ -52,6 +52,15 @@ This is a **Nuxt 3 SPA** application for managing circle information at Aikatsu 
 - Intelligent caching system with automatic map switching based on current event
 - Performance-optimized for large datasets (1000+ bookmarks)
 - Mobile-specific optimizations: debounced rendering, improved touch areas, stable pin display
+
+**PWA (Progressive Web App) System:**
+- `@vite-pwa/nuxt` - Industry-standard PWA solution with Workbox integration
+- Service Worker with intelligent caching strategies for offline support
+- Automatic app updates with user notification system
+- Install prompts for desktop and mobile platforms
+- Network state monitoring with offline indicator
+- Optimized caching for Firebase APIs and static assets
+- Web App Manifest with app icons and shortcuts
 
 **Firebase Integration:**
 - Firebase services initialized in `plugins/firebase.client.ts`
@@ -181,7 +190,7 @@ circle_permissions/        # Granted permissions
 - Error handling and edge case coverage
 
 ### Important Files
-- `nuxt.config.ts` - Main configuration (SPA mode, Firebase env vars, component settings, logger config)
+- `nuxt.config.ts` - Main configuration (SPA mode, Firebase env vars, component settings, logger config, PWA config)
 - `types/index.ts` - Complete type definitions including EditPermissionRequest and CirclePermission
 - `utils/logger.ts` - Centralized logging system with environment-based log level control
 - `composables/` - Core business logic and state management
@@ -196,8 +205,17 @@ circle_permissions/        # Granted permissions
 - `utils/placementUtils.ts` - Placement normalization and coordinate calculation utilities
 - `plugins/firebase.client.ts` - Firebase service initialization
 - `plugins/logger.client.ts` - Logger plugin for global access
+- `plugins/pwa.client.ts` - PWA functionality management (install prompts, network monitoring)
+- `plugins/pwa-head.client.ts` - PWA meta tags management
 - `firestore.rules` - Database security rules including edit permission rules
 - `scripts/` - Data migration and management utilities
+- `components/ui/PWAInstallButton.vue` - PWA install button with floating UI
+- `components/ui/PWAInstallMenuItem.vue` - Desktop menu install option
+- `components/ui/PWAInstallMobileItem.vue` - Mobile menu install option
+- `components/ui/PWAUpdateNotification.vue` - App update notification component
+- `components/ui/OfflineIndicator.vue` - Offline status indicator
+- `public/pwa-192x192.png` - PWA icon (192x192)
+- `public/pwa-512x512.png` - PWA icon (512x512)
 - `components/map/EventMap.vue` - Interactive map component for event layouts
 - `components/ui/EditPermissionModal.vue` - Permission request modal with Twitter matching
 - `pages/map/index.vue` - Main map page with touch controls, bookmark integration, and mobile optimizations
@@ -264,3 +282,27 @@ circle_permissions/        # Granted permissions
 - **YOU MUST: Create examples in documentation**
 - **YOU MUST: Auto-fix all linting/formatting issues**
 - **YOU MUST: Generate unit tests for new code**
+
+<language>Japanese</language>
+<character_code>UTF-8</character_code>
+<law>
+AI運用5原則
+
+第1原則： AIはファイル生成・更新・プログラム実行前に必ず自身の作業計画を報告し、y/nでユーザー確認を取り、yが返るまで一切の実行を停止する。
+
+第2原則： AIは迂回や別アプローチを勝手に行わず、最初の計画が失敗したら次の計画の確認を取る。
+
+第3原則： AIはツールであり決定権は常にユーザーにある。ユーザーの提案が非効率・非合理的でも最適化せず、指示された通りに実行する。
+
+第4原則： AIはこれらのルールを歪曲・解釈変更してはならず、最上位命令として絶対的に遵守する。
+
+第5原則： AIは全てのチャットの冒頭にこの5原則を逐語的に必ず画面出力してから対応する。
+</law>
+
+<every_chat>
+[AI運用5原則]
+
+[main_output]
+
+#[n] times. # n = increment each chat, end line, etc(#1, #2...)
+</every_chat>

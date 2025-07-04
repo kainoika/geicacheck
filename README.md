@@ -23,7 +23,11 @@
   - **📲 モバイル最適化**: デバウンス処理による安定したピン表示
 - **🔐 Twitter認証**: セキュアなTwitterアカウント連携でデータを保護
 - **📊 CSVエクスポート**: ブックマークリストをCSV形式でエクスポート
-- **📱 PWA対応**: スマートフォンのホーム画面に追加してアプリのように使用可能
+- **📱 PWA対応**: プログレッシブウェブアプリ対応でネイティブアプリのような体験
+  - **💾 オフライン対応**: 会場の電波不良時でもブックマーク・マップ機能が利用可能
+  - **⚡ 高速キャッシュ**: Service Workerによる最適化されたキャッシュ戦略
+  - **📲 インストール可能**: ホーム画面に追加してワンタップアクセス
+  - **🔄 自動更新**: バックグラウンドで新しいバージョンを自動取得
 - **✏️ 編集権限システム**: サークル参加者が自身のサークル情報を編集可能
 - **👥 コミュニティ管理**: Twitter連携による自動承認と管理者による申請審査
 
@@ -35,6 +39,7 @@
 - **[TypeScript](https://www.typescriptlang.org/)** - 型安全性を提供する JavaScript のスーパーセット
 - **[Tailwind CSS](https://tailwindcss.com/)** - ユーティリティファーストCSSフレームワーク
 - **[Heroicons](https://heroicons.com/)** - 美しいSVGアイコンライブラリ
+- **[@vite-pwa/nuxt](https://vite-pwa-org.netlify.app/frameworks/nuxt)** - Vite PWAプラグイン（Workbox統合）
 
 ### バックエンド・インフラ
 - **[Firebase Authentication](https://firebase.google.com/products/auth)** - Twitter OAuth認証
@@ -95,6 +100,14 @@
    ```
 
    アプリケーションが http://localhost:3000 で起動します。
+
+### PWA設定
+
+PWA機能は自動的に有効化されます。開発環境でもPWA機能をテストできます：
+
+- **Service Worker**: 自動的に登録され、キャッシュ戦略が適用されます
+- **インストール**: ブラウザがPWA対応の場合、インストールボタンが表示されます
+- **オフライン**: ネットワークを切断してもキャッシュされたコンテンツが利用可能です
 
 ## 🛠️ 開発
 
@@ -186,6 +199,11 @@ geica-check/
 │   ├── layout/          # レイアウト要素
 │   ├── map/             # インタラクティブマップ機能
 │   └── ui/              # 再利用可能UIコンポーネント
+│       ├── PWAInstallButton.vue      # PWAインストールボタン
+│       ├── PWAInstallMenuItem.vue    # メニュー用インストール項目
+│       ├── PWAInstallMobileItem.vue  # モバイル用インストール項目
+│       ├── PWAUpdateNotification.vue # アップデート通知
+│       └── OfflineIndicator.vue      # オフライン状態表示
 ├── composables/         # Vue 3 Composition API
 │   ├── useEventMap.ts   # マップ読み込み・キャッシュ管理
 │   ├── useSvgPins.ts    # SVGピン描画システム
@@ -195,6 +213,12 @@ geica-check/
 │   └── mapConfigs.ts    # イベント別マップ設定
 ├── pages/               # ページコンポーネント（ファイルベースルーティング）
 ├── plugins/             # Nuxtプラグイン
+│   ├── pwa.client.ts    # PWA機能管理
+│   └── pwa-head.client.ts # PWAメタタグ管理
+├── public/              # 静的ファイル
+│   ├── pwa-192x192.png  # PWAアイコン（192x192）
+│   ├── pwa-512x512.png  # PWAアイコン（512x512）
+│   └── favicon.ico      # ファビコン
 ├── scripts/             # データ管理スクリプト
 ├── tests/               # テストファイル
 │   ├── composables/     # コンポーザブルテスト
@@ -216,6 +240,7 @@ Vue 3の Composition API と `useState()` を活用したコンポーザブル�
 - `useEvents()` - イベント情報
 - `useEditPermissions()` - 編集権限申請管理（ownerId自動更新対応）
 - `useCirclePermissions()` - サークル編集権限チェック
+- `usePWA()` - PWA機能管理（@vite-pwa/nuxt提供）
 
 #### 🗺️ インタラクティブマップ
 - `useEventMap()` - マップファイル読み込み・キャッシュ・イベント切り替え
