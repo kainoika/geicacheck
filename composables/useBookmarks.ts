@@ -389,14 +389,15 @@ export const useBookmarks = () => {
     const { formatPlacement } = useCircles();
     
     return targetBookmarks.map((bookmark) => ({
+      "サークル名(フリガナ)": bookmark.circle.circleKana || "",
       サークル名: bookmark.circle.circleName,
-      ジャンル: bookmark.circle.genre.join(", "),
+      "ペンネーム(フリガナ)": bookmark.circle.penNameKana || "",
+      ペンネーム: bookmark.circle.penName,
       配置: formatPlacement(bookmark.circle.placement),
-      カテゴリ: getCategoryLabel(bookmark.category),
-      メモ: bookmark.memo || "",
+      ジャンル: bookmark.circle.genre.join(", "),
       Twitter: bookmark.circle.contact?.twitter || "",
       Pixiv: bookmark.circle.contact?.pixiv || "",
-      お品書きURL: bookmark.circle.contact?.oshinaUrl || "",
+      カテゴリ: getCategoryLabel(bookmark.category),
     }));
   };
 
