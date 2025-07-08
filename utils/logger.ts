@@ -124,7 +124,61 @@ export class Logger {
   }
 
   /**
-   * ログをフォーマット
+   * 機密情報をサニタイズ（セキュリティ強化）
+   */
+  private sanitizeMessage(message: string): string {
+    if (!message || typeof message !== 'string') {
+      return String(message || '')
+    }
+
+    // 機密情報のパターンを定義
+    const sensitivePatterns = [
+      // API キー、トークン、パスワード
+      /api[_-]?key["\s]*[=:]["\s]*[\w\-\.]+/gi,
+      /token["\s]*[=:]["\s]*[\w\-\.]+/gi,
+      /password["\s]*[=:]["\s]*[\w\-\.]+/gi,
+      /secret["\s]*[=:]["\s]*[\w\-\.]+/gi,
+      /auth["\s]*[=:]["\s]*[\w\-\.]+/gi,
+      
+      // Firebase設定（部分的）
+      /firebaseApiKey["\s]*[=:]["\s]*[\w\-\.]+/gi,
+      /firebaseAuthDomain["\s]*[=:]["\s]*[\w\-\.]+/gi,
+      
+      // 暗号化キー
+      /encryptionKey["\s]*[=:]["\s]*[\w\-\.]+/gi,
+      /crypto[_-]?key["\s]*[=:]["\s]*[\w\-\.]+/gi,
+      
+      // ユーザーID、メールアドレス（部分的にマスク）
+      /([\w\._%+-]+)@([\w\.-]+\.[A-Za-z]{2,})/g,
+      
+      // IPv4アドレス
+      /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/g,
+      
+      // JWT トークンのような長い文字列
+      /\b[A-Za-z0-9_-]{50,}\b/g
+    ]
+
+    let sanitized = message
+    
+    // 各パターンをマスク
+    sensitivePatterns.forEach(pattern => {
+      if (pattern.source.includes('@')) {
+        // メールアドレスは部分マスク
+        sanitized = sanitized.replace(pattern, (match, user, domain) => {
+          const maskedUser = user.length > 2 ? user.substring(0, 2) + '***' : '***'
+          return `${maskedUser}@${domain}`
+        })
+      } else {
+        // その他は完全マスク
+        sanitized = sanitized.replace(pattern, '[REDACTED]')
+      }
+    })
+
+    return sanitized
+  }
+
+  /**
+   * ログをフォーマット（機密情報サニタイズ付き）
    */
   private formatLog(entry: LogEntry): string {
     const parts: string[] = []
@@ -152,17 +206,78 @@ export class Logger {
       parts.push(`[${entry.context}]`)
     }
 
-    // メッセージ
-    parts.push(entry.message)
+    // メッセージ（機密情報をサニタイズ）
+    const sanitizedMessage = this.sanitizeMessage(entry.message)
+    parts.push(sanitizedMessage)
 
     return parts.join(' ')
   }
 
   /**
-   * ログを出力
+   * データをサニタイズ（機密情報除去）
+   */
+  private sanitizeData(data: any): any {
+    if (!data) return data
+    
+    try {
+      // プリミティブ型はそのまま返す
+      if (typeof data !== 'object') {
+        return typeof data === 'string' ? this.sanitizeMessage(data) : data
+      }
+      
+      // Error オブジェクトの場合
+      if (data instanceof Error) {
+        return {
+          name: data.name,
+          message: this.sanitizeMessage(data.message),
+          // スタックトレースも本番環境では制限
+          ...(this.config.isDevelopment && { stack: data.stack })
+        }
+      }
+      
+      // 配列の場合
+      if (Array.isArray(data)) {
+        return data.map(item => this.sanitizeData(item))
+      }
+      
+      // オブジェクトの場合は機密情報を含む可能性のあるキーをチェック
+      const sanitized: any = {}
+      const sensitiveKeys = [
+        'password', 'secret', 'token', 'key', 'auth', 'credential',
+        'apikey', 'api_key', 'firebaseapikey', 'encryptionkey', 'crypto_key'
+      ]
+      
+      for (const [key, value] of Object.entries(data)) {
+        const lowerKey = key.toLowerCase()
+        
+        if (sensitiveKeys.some(sk => lowerKey.includes(sk))) {
+          sanitized[key] = '[REDACTED]'
+        } else if (typeof value === 'object') {
+          sanitized[key] = this.sanitizeData(value)
+        } else if (typeof value === 'string') {
+          sanitized[key] = this.sanitizeMessage(value)
+        } else {
+          sanitized[key] = value
+        }
+      }
+      
+      return sanitized
+    } catch (error) {
+      // サニタイズ処理でエラーが発生した場合は安全な文字列を返す
+      return '[SANITIZATION_ERROR]'
+    }
+  }
+
+  /**
+   * ログを出力（機密情報サニタイズ付き）
    */
   private log(level: LogLevel, message: string, data?: any): void {
     if (!this.isLevelEnabled(level)) {
+      return
+    }
+
+    // 本番環境では DEBUG と INFO ログを完全に無効化（追加のセキュリティ対策）
+    if (!this.config.isDevelopment && (level === LogLevel.DEBUG || level === LogLevel.INFO)) {
       return
     }
 
@@ -170,28 +285,31 @@ export class Logger {
       level,
       message,
       context: this.context,
-      data,
+      data: this.sanitizeData(data),
       timestamp: new Date()
     }
 
     const formattedMessage = this.formatLog(entry)
+    const sanitizedData = entry.data
 
     // ログレベルに応じたコンソールメソッドを使用
     switch (level) {
       case LogLevel.DEBUG:
-        console.log(formattedMessage, data !== undefined ? data : '')
+        console.log(formattedMessage, sanitizedData !== undefined ? sanitizedData : '')
         break
       case LogLevel.INFO:
-        console.info(formattedMessage, data !== undefined ? data : '')
+        console.info(formattedMessage, sanitizedData !== undefined ? sanitizedData : '')
         break
       case LogLevel.WARN:
-        console.warn(formattedMessage, data !== undefined ? data : '')
+        console.warn(formattedMessage, sanitizedData !== undefined ? sanitizedData : '')
         break
       case LogLevel.ERROR:
         if (data instanceof Error && this.config.enableStackTrace) {
-          console.error(formattedMessage, data.stack || data)
+          // エラーの場合も機密情報をサニタイズ
+          const sanitizedError = this.sanitizeData(data)
+          console.error(formattedMessage, sanitizedError)
         } else {
-          console.error(formattedMessage, data !== undefined ? data : '')
+          console.error(formattedMessage, sanitizedData !== undefined ? sanitizedData : '')
         }
         break
     }
