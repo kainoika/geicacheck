@@ -45,42 +45,6 @@ export default defineNuxtConfig({
             "アイカツ！シリーズオンリー同人イベント「芸能人はカードが命！（芸カ）」のサークルチェックを効率化するWebアプリ",
         },
         { name: "theme-color", content: "#FF69B4" },
-        {
-          'http-equiv': 'Strict-Transport-Security',
-          content: 'max-age=31536000; includeSubDomains; preload'
-        },
-        {
-          'http-equiv': 'X-Content-Type-Options',
-          content: 'nosniff'
-        },
-        {
-          'http-equiv': 'X-Frame-Options',
-          content: 'DENY'
-        },
-        {
-          'http-equiv': 'X-XSS-Protection',
-          content: '1; mode=block'
-        },
-        {
-          'http-equiv': 'Referrer-Policy',
-          content: 'strict-origin-when-cross-origin'
-        },
-        {
-          'http-equiv': 'Content-Security-Policy',
-          content: [
-            "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' https://apis.google.com https://www.gstatic.com https://*.firebaseapp.com https://*.googleapis.com",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-            "font-src 'self' https://fonts.gstatic.com",
-            "img-src 'self' data: https: blob:",
-            "connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com wss://*.firebaseio.com https://firestore.googleapis.com https://securetoken.googleapis.com",
-            "frame-src 'none'",
-            "object-src 'none'",
-            "base-uri 'self'",
-            "form-action 'self'",
-            "upgrade-insecure-requests"
-          ].join('; ')
-        }
       ],
       link: [
         { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
@@ -100,33 +64,19 @@ export default defineNuxtConfig({
   baseURL: '/'
   },
 
-  // ランタイム設定（セキュリティ強化）
+  // ランタイム設定
   runtimeConfig: {
     public: {
-      // Firebase設定（必要最小限のみ公開）
       firebaseApiKey: process.env.NUXT_PUBLIC_FIREBASE_API_KEY,
       firebaseAuthDomain: process.env.NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
       firebaseProjectId: process.env.NUXT_PUBLIC_FIREBASE_PROJECT_ID,
       firebaseStorageBucket: process.env.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
       firebaseMessagingSenderId: process.env.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
       firebaseAppId: process.env.NUXT_PUBLIC_FIREBASE_APP_ID,
-      
-      // 開発環境のみエミュレーター設定を公開
-      useFirebaseEmulator: process.env.NODE_ENV === 'development' ? 
-        (process.env.NUXT_PUBLIC_USE_FIREBASE_EMULATOR === 'true') : false,
-      
-      // ログレベル設定（本番環境では厳格に制御）
-      logLevel: process.env.NUXT_PUBLIC_LOG_LEVEL || 
-               (process.env.NODE_ENV === 'development' ? 'debug' : 'error'),
-      
-      // 暗号化キー（開発環境のみ、本番では環境変数必須）
-      encryptionKey: process.env.NODE_ENV === 'development' ? 
-        'geica-check-dev-key-2025' : process.env.NUXT_PUBLIC_ENCRYPTION_KEY,
+      useFirebaseEmulator: process.env.NUXT_PUBLIC_USE_FIREBASE_EMULATOR === 'true',
+      // ログレベル設定
+      logLevel: process.env.NUXT_PUBLIC_LOG_LEVEL || (process.env.NODE_ENV === 'development' ? 'debug' : 'error'),
     },
-    // プライベート設定（サーバーサイドのみ）
-    private: {
-      // センシティブな設定はここに配置（将来的な拡張用）
-    }
   },
 
   // ビルド設定
@@ -254,7 +204,7 @@ export default defineNuxtConfig({
     }
   },
 
-  // Nitro設定（セキュリティ強化）
+  // Nitro設定
   nitro: {
     esbuild: {
       options: {
@@ -263,41 +213,6 @@ export default defineNuxtConfig({
     },
     prerender: {
       routes: ['/']
-    },
-    // 本番環境でのHTTPS強制リダイレクト
-    routeRules: {
-      '/**': process.env.NODE_ENV === 'production' ? {
-        headers: {
-          'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
-          'X-Content-Type-Options': 'nosniff',
-          'X-Frame-Options': 'DENY',
-          'X-XSS-Protection': '1; mode=block',
-          'Referrer-Policy': 'strict-origin-when-cross-origin',
-          'Permissions-Policy': 'geolocation=(), microphone=(), camera=()'
-        }
-      } : {}
-    },
-    // 本番環境でHTTPからHTTPSへのリダイレクト
-    experimental: {
-      wasm: false
-    }
-  },
-  
-  // 本番環境でのHTTPS強制フック
-  hooks: {
-    'render:route': (url, result, context) => {
-      // 本番環境でHTTPアクセスをHTTPSにリダイレクト
-      if (process.env.NODE_ENV === 'production' && 
-          context.event.node.req.headers['x-forwarded-proto'] !== 'https' &&
-          !context.event.node.req.headers.host?.includes('localhost')) {
-        const host = context.event.node.req.headers.host
-        if (host) {
-          context.event.node.res.writeHead(301, {
-            Location: `https://${host}${url}`
-          })
-          context.event.node.res.end()
-        }
-      }
     }
   }
 });

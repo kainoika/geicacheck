@@ -3,70 +3,22 @@ rules_version = '2';
 // Cloud Storage Security Rules
 service firebase.storage {
   match /b/{bucket}/o {
-    // 管理者チェック関数
-    function isAdmin() {
-      return request.auth != null && 
-             firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.userType == 'admin';
-    }
-    
-    // サークル権限チェック関数
-    function hasCirclePermission(circleId) {
-      return request.auth != null && 
-             firestore.exists(/databases/(default)/documents/circle_permissions/$(circleId)) &&
-             firestore.get(/databases/(default)/documents/circle_permissions/$(circleId)).data.userId == request.auth.uid;
-    }
-    
-    // サークル所有者ID取得関数
-    function getCircleOwnerId(eventId, circleId) {
-      let circleDoc = firestore.get(/databases/(default)/documents/events/$(eventId)/circles/$(circleId));
-      if (circleDoc != null && circleDoc.data.ownerId != null) {
-        return circleDoc.data.ownerId;
-      }
-      // フォールバック: トップレベルのcirclesコレクションもチェック
-      circleDoc = firestore.get(/databases/(default)/documents/circles/$(circleId));
-      return circleDoc != null ? circleDoc.data.ownerId : null;
-    }
-    // Profile images - 認証ユーザーによる自分の画像管理（プライバシー保護強化）
+    // Profile images - authenticated users can upload their own
     match /profile-images/{userId}/{allPaths=**} {
-      allow read: if request.auth != null && 
-                     (request.auth.uid == userId || isAdmin());
+      allow read: if true; // Public read for profile images
       allow write: if request.auth != null && request.auth.uid == userId;
-      allow delete: if request.auth != null && 
-                       (request.auth.uid == userId || isAdmin());
     }
     
-    // Event images - イベント関連画像（公開設定に応じた制御）
-    match /event-images/public/{allPaths=**} {
-      allow read: if true; // 公開イベント画像は全ユーザー閲覧可能
-      allow write: if isAdmin();
-    }
-    
-    match /event-images/private/{allPaths=**} {
-      allow read: if request.auth != null; // プライベートイベント画像は認証ユーザーのみ
-      allow write: if isAdmin();
-    }
-    
+    // Event images - authenticated users (admin check in application)
     match /event-images/{allPaths=**} {
-      allow read: if true; // 従来の互換性維持（既存画像）
-      allow write: if isAdmin();
+      allow read: if true; // Public read for event images
+      allow write: if request.auth != null; // Admin check handled in application
     }
     
-    // Circle images - サークル画像（公開状態とプライバシー設定に応じた制御）
-    match /circle-images/{eventId}/{circleId}/public/{allPaths=**} {
-      allow read: if true; // 公開サークル画像は全ユーザー閲覧可能
-      allow write: if isAdmin() || hasCirclePermission(circleId);
-    }
-    
-    match /circle-images/{eventId}/{circleId}/private/{allPaths=**} {
-      allow read: if request.auth != null && 
-                     (isAdmin() || hasCirclePermission(circleId) || 
-                      request.auth.uid == getCircleOwnerId(eventId, circleId));
-      allow write: if isAdmin() || hasCirclePermission(circleId);
-    }
-    
+    // Circle images - authenticated users (permission check handled in application)
     match /circle-images/{eventId}/{circleId}/{allPaths=**} {
-      allow read: if true; // 従来の互換性維持（既存画像）
-      allow write: if isAdmin() || hasCirclePermission(circleId);
+      allow read: if true; // Public read for circle images
+      allow write: if request.auth != null; // Permission check handled in application
     }
     
     // Temporary uploads - authenticated users only

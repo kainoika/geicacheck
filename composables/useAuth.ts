@@ -14,7 +14,6 @@ import {
 } from "firebase/firestore";
 import type { User } from "~/types";
 import { createLogger } from "~/utils/logger";
-import { removeEncryptedItem, migrateToEncrypted } from "~/utils/encryption";
 
 export const useAuth = () => {
   const logger = createLogger('useAuth');
@@ -101,10 +100,10 @@ export const useAuth = () => {
       await firebaseSignOut($auth);
       user.value = null;
 
-      // ローカルストレージをクリア（暗号化対応）
+      // ローカルストレージをクリア
       if (process.client) {
-        removeEncryptedItem("bookmarks");
-        removeEncryptedItem("searchHistory");
+        localStorage.removeItem("bookmarks");
+        localStorage.removeItem("searchHistory");
       }
     } catch (err: any) {
       logger.error("Sign out error", err);
@@ -279,29 +278,26 @@ export const useAuth = () => {
     }
   };
 
-  // エラーメッセージの取得（セキュリティ強化：汎用化）
+  // エラーメッセージの取得
   const getAuthErrorMessage = (errorCode: string): string => {
-    // システム情報の露出を防ぐため、汎用的なメッセージを返す
     switch (errorCode) {
       case "auth/popup-closed-by-user":
         return "ログインがキャンセルされました";
       case "auth/popup-blocked":
-        return "ポップアップがブロックされています。ブラウザの設定を確認してください";
+        return "ポップアップがブロックされました。ポップアップを許可してください";
+      case "auth/cancelled-popup-request":
+        return "ログイン処理がキャンセルされました";
       case "auth/network-request-failed":
-        return "ネットワークに接続できません。接続を確認して再試行してください";
+        return "ネットワークエラーが発生しました";
       case "auth/too-many-requests":
-        return "アクセスが集中しています。しばらく待ってから再試行してください";
-      // その他の詳細エラーは汎用メッセージに統一（セキュリティ対策）
+        return "リクエストが多すぎます。しばらく待ってから再試行してください";
       default:
-        return "ログインに失敗しました。しばらく待ってから再試行してください";
+        return "ログインに失敗しました";
     }
   };
 
   // 初期化
   if (process.client) {
-    // 既存の非暗号化データを暗号化データに移行
-    migrateToEncrypted("bookmarks");
-    migrateToEncrypted("searchHistory");
     initAuth();
   }
 
