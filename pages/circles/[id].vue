@@ -379,10 +379,10 @@ const handleBookmark = async (category) => {
 const shareToTwitter = () => {
   if (!circle.value) return
   
-  const text = `${circle.value.circleName} | geica check!`
+  const text = `${circle.value.circleName}`
   const url = window.location.href
-  const hashtags = 'アイカツ,芸カ'
-  
+  const hashtags = `geica_check`
+
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}&hashtags=${encodeURIComponent(hashtags)}`
   
   window.open(twitterUrl, '_blank', 'width=550,height=420')
