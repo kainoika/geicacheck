@@ -2,18 +2,18 @@
   <div id="app" style="min-height: 100vh; display: flex; flex-direction: column;">
     <!-- オフラインインジケーター -->
     <OfflineIndicator />
-    
+
     <!-- ヘッダー -->
     <AppHeader />
-    
+
     <!-- メインコンテンツ -->
     <main style="flex: 1;">
       <NuxtPage />
     </main>
-    
+
     <!-- フッター -->
     <AppFooter />
-    
+
     <!-- PWA関連UI -->
     <PWAUpdateNotification />
   </div>
@@ -48,7 +48,7 @@ useHead({
     { name: 'twitter:description', content: 'アイカツ！同人イベントサークルチェックアプリ' }
   ],
   link: [
-    { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+    { rel: 'icon', type: 'image/png', href: '/pwa-192x192.png' }
   ]
 })
 </script>
@@ -177,8 +177,17 @@ body {
 
 /* アニメーション */
 @keyframes sparkle {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.1); }
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
 }
 
 .sparkle {
