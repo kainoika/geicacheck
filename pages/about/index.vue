@@ -273,23 +273,6 @@
             </a>
           </div>
 
-          <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb; text-align: center;">
-            <div style="font-size: 2rem; margin-bottom: 1rem;"><ComputerDesktopIcon style="width: 2rem; height: 2rem; color: #374151; margin: 0 auto;" /></div>
-            <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
-              GitHub
-            </h3>
-            <p style="color: #6b7280; margin: 0 0 1rem 0;">
-              オープンソースプロジェクトとして開発しています
-            </p>
-            <a 
-              href="https://github.com/kainoika/geicacheck" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              style="color: #374151; text-decoration: none; font-weight: 500;"
-            >
-              GitHub Repository
-            </a>
-          </div>
         </div>
       </section>
 

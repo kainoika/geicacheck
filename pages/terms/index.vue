@@ -3,7 +3,7 @@
     <main class="container mx-auto px-4 py-8 max-w-4xl">
       <div class="bg-white rounded-lg shadow-md p-8">
         <h1 class="text-3xl font-bold mb-2">利用規約</h1>
-        <p class="text-gray-600 mb-8">最終更新日: 2025年6月1日</p>
+        <p class="text-gray-600 mb-8">最終更新日: 2025年9月1日</p>
 
         <div class="prose prose-pink max-w-none space-y-8">
           <section>
@@ -81,7 +81,6 @@
               <ul class="space-y-2 text-gray-700">
                 <li class="flex items-center gap-2"><XMarkIcon class="h-4 w-4 text-red-600" /> 法律に違反する行為</li>
                 <li class="flex items-center gap-2"><XMarkIcon class="h-4 w-4 text-red-600" /> サーバーに負荷をかける行為（スクレイピング、自動化ツールの使用など）</li>
-                <li class="flex items-center gap-2"><XMarkIcon class="h-4 w-4 text-red-600" /> 他人の個人情報を無断で公開する行為</li>
                 <li class="flex items-center gap-2"><XMarkIcon class="h-4 w-4 text-red-600" /> サービスの運営を妨害する行為</li>
                 <li class="flex items-center gap-2"><XMarkIcon class="h-4 w-4 text-red-600" /> その他、運営が不適切と判断する行為</li>
               </ul>

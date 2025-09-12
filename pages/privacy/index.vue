@@ -3,7 +3,7 @@
     <main class="container mx-auto px-4 py-8 max-w-4xl">
       <div class="bg-white rounded-lg shadow-md p-8">
         <h1 class="text-3xl font-bold mb-2">プライバシーポリシー</h1>
-        <p class="text-gray-600 mb-8">最終更新日: 2025年6月1日</p>
+        <p class="text-gray-600 mb-8">最終更新日: 2025年9月1日</p>
 
         <div class="prose prose-pink max-w-none space-y-8">
           <section>
@@ -49,19 +49,6 @@
                   <li>✓ アップロードした画像（サークルカット、お品書き）</li>
                   <li>✓ ブックマークしたサークル情報</li>
                 </ul>
-              </div>
-
-              <div class="bg-yellow-50 rounded-lg p-6">
-                <h3 class="font-bold text-lg mb-3 flex items-center gap-2">
-                  <CogIcon class="h-5 w-5 text-yellow-600" /> 自動収集情報
-                </h3>
-                <ul class="space-y-2 text-sm text-gray-700">
-                  <li>✓ ログイン状態維持のためのクッキー</li>
-                  <li>✓ 最後に閲覧したイベント情報</li>
-                </ul>
-                <p class="mt-3 text-xs text-gray-600">
-                  ※ 広告配信や行動追跡は行っておりません
-                </p>
               </div>
             </div>
           </section>
@@ -149,21 +136,10 @@
               </p>
               <ul class="space-y-2 text-sm text-gray-700">
                 <li>• お問い合わせフォームからアカウント削除をリクエストできます</li>
-                <li>• 削除時には、登録された個人情報も削除いたします</li>
+                <li>• 削除時に  は、登録された個人情報も削除いたします</li>
                 <li>• 公開済みの情報の一部は、サービス運営上残存する場合があります</li>
               </ul>
             </div>
-          </section>
-
-          <section>
-            <h2 class="text-2xl font-bold text-pink-600 mb-4 flex items-center gap-2">
-              <UserIcon class="h-6 w-6" />
-              年齢制限
-            </h2>
-            <p class="text-gray-700">
-              本サービスは13歳以上の方を対象としています。<br>
-              成人向けコンテンツも含まれるため、保護者の方はご注意ください。
-            </p>
           </section>
 
           <section>
@@ -177,14 +153,6 @@
             </p>
           </section>
 
-          <div class="mt-12 p-6 bg-pink-100 rounded-lg text-center">
-            <p class="text-lg font-bold text-pink-700 mb-2">
-              個人情報の保護に努めます
-            </p>
-            <p class="text-sm text-gray-600">
-              安心してgeica check!をご利用ください。
-            </p>
-          </div>
         </div>
       </div>
     </main>
