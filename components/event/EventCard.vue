@@ -1,11 +1,11 @@
 <template>
-  <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-200"
-       :class="{ 'ring-2 ring-pink-500': isCurrent }">
+  <div
+    class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-200"
+    :class="{ 'ring-2 ring-pink-500': isCurrent }">
     <!-- イベント状態バッジ -->
     <div class="px-4 pt-4">
       <div class="flex justify-between items-start mb-3">
-        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-              :class="statusBadgeClass">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" :class="statusBadgeClass">
           {{ statusText }}
         </span>
         <div v-if="isCurrent" class="flex items-center text-pink-600">
@@ -20,25 +20,20 @@
       <h3 class="text-lg font-semibold text-gray-900 mb-2">
         {{ event.name }}
       </h3>
-      
+
       <div class="space-y-2 text-sm text-gray-600 mb-4">
         <!-- 開催日 -->
         <div class="flex items-center">
           <CalendarIcon class="h-4 w-4 mr-2 text-gray-400" />
           <span>{{ formatEventDate(event.eventDate) }}</span>
         </div>
-        
+
         <!-- 会場 -->
         <div class="flex items-center">
           <MapPinIcon class="h-4 w-4 mr-2 text-gray-400" />
           <span>{{ event.venue.name }}</span>
         </div>
-        
-        <!-- 申込期間（今後・開催中のイベントのみ） -->
-        <div v-if="event.status !== 'completed'" class="flex items-center">
-          <ClockIcon class="h-4 w-4 mr-2 text-gray-400" />
-          <span>申込: {{ formatDateRange(event.registrationPeriod) }}</span>
-        </div>
+
       </div>
 
       <!-- 説明 -->
@@ -49,35 +44,18 @@
       <!-- アクションボタン -->
       <div class="flex space-x-2">
         <button @click="$emit('select', event.id)"
-                class="flex-1 bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-                :disabled="isCurrent">
+          class="flex-1 bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+          :disabled="isCurrent">
           {{ isCurrent ? '選択中' : 'このイベントを選択' }}
         </button>
-        
+
         <NuxtLink :to="`/events/${event.id}`"
-                  class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+          class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
           詳細
         </NuxtLink>
       </div>
     </div>
 
-    <!-- 統計情報（オプション） -->
-    <div v-if="showStats && stats" class="bg-gray-50 px-4 py-3 border-t border-gray-200">
-      <div class="grid grid-cols-3 gap-4 text-center">
-        <div>
-          <div class="text-lg font-semibold text-gray-900">{{ stats.totalCircles }}</div>
-          <div class="text-xs text-gray-500">サークル</div>
-        </div>
-        <div>
-          <div class="text-lg font-semibold text-gray-900">{{ stats.totalUsers }}</div>
-          <div class="text-xs text-gray-500">参加者</div>
-        </div>
-        <div>
-          <div class="text-lg font-semibold text-gray-900">{{ stats.totalBookmarks }}</div>
-          <div class="text-xs text-gray-500">ブックマーク</div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -151,13 +129,12 @@ const formatDateRange = (period: { start: Date; end: Date }) => {
     month: 'numeric',
     day: 'numeric'
   }).format(period.start)
-  
   const endDate = new Intl.DateTimeFormat('ja-JP', {
     month: 'numeric',
     day: 'numeric'
   }).format(period.end)
-  
-  return `${startDate} - ${endDate}`
+
+  eturn`${startDate} - ${endDate}`
 }
 
 // 統計情報を取得（showStatsがtrueの場合）

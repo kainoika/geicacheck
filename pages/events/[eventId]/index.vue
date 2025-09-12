@@ -16,7 +16,9 @@
         <div class="flex">
           <div class="flex-shrink-0">
             <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              <path fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clip-rule="evenodd" />
             </svg>
           </div>
           <div class="ml-3">
@@ -58,21 +60,21 @@
                   </li>
                 </ol>
               </nav>
-              
+
               <div class="mt-4 flex items-center space-x-4">
                 <h1 class="text-3xl font-bold text-gray-900">
                   {{ event.name }}
                 </h1>
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-                      :class="statusBadgeClass">
+                  :class="statusBadgeClass">
                   {{ statusText }}
                 </span>
               </div>
             </div>
-            
+
             <div class="flex space-x-3">
               <button v-if="!isCurrent" @click="selectEvent"
-                      class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-md font-medium transition-colors">
+                class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-md font-medium transition-colors">
                 このイベントを選択
               </button>
               <span v-else class="inline-flex items-center px-4 py-2 bg-pink-100 text-pink-800 rounded-md font-medium">
@@ -112,22 +114,6 @@
               </dl>
             </div>
 
-            <!-- 申込期間 -->
-            <div v-if="event.status !== 'completed'" class="bg-white rounded-lg shadow p-6">
-              <h2 class="text-lg font-semibold text-gray-900 mb-4">申込期間</h2>
-              <div class="flex items-center space-x-4">
-                <div>
-                  <div class="text-sm font-medium text-gray-500">開始</div>
-                  <div class="text-sm text-gray-900">{{ formatDate(event.registrationPeriod.start) }}</div>
-                </div>
-                <div class="text-gray-400">〜</div>
-                <div>
-                  <div class="text-sm font-medium text-gray-500">終了</div>
-                  <div class="text-sm text-gray-900">{{ formatDate(event.registrationPeriod.end) }}</div>
-                </div>
-              </div>
-            </div>
-
             <!-- 説明 -->
             <div v-if="event.description" class="bg-white rounded-lg shadow p-6">
               <h2 class="text-lg font-semibold text-gray-900 mb-4">イベント概要</h2>
@@ -139,17 +125,17 @@
               <h2 class="text-lg font-semibold text-gray-900 mb-4">クイックアクション</h2>
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <NuxtLink :to="`/circles`"
-                          class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                  class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
                   <BookOpenIcon class="h-5 w-5 mr-2 text-gray-400" />
                   <span class="text-sm font-medium">サークル一覧</span>
                 </NuxtLink>
                 <NuxtLink :to="`/map`"
-                          class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                  class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
                   <MapIcon class="h-5 w-5 mr-2 text-gray-400" />
                   <span class="text-sm font-medium">マップ</span>
                 </NuxtLink>
                 <NuxtLink :to="`/bookmarks`"
-                          class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                  class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
                   <StarIcon class="h-5 w-5 mr-2 text-gray-400" />
                   <span class="text-sm font-medium">ブックマーク</span>
                 </NuxtLink>
@@ -157,61 +143,19 @@
             </div>
           </div>
 
-          <!-- 右カラム: 統計情報 -->
           <div class="space-y-6">
-            <!-- 統計情報 -->
-            <div v-if="stats" class="bg-white rounded-lg shadow p-6">
-              <h2 class="text-lg font-semibold text-gray-900 mb-4">統計情報</h2>
-              <div class="space-y-4">
-                <div class="flex justify-between">
-                  <span class="text-sm text-gray-500">参加サークル数</span>
-                  <span class="text-sm font-medium text-gray-900">{{ stats.totalCircles }}</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-sm text-gray-500">参加者数</span>
-                  <span class="text-sm font-medium text-gray-900">{{ stats.totalUsers }}</span>
-                </div>
-                <div class="flex justify-between">
-                  <span class="text-sm text-gray-500">総ブックマーク数</span>
-                  <span class="text-sm font-medium text-gray-900">{{ stats.totalBookmarks }}</span>
-                </div>
-                
-                <hr class="my-4">
-                
-                <div class="space-y-2">
-                  <div class="text-sm font-medium text-gray-700">ブックマーク内訳</div>
-                  <div class="space-y-1">
-                    <div class="flex justify-between text-xs">
-                      <span class="text-gray-500">チェック予定</span>
-                      <span class="text-gray-900">{{ stats.bookmarksByCategory.check }}</span>
-                    </div>
-                    <div class="flex justify-between text-xs">
-                      <span class="text-gray-500">気になる</span>
-                      <span class="text-gray-900">{{ stats.bookmarksByCategory.interested }}</span>
-                    </div>
-                    <div class="flex justify-between text-xs">
-                      <span class="text-gray-500">優先</span>
-                      <span class="text-gray-900">{{ stats.bookmarksByCategory.priority }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <!-- 他のイベント -->
             <div v-if="otherEvents.length > 0" class="bg-white rounded-lg shadow p-6">
               <h2 class="text-lg font-semibold text-gray-900 mb-4">他のイベント</h2>
               <div class="space-y-3">
-                <NuxtLink v-for="otherEvent in otherEvents" :key="otherEvent.id"
-                          :to="`/events/${otherEvent.id}`"
-                          class="block p-3 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors">
+                <NuxtLink v-for="otherEvent in otherEvents" :key="otherEvent.id" :to="`/events/${otherEvent.id}`"
+                  class="block p-3 border border-gray-200 rounded-md hover:bg-gray-50 transition-colors">
                   <div class="flex justify-between items-center">
                     <div>
                       <div class="text-sm font-medium text-gray-900">{{ otherEvent.shortName }}</div>
                       <div class="text-xs text-gray-500">{{ formatDate(otherEvent.eventDate) }}</div>
                     </div>
-                    <span class="text-xs px-2 py-1 rounded-full"
-                          :class="getStatusBadgeClass(otherEvent.status)">
+                    <span class="text-xs px-2 py-1 rounded-full" :class="getStatusBadgeClass(otherEvent.status)">
                       {{ getStatusText(otherEvent.status) }}
                     </span>
                   </div>
@@ -226,11 +170,11 @@
 </template>
 
 <script setup lang="ts">
-import { 
-  ChevronRightIcon, 
-  StarIcon, 
-  BookOpenIcon, 
-  MapIcon 
+import {
+  ChevronRightIcon,
+  StarIcon,
+  BookOpenIcon,
+  MapIcon
 } from '@heroicons/vue/24/outline'
 import type { Event, EventStats } from '~/types'
 
@@ -244,11 +188,11 @@ definePageMeta({
 })
 
 // イベント管理
-const { 
+const {
   events,
-  currentEvent, 
-  getEventById, 
-  setCurrentEvent, 
+  currentEvent,
+  getEventById,
+  setCurrentEvent,
   fetchEvents,
   getEventStats,
   loading,
@@ -336,7 +280,7 @@ onMounted(async () => {
   if (events.value.length === 0) {
     await fetchEvents()
   }
-  
+
   // 統計情報を取得
   if (event.value) {
     stats.value = await getEventStats(eventId)
