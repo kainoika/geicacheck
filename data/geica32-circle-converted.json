@@ -6,10 +6,7 @@
     "penName": "ウミノモクズ",
     "penNameKana": "ウミノモクズ",
     "circleImageUrl": "",
-    "genre": [
-      "霧矢あおい",
-      "中心オールキャラ漫画"
-    ],
+    "genre": ["霧矢あおい", "中心オールキャラ漫画"],
     "placement": {
       "block": "カ",
       "number1": "01",
@@ -62,9 +59,7 @@
     "penName": "宮谷里沙",
     "penNameKana": "ミヤダニリサ",
     "circleImageUrl": "",
-    "genre": [
-      "アイカツアカデミー"
-    ],
+    "genre": ["アイカツアカデミー"],
     "placement": {
       "block": "カ",
       "number1": "05",
@@ -88,9 +83,7 @@
     "penName": "kei",
     "penNameKana": "ケイ",
     "circleImageUrl": "",
-    "genre": [
-      "瀬名翼×大空あかり"
-    ],
+    "genre": ["瀬名翼×大空あかり"],
     "placement": {
       "block": "ア",
       "number1": "01",
@@ -114,10 +107,7 @@
     "penName": "すぷな",
     "penNameKana": "スプナ",
     "circleImageUrl": "",
-    "genre": [
-      "瀬名翼×大空あかり",
-      "漫画"
-    ],
+    "genre": ["瀬名翼×大空あかり", "漫画"],
     "placement": {
       "block": "ア",
       "number1": "02",
@@ -141,9 +131,7 @@
     "penName": "おばあちゃん",
     "penNameKana": "オバアチャン",
     "circleImageUrl": "",
-    "genre": [
-      "アイカツスターズ!まとめ本"
-    ],
+    "genre": ["アイカツスターズ!まとめ本"],
     "placement": {
       "block": "ア",
       "number1": "03",
@@ -167,9 +155,7 @@
     "penName": "刹那莉織",
     "penNameKana": "セツナリオ",
     "circleImageUrl": "",
-    "genre": [
-      "スターズメインイラストまとめ本"
-    ],
+    "genre": ["スターズメインイラストまとめ本"],
     "placement": {
       "block": "ア",
       "number1": "04",
@@ -193,9 +179,7 @@
     "penName": "しとろん",
     "penNameKana": "シトロン",
     "circleImageUrl": "",
-    "genre": [
-      "全シリーズドレスイラスト本"
-    ],
+    "genre": ["全シリーズドレスイラスト本"],
     "placement": {
       "block": "ア",
       "number1": "05",
@@ -219,10 +203,7 @@
     "penName": "弾丸",
     "penNameKana": "ダンガン",
     "circleImageUrl": "",
-    "genre": [
-      "アイカツスターズ",
-      "オールキャラ"
-    ],
+    "genre": ["アイカツスターズ", "オールキャラ"],
     "placement": {
       "block": "ア",
       "number1": "06",
@@ -246,10 +227,7 @@
     "penName": "knb",
     "penNameKana": "ケーエヌビー",
     "circleImageUrl": "",
-    "genre": [
-      "アイカツスターズ!",
-      "イラスト本"
-    ],
+    "genre": ["アイカツスターズ!", "イラスト本"],
     "placement": {
       "block": "ア",
       "number1": "07",
@@ -273,9 +251,7 @@
     "penName": "灯屋はる",
     "penNameKana": "アカリヤハル",
     "circleImageUrl": "",
-    "genre": [
-      "オケカツのレポート"
-    ],
+    "genre": ["オケカツのレポート"],
     "placement": {
       "block": "ア",
       "number1": "08",
@@ -299,10 +275,7 @@
     "penName": "",
     "penNameKana": "",
     "circleImageUrl": "",
-    "genre": [
-      "アイカツ無印",
-      "中心イラスト本"
-    ],
+    "genre": ["アイカツ無印", "中心イラスト本"],
     "placement": {
       "block": "ア",
       "number1": "09",
@@ -326,10 +299,7 @@
     "penName": "jujumaru",
     "penNameKana": "ジュジュマル",
     "circleImageUrl": "",
-    "genre": [
-      "アイカツ無印中心",
-      "イラスト本"
-    ],
+    "genre": ["アイカツ無印中心", "イラスト本"],
     "placement": {
       "block": "ア",
       "number1": "10",
@@ -353,9 +323,7 @@
     "penName": "piyotori",
     "penNameKana": "ピヨトリ",
     "circleImageUrl": "",
-    "genre": [
-      "オールシリーズイラスト本"
-    ],
+    "genre": ["オールシリーズイラスト本"],
     "placement": {
       "block": "ア",
       "number1": "11",
@@ -379,9 +347,7 @@
     "penName": "小倉",
     "penNameKana": "オグラ",
     "circleImageUrl": "",
-    "genre": [
-      "オールキャライラスト本"
-    ],
+    "genre": ["オールキャライラスト本"],
     "placement": {
       "block": "ア",
       "number1": "12",
@@ -405,10 +371,7 @@
     "penName": "せみ",
     "penNameKana": "セミ",
     "circleImageUrl": "",
-    "genre": [
-      "マイキャラ",
-      "イラスト本"
-    ],
+    "genre": ["マイキャラ", "イラスト本"],
     "placement": {
       "block": "ア",
       "number1": "13",
@@ -432,9 +395,7 @@
     "penName": "千尋",
     "penNameKana": "チヒロ",
     "circleImageUrl": "",
-    "genre": [
-      "マイキャラ"
-    ],
+    "genre": ["マイキャラ"],
     "placement": {
       "block": "ア",
       "number1": "14",
@@ -458,9 +419,7 @@
     "penName": "しんじ、たぴ、猫じゃらし、よつ",
     "penNameKana": "シンジ、タピ、ネコジャラシ、ヨツ",
     "circleImageUrl": "",
-    "genre": [
-      "マイキャラ"
-    ],
+    "genre": ["マイキャラ"],
     "placement": {
       "block": "ア",
       "number1": "15",
@@ -484,9 +443,7 @@
     "penName": "よしち",
     "penNameKana": "ヨシチ",
     "circleImageUrl": "",
-    "genre": [
-      "マイキャラ"
-    ],
+    "genre": ["マイキャラ"],
     "placement": {
       "block": "ア",
       "number1": "17",
@@ -510,9 +467,7 @@
     "penName": "理久",
     "penNameKana": "リク",
     "circleImageUrl": "",
-    "genre": [
-      "マイキャラ"
-    ],
+    "genre": ["マイキャラ"],
     "placement": {
       "block": "ア",
       "number1": "18",
@@ -536,9 +491,7 @@
     "penName": "ぴっきゅむ",
     "penNameKana": "ピッキュム",
     "circleImageUrl": "",
-    "genre": [
-      "マイキャラ"
-    ],
+    "genre": ["マイキャラ"],
     "placement": {
       "block": "ア",
       "number1": "19",
@@ -562,10 +515,7 @@
     "penName": "銀次郎",
     "penNameKana": "ギンジロウ",
     "circleImageUrl": "",
-    "genre": [
-      "マイキャラ",
-      "イラスト本"
-    ],
+    "genre": ["マイキャラ", "イラスト本"],
     "placement": {
       "block": "ア",
       "number1": "20",
@@ -589,10 +539,7 @@
     "penName": "蓮、なや",
     "penNameKana": "レン、ナヤ",
     "circleImageUrl": "",
-    "genre": [
-      "マイキャラ",
-      "イラスト本"
-    ],
+    "genre": ["マイキャラ", "イラスト本"],
     "placement": {
       "block": "ア",
       "number1": "21",
@@ -616,9 +563,7 @@
     "penName": "ぶんたん",
     "penNameKana": "ブンタン",
     "circleImageUrl": "",
-    "genre": [
-      "マイキャラ"
-    ],
+    "genre": ["マイキャラ"],
     "placement": {
       "block": "ア",
       "number1": "22",
@@ -642,9 +587,7 @@
     "penName": "荒磯一",
     "penNameKana": "アライソハジメ",
     "circleImageUrl": "",
-    "genre": [
-      "マイキャラ"
-    ],
+    "genre": ["マイキャラ"],
     "placement": {
       "block": "ア",
       "number1": "23",
@@ -668,10 +611,7 @@
     "penName": "鈴白 会依 the 美少女",
     "penNameKana": "スズシロアイザビショウジョ",
     "circleImageUrl": "",
-    "genre": [
-      "アリス",
-      "キャロルメインイラスト本"
-    ],
+    "genre": ["アリス", "キャロルメインイラスト本"],
     "placement": {
       "block": "ア",
       "number1": "24",
@@ -695,10 +635,7 @@
     "penName": "モツ煮",
     "penNameKana": "モツニ",
     "circleImageUrl": "",
-    "genre": [
-      "花園きらら×早乙女あこ",
-      "合同誌"
-    ],
+    "genre": ["花園きらら×早乙女あこ", "合同誌"],
     "placement": {
       "block": "ア",
       "number1": "25",
@@ -722,9 +659,7 @@
     "penName": "桃内みき",
     "penNameKana": "モモウチミキ",
     "circleImageUrl": "",
-    "genre": [
-      "ハルカ☆ルカ中心シリアス漫画"
-    ],
+    "genre": ["ハルカ☆ルカ中心シリアス漫画"],
     "placement": {
       "block": "ア",
       "number1": "26",
@@ -748,9 +683,7 @@
     "penName": "みつしらせ",
     "penNameKana": "ミツシラセ",
     "circleImageUrl": "",
-    "genre": [
-      "ラブミーティアの中学生時代の漫画"
-    ],
+    "genre": ["ラブミーティアの中学生時代の漫画"],
     "placement": {
       "block": "ア",
       "number1": "27",
@@ -774,10 +707,7 @@
     "penName": "帰還者トーマス",
     "penNameKana": "キカンシャトーマス",
     "circleImageUrl": "",
-    "genre": [
-      "ラブミーティア",
-      "漫画"
-    ],
+    "genre": ["ラブミーティア", "漫画"],
     "placement": {
       "block": "ア",
       "number1": "29",
@@ -801,9 +731,7 @@
     "penName": "ゾンリー",
     "penNameKana": "ゾンリー",
     "circleImageUrl": "",
-    "genre": [
-      "友希ももね(+オリキャラ)メイン小説"
-    ],
+    "genre": ["友希ももね(+オリキャラ)メイン小説"],
     "placement": {
       "block": "ア",
       "number1": "31",
@@ -827,10 +755,7 @@
     "penName": "ぷらすか",
     "penNameKana": "プラスカ",
     "circleImageUrl": "",
-    "genre": [
-      "姫石さあや",
-      "イラスト本"
-    ],
+    "genre": ["姫石さあや", "イラスト本"],
     "placement": {
       "block": "ア",
       "number1": "32",
@@ -854,11 +779,7 @@
     "penName": "牛乳",
     "penNameKana": "ギュウニュウ",
     "circleImageUrl": "",
-    "genre": [
-      "アイカツプラネット",
-      "プロミスブーケ",
-      "イラスト本"
-    ],
+    "genre": ["アイカツプラネット", "プロミスブーケ", "イラスト本"],
     "placement": {
       "block": "ア",
       "number1": "33",
@@ -882,10 +803,7 @@
     "penName": "ろーいち",
     "penNameKana": "ローイチ",
     "circleImageUrl": "",
-    "genre": [
-      "姫乃みえる×和央パリン",
-      "漫画"
-    ],
+    "genre": ["姫乃みえる×和央パリン", "漫画"],
     "placement": {
       "block": "ア",
       "number1": "34",
@@ -909,10 +827,7 @@
     "penName": "のまころね",
     "penNameKana": "ノマコロネ",
     "circleImageUrl": "",
-    "genre": [
-      "和央パリン",
-      "漫画"
-    ],
+    "genre": ["和央パリン", "漫画"],
     "placement": {
       "block": "ア",
       "number1": "35",
@@ -936,10 +851,7 @@
     "penName": "ぶるーらいと",
     "penNameKana": "ブルーライト",
     "circleImageUrl": "",
-    "genre": [
-      "真未夢メエ",
-      "ゲーム配信コピ本"
-    ],
+    "genre": ["真未夢メエ", "ゲーム配信コピ本"],
     "placement": {
       "block": "ア",
       "number1": "36",
@@ -963,10 +875,7 @@
     "penName": "ちぇるし。，たんこぶちゃん",
     "penNameKana": "チェルシタンコブチャン",
     "circleImageUrl": "",
-    "genre": [
-      "服部ユウ",
-      "イラスト本"
-    ],
+    "genre": ["服部ユウ", "イラスト本"],
     "placement": {
       "block": "ア",
       "number1": "37",
@@ -990,10 +899,7 @@
     "penName": "かいのいか",
     "penNameKana": "カイノイカ",
     "circleImageUrl": "",
-    "genre": [
-      "漫画(服部ユウ)",
-      "グッズ(ユウスミ中心)"
-    ],
+    "genre": ["漫画(服部ユウ)", "グッズ(ユウスミ中心)"],
     "placement": {
       "block": "ア",
       "number1": "38",
@@ -1017,10 +923,7 @@
     "penName": "こんとらっぷ",
     "penNameKana": "コントラップ",
     "circleImageUrl": "",
-    "genre": [
-      "氷上スミレ",
-      "イラスト本"
-    ],
+    "genre": ["氷上スミレ", "イラスト本"],
     "placement": {
       "block": "ア",
       "number1": "39",
@@ -1044,10 +947,7 @@
     "penName": "きね",
     "penNameKana": "キネ",
     "circleImageUrl": "",
-    "genre": [
-      "神谷しおん×紅林珠璃",
-      "漫画"
-    ],
+    "genre": ["神谷しおん×紅林珠璃", "漫画"],
     "placement": {
       "block": "ア",
       "number1": "40",
@@ -1071,10 +971,7 @@
     "penName": "いちごのタルト",
     "penNameKana": "イチゴノタルト",
     "circleImageUrl": "",
-    "genre": [
-      "新条ひなき",
-      "漫画"
-    ],
+    "genre": ["新条ひなき", "漫画"],
     "placement": {
       "block": "ア",
       "number1": "41",
@@ -1098,11 +995,7 @@
     "penName": "味醂",
     "penNameKana": "ミリン",
     "circleImageUrl": "",
-    "genre": [
-      "黒沢凛",
-      "天羽まどか",
-      "漫画"
-    ],
+    "genre": ["黒沢凛", "天羽まどか", "漫画"],
     "placement": {
       "block": "ア",
       "number1": "42",
@@ -1126,10 +1019,7 @@
     "penName": "べじ.",
     "penNameKana": "ベジ",
     "circleImageUrl": "",
-    "genre": [
-      "天羽まどか",
-      "イラスト本"
-    ],
+    "genre": ["天羽まどか", "イラスト本"],
     "placement": {
       "block": "ア",
       "number1": "43",
@@ -1153,10 +1043,7 @@
     "penName": "L",
     "penNameKana": "エル",
     "circleImageUrl": "",
-    "genre": [
-      "黒沢凛",
-      "色紙"
-    ],
+    "genre": ["黒沢凛", "色紙"],
     "placement": {
       "block": "ア",
       "number1": "44",
@@ -1180,10 +1067,7 @@
     "penName": "熱海 綾",
     "penNameKana": "アタミアヤ",
     "circleImageUrl": "",
-    "genre": [
-      "虹野ゆめ×桜庭ローラ",
-      "漫画"
-    ],
+    "genre": ["虹野ゆめ×桜庭ローラ", "漫画"],
     "placement": {
       "block": "ア",
       "number1": "45",
@@ -1207,10 +1091,7 @@
     "penName": "あんにん",
     "penNameKana": "アンニン",
     "circleImageUrl": "",
-    "genre": [
-      "香澄夜空",
-      "イラスト本"
-    ],
+    "genre": ["香澄夜空", "イラスト本"],
     "placement": {
       "block": "ア",
       "number1": "46",
@@ -1234,10 +1115,7 @@
     "penName": "ゆめろま",
     "penNameKana": "ユメロマ",
     "circleImageUrl": "",
-    "genre": [
-      "香澄真昼×香澄夜空",
-      "漫画"
-    ],
+    "genre": ["香澄真昼×香澄夜空", "漫画"],
     "placement": {
       "block": "ア",
       "number1": "47",
@@ -1261,10 +1139,7 @@
     "penName": "きりうなぎ",
     "penNameKana": "キリウナギ",
     "circleImageUrl": "",
-    "genre": [
-      "白銀リリィ×二階堂ゆず",
-      "漫画"
-    ],
+    "genre": ["白銀リリィ×二階堂ゆず", "漫画"],
     "placement": {
       "block": "ア",
       "number1": "48",
@@ -1288,10 +1163,7 @@
     "penName": "府中はるる",
     "penNameKana": "フチュウハルル",
     "circleImageUrl": "",
-    "genre": [
-      "藤堂ユリカ",
-      "小説"
-    ],
+    "genre": ["藤堂ユリカ", "小説"],
     "placement": {
       "block": "ア",
       "number1": "49",
@@ -1315,10 +1187,7 @@
     "penName": "ひみつ吉",
     "penNameKana": "ヒミツキチ",
     "circleImageUrl": "",
-    "genre": [
-      "神谷しおん",
-      "漫画"
-    ],
+    "genre": ["神谷しおん", "漫画"],
     "placement": {
       "block": "ア",
       "number1": "50",
@@ -1342,10 +1211,7 @@
     "penName": "みつる",
     "penNameKana": "ミツル",
     "circleImageUrl": "",
-    "genre": [
-      "ぽわぽわプリリン",
-      "コメディ漫画"
-    ],
+    "genre": ["ぽわぽわプリリン", "コメディ漫画"],
     "placement": {
       "block": "ア",
       "number1": "51",
@@ -1369,10 +1235,7 @@
     "penName": "紙芽字",
     "penNameKana": "シメジ",
     "circleImageUrl": "",
-    "genre": [
-      "黒澤ミチル&幽木れいか",
-      "イラスト本"
-    ],
+    "genre": ["黒澤ミチル&幽木れいか", "イラスト本"],
     "placement": {
       "block": "ア",
       "number1": "52",
@@ -1396,10 +1259,7 @@
     "penName": "ホンマチ、",
     "penNameKana": "ホンマチ、",
     "circleImageUrl": "",
-    "genre": [
-      "風沢そら",
-      "小説"
-    ],
+    "genre": ["風沢そら", "小説"],
     "placement": {
       "block": "ア",
       "number1": "53",
@@ -1423,10 +1283,7 @@
     "penName": "ちなこ",
     "penNameKana": "チナコ",
     "circleImageUrl": "",
-    "genre": [
-      "大空あかり",
-      "漫画"
-    ],
+    "genre": ["大空あかり", "漫画"],
     "placement": {
       "block": "ア",
       "number1": "54",
@@ -1450,10 +1307,7 @@
     "penName": "のせ",
     "penNameKana": "ノセ",
     "circleImageUrl": "",
-    "genre": [
-      "大空あかり",
-      "イラスト本"
-    ],
+    "genre": ["大空あかり", "イラスト本"],
     "placement": {
       "block": "ア",
       "number1": "55",
@@ -1477,9 +1331,7 @@
     "penName": "いち",
     "penNameKana": "イチ",
     "circleImageUrl": "",
-    "genre": [
-      "大空あかりマンガ"
-    ],
+    "genre": ["大空あかりマンガ"],
     "placement": {
       "block": "ア",
       "number1": "56",
@@ -1503,10 +1355,7 @@
     "penName": "つちもと ひろき",
     "penNameKana": "ツチモトヒロキ",
     "circleImageUrl": "",
-    "genre": [
-      "大空あかり",
-      "小説"
-    ],
+    "genre": ["大空あかり", "小説"],
     "placement": {
       "block": "ア",
       "number1": "57",
@@ -1530,10 +1379,7 @@
     "penName": "ポンポ郷",
     "penNameKana": "ポンポゴウ",
     "circleImageUrl": "",
-    "genre": [
-      "大空あかり",
-      "北大路さくら"
-    ],
+    "genre": ["大空あかり", "北大路さくら"],
     "placement": {
       "block": "ア",
       "number1": "58",
@@ -1557,10 +1403,7 @@
     "penName": "未曾有",
     "penNameKana": "ミゾウ",
     "circleImageUrl": "",
-    "genre": [
-      "大空あかり",
-      "服部ユウペーパードール本"
-    ],
+    "genre": ["大空あかり", "服部ユウペーパードール本"],
     "placement": {
       "block": "ア",
       "number1": "59",
@@ -1584,9 +1427,7 @@
     "penName": "Az 豆",
     "penNameKana": "アズキ",
     "circleImageUrl": "",
-    "genre": [
-      "服部ユウx大空あかり"
-    ],
+    "genre": ["服部ユウx大空あかり"],
     "placement": {
       "block": "ア",
       "number1": "60",
@@ -1610,10 +1451,7 @@
     "penName": "加藤アカツキ",
     "penNameKana": "カトウアカツキ",
     "circleImageUrl": "",
-    "genre": [
-      "ソレイユ",
-      "イラスト本"
-    ],
+    "genre": ["ソレイユ", "イラスト本"],
     "placement": {
       "block": "ア",
       "number1": "61",
@@ -1637,10 +1475,7 @@
     "penName": "やまだぴや子",
     "penNameKana": "ヤマダピヤコ",
     "circleImageUrl": "",
-    "genre": [
-      "ソレイユ",
-      "イラスト本"
-    ],
+    "genre": ["ソレイユ", "イラスト本"],
     "placement": {
       "block": "ア",
       "number1": "62",
@@ -1664,10 +1499,7 @@
     "penName": "白いもの",
     "penNameKana": "シロイモノ",
     "circleImageUrl": "",
-    "genre": [
-      "星宮いちご",
-      "中心ギャグ"
-    ],
+    "genre": ["星宮いちご", "中心ギャグ"],
     "placement": {
       "block": "ア",
       "number1": "63",
@@ -1691,10 +1523,7 @@
     "penName": "しもやぎ",
     "penNameKana": "シモヤギ",
     "circleImageUrl": "",
-    "genre": [
-      "霧矢あおい",
-      "未来の漫画"
-    ],
+    "genre": ["霧矢あおい", "未来の漫画"],
     "placement": {
       "block": "ア",
       "number1": "64",
@@ -1718,11 +1547,7 @@
     "penName": "山口欠",
     "penNameKana": "ヤマグチカケル",
     "circleImageUrl": "",
-    "genre": [
-      "霧矢あおい",
-      "ぬいぐるみ",
-      "写真"
-    ],
+    "genre": ["霧矢あおい", "ぬいぐるみ", "写真"],
     "placement": {
       "block": "ア",
       "number1": "65",
@@ -1746,10 +1571,7 @@
     "penName": "まんじ",
     "penNameKana": "マンジ",
     "circleImageUrl": "",
-    "genre": [
-      "星宮らいち×霧矢あおい",
-      "漫画"
-    ],
+    "genre": ["星宮らいち×霧矢あおい", "漫画"],
     "placement": {
       "block": "ア",
       "number1": "66",
@@ -1773,10 +1595,7 @@
     "penName": "ラグドール",
     "penNameKana": "ラグドール",
     "circleImageUrl": "",
-    "genre": [
-      "一ノ瀬かえで×藤堂ユリカ",
-      "漫画"
-    ],
+    "genre": ["一ノ瀬かえで×藤堂ユリカ", "漫画"],
     "placement": {
       "block": "ア",
       "number1": "67",
@@ -1800,10 +1619,7 @@
     "penName": "フィア",
     "penNameKana": "フィア",
     "circleImageUrl": "",
-    "genre": [
-      "藤堂ユリカ",
-      "プレイマット"
-    ],
+    "genre": ["藤堂ユリカ", "プレイマット"],
     "placement": {
       "block": "ア",
       "number1": "68",
@@ -1827,10 +1643,7 @@
     "penName": "イクサ",
     "penNameKana": "イクサ",
     "circleImageUrl": "",
-    "genre": [
-      "三ノ輪ヒカリ",
-      "漫画"
-    ],
+    "genre": ["三ノ輪ヒカリ", "漫画"],
     "placement": {
       "block": "ア",
       "number1": "69",
@@ -1854,10 +1667,7 @@
     "penName": "よずく",
     "penNameKana": "ヨズク",
     "circleImageUrl": "",
-    "genre": [
-      "三ノ輪ヒカリ",
-      "漫画"
-    ],
+    "genre": ["三ノ輪ヒカリ", "漫画"],
     "placement": {
       "block": "ア",
       "number1": "70",
@@ -1881,10 +1691,7 @@
     "penName": "らむしと",
     "penNameKana": "ラムシト",
     "circleImageUrl": "",
-    "genre": [
-      "紫吹蘭×三ノ輪ヒカリ",
-      "漫画"
-    ],
+    "genre": ["紫吹蘭×三ノ輪ヒカリ", "漫画"],
     "placement": {
       "block": "ア",
       "number1": "71",
@@ -1908,10 +1715,7 @@
     "penName": "松浦あすか",
     "penNameKana": "マツウラアスカ",
     "circleImageUrl": "",
-    "genre": [
-      "蘭ユリ",
-      "漫画"
-    ],
+    "genre": ["蘭ユリ", "漫画"],
     "placement": {
       "block": "ア",
       "number1": "72",
@@ -1965,10 +1769,7 @@
     "penName": "緒結ころり",
     "penNameKana": "オムスビコロリ",
     "circleImageUrl": "",
-    "genre": [
-      "18同人誌",
-      "モブ×霧矢あおい成人向け漫画"
-    ],
+    "genre": ["18同人誌", "モブ×霧矢あおい成人向け漫画"],
     "placement": {
       "block": "ド",
       "number1": "02",
@@ -1992,11 +1793,7 @@
     "penName": "ホイさん",
     "penNameKana": "ホイサン",
     "circleImageUrl": "",
-    "genre": [
-      "18同人誌",
-      "織姫学園長",
-      "成人向け漫画"
-    ],
+    "genre": ["18同人誌", "織姫学園長", "成人向け漫画"],
     "placement": {
       "block": "ド",
       "number1": "03",
@@ -2020,11 +1817,7 @@
     "penName": "MG",
     "penNameKana": "メガ",
     "circleImageUrl": "",
-    "genre": [
-      "18同人誌",
-      "大空あかり",
-      "漫画(成人向け)"
-    ],
+    "genre": ["18同人誌", "大空あかり", "漫画(成人向け)"],
     "placement": {
       "block": "ド",
       "number1": "04",
@@ -2048,11 +1841,7 @@
     "penName": "ポンケ",
     "penNameKana": "ポンケ",
     "circleImageUrl": "",
-    "genre": [
-      "18同人誌",
-      "白樺リサ",
-      "成人向け漫画"
-    ],
+    "genre": ["18同人誌", "白樺リサ", "成人向け漫画"],
     "placement": {
       "block": "ド",
       "number1": "05",
@@ -2076,11 +1865,7 @@
     "penName": "亜住",
     "penNameKana": "アスミ",
     "circleImageUrl": "",
-    "genre": [
-      "18同人誌",
-      "桜庭ローラ",
-      "成人向け"
-    ],
+    "genre": ["18同人誌", "桜庭ローラ", "成人向け"],
     "placement": {
       "block": "ド",
       "number1": "06",
@@ -2104,11 +1889,7 @@
     "penName": "いるかやろう",
     "penNameKana": "イルカヤロウ",
     "circleImageUrl": "",
-    "genre": [
-      "18同人誌",
-      "友希あいねR18",
-      "漫画"
-    ],
+    "genre": ["18同人誌", "友希あいねR18", "漫画"],
     "placement": {
       "block": "ド",
       "number1": "07",
@@ -2132,10 +1913,7 @@
     "penName": "まぐ",
     "penNameKana": "マグ",
     "circleImageUrl": "",
-    "genre": [
-      "18同人誌",
-      "ピュアパレット成人向け漫画"
-    ],
+    "genre": ["18同人誌", "ピュアパレット成人向け漫画"],
     "placement": {
       "block": "ド",
       "number1": "08",
@@ -2159,11 +1937,7 @@
     "penName": "ヒビキ",
     "penNameKana": "ヒビキ",
     "circleImageUrl": "",
-    "genre": [
-      "18同人誌",
-      "明日香ミライ×友希あいね",
-      "18禁漫画"
-    ],
+    "genre": ["18同人誌", "明日香ミライ×友希あいね", "18禁漫画"],
     "placement": {
       "block": "ド",
       "number1": "09",
@@ -2187,10 +1961,7 @@
     "penName": "RR",
     "penNameKana": "アールアール",
     "circleImageUrl": "",
-    "genre": [
-      "18同人誌",
-      "オールキャライラスト本"
-    ],
+    "genre": ["18同人誌", "オールキャライラスト本"],
     "placement": {
       "block": "ド",
       "number1": "10",
@@ -2242,12 +2013,7 @@
     "penName": "りょ",
     "penNameKana": "リョ",
     "circleImageUrl": "",
-    "genre": [
-      "18同人誌",
-      "アイカツアカデミー",
-      "凛堂たいむ",
-      "イラスト本"
-    ],
+    "genre": ["18同人誌", "アイカツアカデミー", "凛堂たいむ", "イラスト本"],
     "placement": {
       "block": "ド",
       "number1": "12",
@@ -2271,11 +2037,7 @@
     "penName": "破箒 芥",
     "penNameKana": "ヤブレボウキアクタ",
     "circleImageUrl": "",
-    "genre": [
-      "18同人誌",
-      "大空あかり中心×モブおじさん",
-      "漫画"
-    ],
+    "genre": ["18同人誌", "大空あかり中心×モブおじさん", "漫画"],
     "placement": {
       "block": "ド",
       "number1": "13",
@@ -2299,9 +2061,7 @@
     "penName": "宝生 そら",
     "penNameKana": "ホウショウソラ",
     "circleImageUrl": "",
-    "genre": [
-      "DCD考察本"
-    ],
+    "genre": ["DCD考察本"],
     "placement": {
       "block": "ド",
       "number1": "15",
@@ -2325,9 +2085,7 @@
     "penName": "三上",
     "penNameKana": "ミカミ",
     "circleImageUrl": "",
-    "genre": [
-      "オールキャラギャグ4コマ"
-    ],
+    "genre": ["オールキャラギャグ4コマ"],
     "placement": {
       "block": "ド",
       "number1": "16",
@@ -2351,11 +2109,7 @@
     "penName": "しまみず",
     "penNameKana": "シマミズ",
     "circleImageUrl": "",
-    "genre": [
-      "アイカツ",
-      "オールキャラ",
-      "漫画"
-    ],
+    "genre": ["アイカツ", "オールキャラ", "漫画"],
     "placement": {
       "block": "ド",
       "number1": "17",
@@ -2379,10 +2133,7 @@
     "penName": "伊藤キース",
     "penNameKana": "イトウキース",
     "circleImageUrl": "",
-    "genre": [
-      "アイカツシリーズ全般",
-      "イラスト本"
-    ],
+    "genre": ["アイカツシリーズ全般", "イラスト本"],
     "placement": {
       "block": "ド",
       "number1": "18",
@@ -2406,9 +2157,7 @@
     "penName": "藤咲",
     "penNameKana": "フジサキ",
     "circleImageUrl": "",
-    "genre": [
-      "アイカツ!オールキャライラスト本"
-    ],
+    "genre": ["アイカツ!オールキャライラスト本"],
     "placement": {
       "block": "ド",
       "number1": "19",
@@ -2432,11 +2181,7 @@
     "penName": "じんるいあい",
     "penNameKana": "ジンルイアイ",
     "circleImageUrl": "",
-    "genre": [
-      "グッズ",
-      "アイカツ!無印のオールキャラ",
-      "クリアシール"
-    ],
+    "genre": ["グッズ", "アイカツ!無印のオールキャラ", "クリアシール"],
     "placement": {
       "block": "ド",
       "number1": "20",
@@ -2460,11 +2205,7 @@
     "penName": "めるきゅ",
     "penNameKana": "メルキュ",
     "circleImageUrl": "",
-    "genre": [
-      "全年齢",
-      "初代～スターズ",
-      "イラスト本"
-    ],
+    "genre": ["全年齢", "初代～スターズ", "イラスト本"],
     "placement": {
       "block": "ド",
       "number1": "21",
@@ -2488,10 +2229,7 @@
     "penName": "Ichika",
     "penNameKana": "イチカ",
     "circleImageUrl": "",
-    "genre": [
-      "紫吹蘭×霧矢あおい",
-      "漫画"
-    ],
+    "genre": ["紫吹蘭×霧矢あおい", "漫画"],
     "placement": {
       "block": "ド",
       "number1": "22",
@@ -2515,9 +2253,7 @@
     "penName": "筒、カチコミ大吟醸",
     "penNameKana": "ツツカチコミダイギンジョウ",
     "circleImageUrl": "",
-    "genre": [
-      "オールキャライラスト集"
-    ],
+    "genre": ["オールキャライラスト集"],
     "placement": {
       "block": "ド",
       "number1": "23",
@@ -2541,11 +2277,7 @@
     "penName": "ちも森",
     "penNameKana": "チモモリ",
     "circleImageUrl": "",
-    "genre": [
-      "アイカツ",
-      "無印",
-      "イラスト本"
-    ],
+    "genre": ["アイカツ", "無印", "イラスト本"],
     "placement": {
       "block": "ド",
       "number1": "25",
@@ -2569,10 +2301,7 @@
     "penName": "じゃんぐる",
     "penNameKana": "ジャングル",
     "circleImageUrl": "",
-    "genre": [
-      "デミカツ中心オールシリーズ",
-      "イラスト本"
-    ],
+    "genre": ["デミカツ中心オールシリーズ", "イラスト本"],
     "placement": {
       "block": "ド",
       "number1": "26",
@@ -2596,9 +2325,7 @@
     "penName": "とぅっしぃ",
     "penNameKana": "トゥッシィ",
     "circleImageUrl": "",
-    "genre": [
-      "デミカツメインのイラスト集"
-    ],
+    "genre": ["デミカツメインのイラスト集"],
     "placement": {
       "block": "ド",
       "number1": "27",
@@ -2622,9 +2349,7 @@
     "penName": "みずみゆの",
     "penNameKana": "ミズミユノ",
     "circleImageUrl": "",
-    "genre": [
-      "アイカツアカデミーオススメ動画まとめと4コマ少々の同人誌"
-    ],
+    "genre": ["アイカツアカデミーオススメ動画まとめと4コマ少々の同人誌"],
     "placement": {
       "block": "ド",
       "number1": "28",
@@ -2648,10 +2373,7 @@
     "penName": "なお",
     "penNameKana": "ナオ",
     "circleImageUrl": "",
-    "genre": [
-      "アイカツアカデミー",
-      "イラスト本"
-    ],
+    "genre": ["アイカツアカデミー", "イラスト本"],
     "placement": {
       "block": "ド",
       "number1": "29",
@@ -2675,9 +2397,7 @@
     "penName": "桜勝優也",
     "penNameKana": "オウショウユウヤ",
     "circleImageUrl": "",
-    "genre": [
-      "アイカツアカデミーゲーム配信ギャグマンガ(マキON)"
-    ],
+    "genre": ["アイカツアカデミーゲーム配信ギャグマンガ(マキON)"],
     "placement": {
       "block": "ド",
       "number1": "30",
@@ -2701,10 +2421,7 @@
     "penName": "まぐちよ",
     "penNameKana": "マグチヨ",
     "circleImageUrl": "",
-    "genre": [
-      "オールキャラ",
-      "イラスト本"
-    ],
+    "genre": ["オールキャラ", "イラスト本"],
     "placement": {
       "block": "ド",
       "number1": "31",
@@ -2728,9 +2445,7 @@
     "penName": "こえど",
     "penNameKana": "コエド",
     "circleImageUrl": "",
-    "genre": [
-      "あかジェネ"
-    ],
+    "genre": ["あかジェネ"],
     "placement": {
       "block": "ド",
       "number1": "32",
@@ -2754,10 +2469,7 @@
     "penName": "ARIA、棗",
     "penNameKana": "アリア、ナツメ",
     "circleImageUrl": "",
-    "genre": [
-      "あかりジェネレーション",
-      "漫画"
-    ],
+    "genre": ["あかりジェネレーション", "漫画"],
     "placement": {
       "block": "ド",
       "number1": "33",
@@ -2781,9 +2493,7 @@
     "penName": "マクラ",
     "penNameKana": "マクラ",
     "circleImageUrl": "",
-    "genre": [
-      "オールキャラギャグ漫画"
-    ],
+    "genre": ["オールキャラギャグ漫画"],
     "placement": {
       "block": "ド",
       "number1": "34",
@@ -2807,11 +2517,7 @@
     "penName": "女児閣下&まゆちゃ",
     "penNameKana": "ジョジカッカ&マユチャ",
     "circleImageUrl": "",
-    "genre": [
-      "オールキャライラスト集",
-      "色紙",
-      "ステッカー"
-    ],
+    "genre": ["オールキャライラスト集", "色紙", "ステッカー"],
     "placement": {
       "block": "ド",
       "number1": "35",
@@ -2835,9 +2541,7 @@
     "penName": "うぇい",
     "penNameKana": "ウェイ",
     "circleImageUrl": "",
-    "genre": [
-      "オールキャラギャグ"
-    ],
+    "genre": ["オールキャラギャグ"],
     "placement": {
       "block": "ド",
       "number1": "36",
@@ -2861,9 +2565,7 @@
     "penName": "F2型ガドリー",
     "penNameKana": "エフツウガタガドリー",
     "circleImageUrl": "",
-    "genre": [
-      "自作のアイカツ!ガレージキットの展示+コピ本頒布"
-    ],
+    "genre": ["自作のアイカツ!ガレージキットの展示+コピ本頒布"],
     "placement": {
       "block": "ド",
       "number1": "37",
@@ -2887,9 +2589,7 @@
     "penName": "eat_module",
     "penNameKana": "イートモジュール",
     "circleImageUrl": "",
-    "genre": [
-      "アイカツ無印オールキャライラスト本"
-    ],
+    "genre": ["アイカツ無印オールキャライラスト本"],
     "placement": {
       "block": "ド",
       "number1": "38",
@@ -2913,9 +2613,7 @@
     "penName": "いやはにこ、くろわ",
     "penNameKana": "イヤハニコ、クロワ",
     "circleImageUrl": "",
-    "genre": [
-      "オールキャライラスト本"
-    ],
+    "genre": ["オールキャライラスト本"],
     "placement": {
       "block": "ド",
       "number1": "39",
@@ -2939,11 +2637,7 @@
     "penName": "杞憂太郎",
     "penNameKana": "キユウタロウ",
     "circleImageUrl": "",
-    "genre": [
-      "同人ゲーム",
-      "天羽まどか",
-      "黒沢凛"
-    ],
+    "genre": ["同人ゲーム", "天羽まどか", "黒沢凛"],
     "placement": {
       "block": "ド",
       "number1": "40",
@@ -2967,10 +2661,7 @@
     "penName": "か～に飯",
     "penNameKana": "カーニハン",
     "circleImageUrl": "",
-    "genre": [
-      "霧矢あおい×神谷しおん",
-      "イケナイ刑事ノベルゲーム"
-    ],
+    "genre": ["霧矢あおい×神谷しおん", "イケナイ刑事ノベルゲーム"],
     "placement": {
       "block": "ド",
       "number1": "41",
@@ -2994,10 +2685,7 @@
     "penName": "たけくも",
     "penNameKana": "タケクモ",
     "circleImageUrl": "",
-    "genre": [
-      "音楽CD",
-      "キャラクターイメージ音楽CD"
-    ],
+    "genre": ["音楽CD", "キャラクターイメージ音楽CD"],
     "placement": {
       "block": "ド",
       "number1": "42",
@@ -3021,10 +2709,7 @@
     "penName": "みそのさん、ぬぬさん",
     "penNameKana": "ミソノサン、ヌヌサン",
     "circleImageUrl": "",
-    "genre": [
-      "音楽CD",
-      "吹奏楽生演奏アレンジCD"
-    ],
+    "genre": ["音楽CD", "吹奏楽生演奏アレンジCD"],
     "placement": {
       "block": "ド",
       "number1": "43",
@@ -3048,10 +2733,7 @@
     "penName": "4423",
     "penNameKana": "ヨシズミ",
     "circleImageUrl": "",
-    "genre": [
-      "音楽CD",
-      "アレンジ音楽CD"
-    ],
+    "genre": ["音楽CD", "アレンジ音楽CD"],
     "placement": {
       "block": "ド",
       "number1": "45",
@@ -3075,10 +2757,7 @@
     "penName": "アフリカンサマータイム",
     "penNameKana": "アフリカンサマータイム",
     "circleImageUrl": "",
-    "genre": [
-      "音楽CD",
-      "アコースティックギターアレンジCD/ピック"
-    ],
+    "genre": ["音楽CD", "アコースティックギターアレンジCD/ピック"],
     "placement": {
       "block": "ド",
       "number1": "46",
@@ -3102,10 +2781,7 @@
     "penName": "ねこぜなおとこ",
     "penNameKana": "ネコゼナオトコ",
     "circleImageUrl": "",
-    "genre": [
-      "音楽CD",
-      "アレンジ音楽CD"
-    ],
+    "genre": ["音楽CD", "アレンジ音楽CD"],
     "placement": {
       "block": "ド",
       "number1": "47",
@@ -3129,10 +2805,7 @@
     "penName": "めがね屋四重奏",
     "penNameKana": "メガネヤシジュウソウ",
     "circleImageUrl": "",
-    "genre": [
-      "音楽CD",
-      "ルミナス大好きアレンジ音楽CD"
-    ],
+    "genre": ["音楽CD", "ルミナス大好きアレンジ音楽CD"],
     "placement": {
       "block": "ド",
       "number1": "48",
@@ -3156,11 +2829,7 @@
     "penName": "猫乃うた",
     "penNameKana": "ネコノウタ",
     "circleImageUrl": "",
-    "genre": [
-      "コスプレ",
-      "星宮いちご",
-      "コスプレ写真集"
-    ],
+    "genre": ["コスプレ", "星宮いちご", "コスプレ写真集"],
     "placement": {
       "block": "ド",
       "number1": "49",
@@ -3184,11 +2853,7 @@
     "penName": "雪華 はる",
     "penNameKana": "ユキナハル",
     "circleImageUrl": "",
-    "genre": [
-      "コスプレ",
-      "霧矢あおい",
-      "コスプレ写真集"
-    ],
+    "genre": ["コスプレ", "霧矢あおい", "コスプレ写真集"],
     "placement": {
       "block": "ド",
       "number1": "50",
@@ -3212,11 +2877,7 @@
     "penName": "魔法猫みぃぃ",
     "penNameKana": "マホウネコミィィ",
     "circleImageUrl": "",
-    "genre": [
-      "グッズ",
-      "オールキャライラスト",
-      "イメージグッズ"
-    ],
+    "genre": ["グッズ", "オールキャライラスト", "イメージグッズ"],
     "placement": {
       "block": "ド",
       "number1": "51",
@@ -3240,12 +2901,7 @@
     "penName": "ティニー",
     "penNameKana": "ティニー",
     "circleImageUrl": "",
-    "genre": [
-      "グッズ",
-      "早乙女あこ",
-      "缶バッジ",
-      "クリアファイル"
-    ],
+    "genre": ["グッズ", "早乙女あこ", "缶バッジ", "クリアファイル"],
     "placement": {
       "block": "ド",
       "number1": "52",
@@ -3299,10 +2955,7 @@
     "penName": "ちと",
     "penNameKana": "チト",
     "circleImageUrl": "",
-    "genre": [
-      "グッズ",
-      "ドリアカメインのバッジやシールなどのイラストグッズ"
-    ],
+    "genre": ["グッズ", "ドリアカメインのバッジやシールなどのイラストグッズ"],
     "placement": {
       "block": "ド",
       "number1": "54",
@@ -3326,11 +2979,7 @@
     "penName": "ものどら",
     "penNameKana": "モノドラ",
     "circleImageUrl": "",
-    "genre": [
-      "グッズ",
-      "友希あいね",
-      "シール"
-    ],
+    "genre": ["グッズ", "友希あいね", "シール"],
     "placement": {
       "block": "ド",
       "number1": "55",
@@ -3354,10 +3003,7 @@
     "penName": "まり、ひまり",
     "penNameKana": "マリ、ヒマリ",
     "circleImageUrl": "",
-    "genre": [
-      "グッズ",
-      "モチーフアクセサリー"
-    ],
+    "genre": ["グッズ", "モチーフアクセサリー"],
     "placement": {
       "block": "ド",
       "number1": "56",
@@ -3381,11 +3027,7 @@
     "penName": "うっけ",
     "penNameKana": "ウッケ",
     "circleImageUrl": "",
-    "genre": [
-      "グッズ",
-      "ALLアイカツ",
-      "アクスタ"
-    ],
+    "genre": ["グッズ", "ALLアイカツ", "アクスタ"],
     "placement": {
       "block": "ド",
       "number1": "57",
@@ -3437,10 +3079,7 @@
     "penName": "あっさ＊",
     "penNameKana": "アッサ",
     "circleImageUrl": "",
-    "genre": [
-      "グッズ",
-      "キューピットさん漫画"
-    ],
+    "genre": ["グッズ", "キューピットさん漫画"],
     "placement": {
       "block": "ド",
       "number1": "59",
@@ -3464,11 +3103,7 @@
     "penName": "ちゃも",
     "penNameKana": "チャモ",
     "circleImageUrl": "",
-    "genre": [
-      "グッズ",
-      "大空あかり",
-      "グッズ"
-    ],
+    "genre": ["グッズ", "大空あかり", "グッズ"],
     "placement": {
       "block": "ド",
       "number1": "60",
@@ -3492,11 +3127,7 @@
     "penName": "よつば",
     "penNameKana": "ヨツバ",
     "circleImageUrl": "",
-    "genre": [
-      "グッズ",
-      "大空あかり",
-      "色紙"
-    ],
+    "genre": ["グッズ", "大空あかり", "色紙"],
     "placement": {
       "block": "ド",
       "number1": "61",
@@ -3520,11 +3151,7 @@
     "penName": "sue",
     "penNameKana": "スエ",
     "circleImageUrl": "",
-    "genre": [
-      "グッズ",
-      "キーホルダー",
-      "スターライト学園中心"
-    ],
+    "genre": ["グッズ", "キーホルダー", "スターライト学園中心"],
     "placement": {
       "block": "ド",
       "number1": "62",
@@ -3548,10 +3175,7 @@
     "penName": "黒地マサト",
     "penNameKana": "クロジマサト",
     "circleImageUrl": "",
-    "genre": [
-      "グッズ",
-      "無印オールキャラのシール"
-    ],
+    "genre": ["グッズ", "無印オールキャラのシール"],
     "placement": {
       "block": "ド",
       "number1": "63",
@@ -3606,10 +3230,7 @@
     "penName": "Cyndi",
     "penNameKana": "シンディ",
     "circleImageUrl": "",
-    "genre": [
-      "グッズ",
-      "いちご&あかり世代のグッズメイン"
-    ],
+    "genre": ["グッズ", "いちご&あかり世代のグッズメイン"],
     "placement": {
       "block": "ド",
       "number1": "65",
@@ -3633,12 +3254,7 @@
     "penName": "せりか",
     "penNameKana": "セリカ",
     "circleImageUrl": "",
-    "genre": [
-      "グッズ",
-      "星宮いちご",
-      "マスカレード中心",
-      "グッズ"
-    ],
+    "genre": ["グッズ", "星宮いちご", "マスカレード中心", "グッズ"],
     "placement": {
       "block": "ド",
       "number1": "67",
@@ -3662,10 +3278,7 @@
     "penName": "PEACH JUN",
     "penNameKana": "ピーチジュン",
     "circleImageUrl": "",
-    "genre": [
-      "グッズ",
-      "デミカツステッカー"
-    ],
+    "genre": ["グッズ", "デミカツステッカー"],
     "placement": {
       "block": "ド",
       "number1": "68",
@@ -3689,11 +3302,7 @@
     "penName": "ナナナ",
     "penNameKana": "ナナナ",
     "circleImageUrl": "",
-    "genre": [
-      "グッズ",
-      "りんどうたいむ",
-      "ステッカー"
-    ],
+    "genre": ["グッズ", "りんどうたいむ", "ステッカー"],
     "placement": {
       "block": "ド",
       "number1": "69",
@@ -3717,11 +3326,7 @@
     "penName": "うさのなぎ",
     "penNameKana": "ウサノナギ",
     "circleImageUrl": "",
-    "genre": [
-      "グッズ",
-      "和央パリン",
-      "ステッカー"
-    ],
+    "genre": ["グッズ", "和央パリン", "ステッカー"],
     "placement": {
       "block": "ド",
       "number1": "70",
@@ -3745,12 +3350,7 @@
     "penName": "珠月まや",
     "penNameKana": "ミヅキマヤ",
     "circleImageUrl": "",
-    "genre": [
-      "グッズ",
-      "アイカツアカデミー",
-      "オールキャラ",
-      "グッズ"
-    ],
+    "genre": ["グッズ", "アイカツアカデミー", "オールキャラ", "グッズ"],
     "placement": {
       "block": "ド",
       "number1": "71",
@@ -3774,10 +3374,7 @@
     "penName": "雀宮 ゆうり",
     "penNameKana": "スズメノミヤユウリ",
     "circleImageUrl": "",
-    "genre": [
-      "グッズ",
-      "アイカツアカデミー"
-    ],
+    "genre": ["グッズ", "アイカツアカデミー"],
     "placement": {
       "block": "ド",
       "number1": "72",
