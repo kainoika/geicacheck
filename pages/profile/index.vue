@@ -145,25 +145,7 @@
             <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
               アカウント設定
             </h3>
-            <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
-              <button 
-                @click="exportBookmarks"
-                :disabled="loading"
-                style="padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: 0.25rem;"
-                :style="{ opacity: loading ? 0.5 : 1, cursor: loading ? 'not-allowed' : 'pointer' }"
-              >
-                <DocumentArrowDownIcon class="h-4 w-4" /> ブックマークをCSVエクスポート
-              </button>
-              
-              <button 
-                @click="refreshEditPermissions"
-                :disabled="loading"
-                style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: 0.25rem;"
-                :style="{ opacity: loading ? 0.5 : 1, cursor: loading ? 'not-allowed' : 'pointer' }"
-              >
-                <ArrowPathIcon class="h-4 w-4" /> 権限情報を更新
-              </button>
-              
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem;">                            
               <button 
                 @click="showDeleteConfirm = true"
                 :disabled="loading"
@@ -173,14 +155,6 @@
                 <TrashIcon class="h-4 w-4" /> アカウント削除
               </button>
               
-              <button 
-                @click="handleSignOut"
-                :disabled="loading"
-                style="padding: 0.5rem 1rem; background: #6b7280; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: 0.25rem;"
-                :style="{ opacity: loading ? 0.5 : 1, cursor: loading ? 'not-allowed' : 'pointer' }"
-              >
-                <ArrowRightOnRectangleIcon class="h-4 w-4" /> ログアウト
-              </button>
             </div>
           </div>
         </div>
@@ -543,81 +517,11 @@ const getRequestStatusLabel = (status) => {
   }
 }
 
-const exportBookmarks = async () => {
-  try {
-    loading.value = true
-    
-    // 実際の実装では useBookmarks()のエクスポート機能を使用
-    // const { exportToCSV } = useBookmarks()
-    // await exportToCSV()
-    
-    logger.info('Exporting bookmarks to CSV...')
-    
-    // ダミーデータでCSVエクスポートのシミュレーション
-    const csvContent = generateDummyCSV()
-    downloadCSV(csvContent, `bookmarks_${new Date().toISOString().split('T')[0]}.csv`)
-    
-    alert('ブックマークをCSVファイルとしてダウンロードしました')
-    
-  } catch (err) {
-    console.error('CSVエクスポートエラー:', err)
-    alert('CSVエクスポートに失敗しました')
-  } finally {
-    loading.value = false
-  }
-}
-
-const generateDummyCSV = () => {
-  const headers = ['サークル名', 'ジャンル', '配置', 'カテゴリ', 'メモ', 'Twitter']
-  const rows = [
-    ['サンプルサークル1', 'アイカツ!', 'A-01', 'チェック', '新刊が気になる', '@sample1'],
-    ['サンプルサークル2', 'アイカツスターズ!', 'B-15', '優先', '限定グッズあり', '@sample2']
-  ]
-  
-  return [headers, ...rows]
-    .map(row => row.map(cell => `"${cell}"`).join(','))
-    .join('\n')
-}
-
-const downloadCSV = (content, filename) => {
-  const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' })
-  const link = document.createElement('a')
-  
-  if (link.download !== undefined) {
-    const url = URL.createObjectURL(blob)
-    link.setAttribute('href', url)
-    link.setAttribute('download', filename)
-    link.style.visibility = 'hidden'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
-}
-
 // applyForEditPermission 関数は削除 - サークル詳細ページから申請を行うため
 
 // handleCircleSelection 関数は削除 - サークル詳細ページから申請を行うため
 
 // handleApplicationSuccess 関数は削除 - サークル詳細ページから申請を行うため
-
-const handleSignOut = async () => {
-  try {
-    loading.value = true
-    
-    // 実際の実装では useAuth().signOut() を使用
-    // const { signOut } = useAuth()
-    // await signOut()
-    
-    logger.info('Signing out user...')
-    await navigateTo('/auth/login')
-    
-  } catch (err) {
-    console.error('ログアウトエラー:', err)
-    alert('ログアウトに失敗しました')
-  } finally {
-    loading.value = false
-  }
-}
 
 const deleteAccount = async () => {
   try {
