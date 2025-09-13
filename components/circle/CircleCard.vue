@@ -54,8 +54,8 @@
                 <h3 class="text-lg font-semibold text-gray-900 truncate">
                     {{ circle.circleName }}
                 </h3>
-                <p v-if="circle.circleKana" class="text-sm text-gray-500 mt-1">
-                    {{ circle.circleKana }}
+                <p v-if="circle.penName" class="text-sm text-gray-500 mt-1">
+                    {{ circle.penName }}
                 </p>
             </div>
 

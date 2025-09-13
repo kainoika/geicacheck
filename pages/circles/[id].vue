@@ -39,8 +39,8 @@
               <h1 class="circle-title">
                 {{ circle.circleName }}
               </h1>
-              <p v-if="circle.circleKana" class="circle-kana">
-                {{ circle.circleKana }}
+              <p v-if="circle.penName" class="circle-pen-name">
+                {{ circle.penName }}
               </p>
             </div>
             
@@ -650,7 +650,7 @@ useHead(() => ({
   word-break: break-word;
 }
 
-.circle-kana {
+.circle-pen-name {
   color: #6b7280;
   margin: 0;
   font-size: 0.875rem;
@@ -742,7 +742,7 @@ useHead(() => ({
     margin-bottom: 0.5rem;
   }
   
-  .circle-kana {
+  .circle-pen-name {
     font-size: 1.125rem;
   }
   
