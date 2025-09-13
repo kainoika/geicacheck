@@ -266,10 +266,10 @@
               バグ報告や機能要望はこちらからお送りください
             </p>
             <a 
-              href="https://marshmallow-qa.com/kainoika8?t=o3fyBa&utm_medium=url_text&utm_source=promotionm"
+              href="https://forms.gle/oJheDtS1oZWBTm6v8"
               style="color: #ff69b4; text-decoration: none; font-weight: 500;"
             >
-              マシュマロ
+              お問い合わせフォーム
             </a>
           </div>
 
