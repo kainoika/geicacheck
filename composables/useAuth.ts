@@ -3,6 +3,7 @@ import {
   TwitterAuthProvider,
   signOut as firebaseSignOut,
   onAuthStateChanged,
+  deleteUser,
   type User as FirebaseUser,
 } from "firebase/auth";
 import {
@@ -142,6 +143,57 @@ export const useAuth = () => {
     } catch (err) {
       logger.error("Update user profile error", err);
       throw new Error("プロフィールの更新に失敗しました");
+    }
+  };
+
+  // ユーザーアカウントの削除
+  const deleteUserAccount = async () => {
+    if (!user.value || !$auth?.currentUser) {
+      throw new Error("ユーザーがログインしていません");
+    }
+
+    const currentUser = $auth.currentUser;
+    const userId = user.value.uid;
+
+    try {
+      loading.value = true;
+      error.value = null;
+
+      logger.info("🗑️ Starting account deletion for user:", userId);
+
+      // Firebase Authentication アカウント削除のみ実行
+      // Cloud Functions が自動的にFirestoreデータを削除
+      logger.info("🔥 Deleting Firebase Auth account...");
+      await deleteUser(currentUser);
+      
+      // ローカル状態をクリア
+      user.value = null;
+      
+      // ローカルストレージをクリア  
+      if (process.client) {
+        localStorage.removeItem("bookmarks");
+        localStorage.removeItem("searchHistory");
+        localStorage.clear();
+      }
+
+      logger.info("✅ Account deletion initiated successfully");
+      logger.info("📡 Cloud Functions will handle data cleanup automatically");
+
+    } catch (err: any) {
+      logger.error("❌ Account deletion failed", err);
+      
+      // エラーメッセージの詳細化
+      if (err.code === "auth/requires-recent-login") {
+        error.value = "セキュリティのため、再ログインしてからアカウントを削除してください";
+      } else if (err.code === "auth/user-not-found") {
+        error.value = "ユーザーが見つかりません";
+      } else {
+        error.value = `アカウントの削除に失敗しました: ${err.message || "不明なエラー"}`;
+      }
+      
+      throw err;
+    } finally {
+      loading.value = false;
     }
   };
 
@@ -311,5 +363,6 @@ export const useAuth = () => {
     signInWithTwitter,
     signOut,
     updateUserProfile,
+    deleteUserAccount,
   };
 };
