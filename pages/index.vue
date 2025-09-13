@@ -102,7 +102,7 @@
                     <div style="font-size: 2rem; margin-bottom: 1rem;"><LockClosedIcon style="width: 2rem; height: 2rem; color: #ff69b4; margin: 0 auto;" /></div>
                     <h3 style="color: #ff69b4; margin-bottom: 0.5rem;">Twitter認証</h3>
                     <p class="text-muted" style="margin-bottom: 1rem;">
-                        Twitterアカウントでログインして、ブックマーク機能やサークル情報の編集権限を申請できます。
+                        X(Twitter)アカウントでログインして、ブックマーク機能やサークル情報の編集権限を申請できます。
                     </p>
                     <div style="color: #ff69b4; font-weight: 500; font-size: 0.9rem;">
                         → ログインページへ

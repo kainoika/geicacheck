@@ -32,7 +32,7 @@
                   <li>✓ ユーザー名（@から始まるID）</li>
                   <li>✓ 表示名</li>
                   <li>✓ プロフィール画像</li>
-                  <li>✓ TwitterのユーザーID</li>
+                  <li>✓ X(Twitter)のユーザーID</li>
                 </ul>
                 <p class="mt-3 text-xs text-gray-600">
                   ※ ツイート内容やフォロワー情報は取得いたしません

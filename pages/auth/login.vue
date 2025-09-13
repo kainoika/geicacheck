@@ -78,7 +78,7 @@
           </div>
         </div>
 
-        <!-- Twitter ログインボタン -->
+        <!-- X(Twitter) ログインボタン -->
         <button 
           @click="handleTwitterSignIn"
           :disabled="loading"
@@ -87,8 +87,11 @@
           onmouseover="this.style.backgroundColor='#1a91da'"
           onmouseout="this.style.backgroundColor='#1da1f2'"
         >
-          <AtSymbolIcon style="width: 1.25rem; height: 1.25rem;" />
-          {{ loading ? 'ログイン中...' : 'Twitterでログイン' }}
+          <svg class="w-4 h-4 mr-2" viewBox="0 0 1200 1227" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" fill="white"/>
+          </svg>
+
+          {{ loading ? 'ログイン中...' : 'X(Twitter)でログイン' }}
         </button>
 
         <!-- 注意事項 -->
@@ -100,7 +103,7 @@
                 プライバシーについて
               </h3>
               <p style="font-size: 0.875rem; color: #7f1d1d; margin: 0; line-height: 1.4;">
-                ログイン時に取得する情報は、ユーザー名、プロフィール画像、TwitterIDのみです。ツイートの投稿や閲覧は行いません。
+                ログイン時に取得する情報は、ユーザー名、プロフィール画像、ユーザーIDのみです。ツイートの投稿や閲覧は行いません。
               </p>
             </div>
           </div>

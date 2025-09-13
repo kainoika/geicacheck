@@ -56,10 +56,10 @@
           <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb; text-align: center;">
             <div style="font-size: 3rem; margin-bottom: 1rem;"><LockClosedIcon style="width: 3rem; height: 3rem; color: #ff69b4; margin: 0 auto;" /></div>
             <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
-              Twitter認証
+              X(Twitter)認証
             </h3>
             <p style="color: #6b7280; line-height: 1.6; margin: 0;">
-              Twitterアカウントでログインして、ブックマーク機能やサークル情報の編集権限申請が利用できます。
+              X(Twitter)アカウントでログインして、ブックマーク機能やサークル情報の編集権限申請が利用できます。
             </p>
           </div>
 
@@ -242,10 +242,10 @@
           <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb; text-align: center;">
             <div style="font-size: 2rem; margin-bottom: 1rem;"><AtSymbolIcon style="width: 2rem; height: 2rem; color: #1da1f2; margin: 0 auto;" /></div>
             <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
-              Twitter
+              X(Twitter)
             </h3>
             <p style="color: #6b7280; margin: 0 0 1rem 0;">
-              最新情報やお知らせはTwitterで配信しています
+              最新情報やお知らせはX(Twitter)で配信しています
             </p>
             <a 
               href="https://twitter.com/geica_check" 

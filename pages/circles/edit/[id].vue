@@ -274,14 +274,14 @@
           <!-- 連絡先 -->
           <div style="background: white; border-radius: 0.5rem; padding: 1.5rem; border: 1px solid #e5e7eb;">
             <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
-              📞 連絡先
+              📞 SNS
             </h2>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
               <!-- Twitter -->
               <div>
                 <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">
-                  Twitter ID
+                  X(Twitter) ID
                 </label>
                 <div style="display: flex; align-items: center;">
                   <span style="padding: 0.75rem; background: #f9fafb; border: 1px solid #d1d5db; border-right: none; border-radius: 0.375rem 0 0 0.375rem; color: #6b7280;">@</span>

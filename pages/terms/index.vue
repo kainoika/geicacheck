@@ -59,7 +59,7 @@
             <ul class="space-y-3 text-gray-700">
               <li class="flex items-start gap-2">
                 <span>•</span>
-                <span>ログインはTwitter（X）アカウントで行います</span>
+                <span>ログインはX(Twitter)アカウントで行います</span>
               </li>
               <li class="flex items-start gap-2">
                 <span>•</span>

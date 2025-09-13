@@ -401,12 +401,12 @@ const rejectReasonTemplates = ref([
   {
     id: 'twitter_mismatch',
     label: 'Twitter不一致',
-    message: '申請者のTwitterスクリーンネームとサークルの登録Twitter情報が一致しません。サークル代表者のTwitterアカウントから再度申請してください。'
+    message: '申請者のX(Twitter)スクリーンネームとサークルの登録X(Twitter)情報が一致しません。サークル代表者のX(Twitter)アカウントから再度申請してください。'
   },
   {
     id: 'no_twitter_connection',
     label: 'Twitter未連携',
-    message: 'Twitterアカウントとの連携が確認できません。Twitterでログインしてから再度申請してください。'
+    message: 'X(Twitter)アカウントとの連携が確認できません。X(Twitter)でログインしてから再度申請してください。'
   },
   {
     id: 'insufficient_evidence',
@@ -546,7 +546,7 @@ const getEmptyStateTitle = () => {
 const getEmptyStateDescription = () => {
   switch (activeStatus.value) {
     case 'pending': return '新しい編集権限申請があると、ここに表示されます'
-    case 'auto_approved': return 'Twitter情報が一致して自動承認された申請があると、ここに表示されます'
+    case 'auto_approved': return 'X(Twitter)情報が一致して自動承認された申請があると、ここに表示されます'
     case 'approved': return '承認された申請があると、ここに表示されます'
     case 'rejected': return '却下された申請があると、ここに表示されます'
     default: return '編集権限の申請があると、ここに表示されます'

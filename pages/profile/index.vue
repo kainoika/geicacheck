@@ -341,7 +341,6 @@
               </h4>
               <ul style="font-size: 0.875rem; color: #075985; margin: 0; padding-left: 1rem; line-height: 1.5;">
                 <li>サークル情報の追加・編集が可能になります</li>
-                <li>TwitterスクリーンネームがサークルのTwitter情報と一致する場合、自動承認されます</li>
                 <li>不適切な編集を行った場合、権限が取り消される場合があります</li>
               </ul>
             </div>
@@ -363,8 +362,17 @@
         <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
           アカウント削除の確認
         </h3>
-        <p style="color: #6b7280; margin: 0 0 1.5rem 0; line-height: 1.5;">
-          アカウントを削除すると、すべてのブックマークデータが失われます。この操作は取り消せません。
+        <p style="color: #6b7280; margin: 0 0 1rem 0; line-height: 1.5;">
+          アカウントを削除すると、以下のデータがすべて失われます：
+        </p>
+        <ul style="color: #6b7280; margin: 0 0 1.5rem 1rem; line-height: 1.5; font-size: 0.9rem;">
+          <li>すべてのブックマーク（{{ userStats.totalBookmarks }}件）</li>
+          <li>編集権限申請履歴</li>
+          <li>サークル編集権限</li>
+          <li>ユーザープロフィール情報</li>
+        </ul>
+        <p style="color: #dc2626; font-weight: 600; margin: 0 0 1.5rem 0; font-size: 0.9rem;">
+          ⚠️ この操作は取り消せません
         </p>
         <div style="display: flex; gap: 1rem; justify-content: end;">
           <button 
@@ -405,7 +413,7 @@ import {
 } from '@heroicons/vue/24/outline'
 
 // Composables
-const { user, isAuthenticated } = useAuth()
+const { user, isAuthenticated, deleteUserAccount } = useAuth()
 const logger = useLogger('ProfilePage')
 const { bookmarks } = useBookmarks()
 const { 
@@ -616,21 +624,29 @@ const deleteAccount = async () => {
     loading.value = true
     showDeleteConfirm.value = false
     
-    // 実際の実装では useAuth().deleteAccount() を使用
-    // const { deleteAccount } = useAuth()
-    // await deleteAccount()
+    logger.info('Starting account deletion process...')
     
-    logger.info('Deleting account...')
+    // useAuth.tsの削除機能を使用
+    await deleteUserAccount()
     
-    // アカウント削除のシミュレーション
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    alert('アカウントを削除しました')
+    // 削除成功時の処理
+    alert('アカウントを削除しました。ご利用ありがとうございました。')
     await navigateTo('/')
     
   } catch (err) {
-    console.error('アカウント削除エラー:', err)
-    alert('アカウントの削除に失敗しました')
+    logger.error('Account deletion error:', err)
+    
+    // エラーメッセージの表示
+    if (err.message && err.message.includes('再ログイン')) {
+      alert('セキュリティのため、再ログインしてからアカウントを削除してください。')
+    } else {
+      alert(`アカウントの削除に失敗しました: ${err.message || '不明なエラー'}`)
+    }
+    
+    // 再ログインが必要な場合はログインページへ
+    if (err.message && err.message.includes('再ログイン')) {
+      await navigateTo('/auth/login')
+    }
   } finally {
     loading.value = false
   }

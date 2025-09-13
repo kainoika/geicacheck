@@ -165,7 +165,7 @@
         
         <div style="margin-bottom: 1rem;">
           <div style="display: flex; gap: 0.5rem;">
-            <!-- Twitter -->
+            <!-- X(Twitter) -->
             <a v-if="selectedCircle.contact?.twitter" :href="selectedCircle.contact.twitter" target="_blank"
               rel="noopener noreferrer"
               style="padding: 0.5rem; background: #f0f9ff; color: #0284c7; border-radius: 0.375rem; text-decoration: none; transition: all 0.2s; display: flex; align-items: center; justify-content: center;"
