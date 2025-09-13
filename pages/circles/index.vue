@@ -23,12 +23,7 @@
 
           <!-- 検索ヒントと人気ジャンルタグ -->
           <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-            <!-- 検索ヒント -->
-            <div style="font-size: 0.875rem; color: #6b7280; display: flex; align-items: center; gap: 0.5rem;">
-              <LightBulbIcon style="width: 1rem; height: 1rem;" />
-              複数のキーワードをスペースで区切って検索できます
-            </div>
-            
+           
             <!-- 人気ジャンルタグ -->
             <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
               <span style="font-size: 0.875rem; color: #6b7280; font-weight: 500;">人気ジャンル:</span>
@@ -254,7 +249,7 @@ const fetchPopularGenres = async () => {
   
   try {
     logger.info('Fetching popular genres for event:', currentEvent.value.id)
-    const genres = await getPopularGenres(currentEvent.value.id, 10)
+    const genres = await getPopularGenres(currentEvent.value.id, 6)
     popularGenres.value = genres
     logger.info('Popular genres fetched:', genres)
   } catch (err) {
