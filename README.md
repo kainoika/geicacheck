@@ -39,6 +39,7 @@
 - **[Firebase Firestore](https://firebase.google.com/products/firestore)** - NoSQLドキュメントデータベース
 - **[Firebase Storage](https://firebase.google.com/products/storage)** - ファイルストレージ
 - **[Firebase Hosting](https://firebase.google.com/products/hosting)** - ホスティングサービス
+- **[Cloud Functions for Firebase](https://firebase.google.com/products/functions)** - サーバーレス関数（アカウント削除処理）
 
 ### 開発ツール
 - **[ESLint](https://eslint.org/)** + **[Prettier](https://prettier.io/)** - コード品質とフォーマット
