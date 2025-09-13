@@ -366,6 +366,12 @@
     </div>
 
     <!-- 編集権限申請モーダルは削除 - サークル詳細ページから申請を行うため -->
+
+    <!-- アカウント削除完了ダイアログ -->
+    <AccountDeletedDialog
+      v-if="showDeletedDialog"
+      @close="handleDeletedDialogClose"
+    />
   </div>
 </template>
 
@@ -387,7 +393,7 @@ import {
 } from '@heroicons/vue/24/outline'
 
 // Composables
-const { user, isAuthenticated, deleteUserAccount } = useAuth()
+const { user, isAuthenticated, deleteUserAccountWithReauth } = useAuth()
 const logger = useLogger('ProfilePage')
 const { bookmarks } = useBookmarks()
 const { 
@@ -405,6 +411,7 @@ const { currentEvent } = useEvents()
 const { fetchCircleById } = useCircles()
 
 const showDeleteConfirm = ref(false)
+const showDeletedDialog = ref(false)
 const loading = ref(false)
 const error = ref(null)
 
@@ -530,12 +537,11 @@ const deleteAccount = async () => {
     
     logger.info('Starting account deletion process...')
     
-    // useAuth.tsの削除機能を使用
-    await deleteUserAccount()
+    // useAuth.tsの削除機能を使用（再認証機能付き）
+    await deleteUserAccountWithReauth()
     
-    // 削除成功時の処理
-    alert('アカウントを削除しました。ご利用ありがとうございました。')
-    await navigateTo('/')
+    // 削除成功時の処理 - ダイアログを表示
+    showDeletedDialog.value = true
     
   } catch (err) {
     logger.error('Account deletion error:', err)
@@ -554,6 +560,12 @@ const deleteAccount = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// アカウント削除完了ダイアログを閉じてトップページに遷移
+const handleDeletedDialogClose = async () => {
+  showDeletedDialog.value = false
+  await navigateTo('/')
 }
 
 // データ取得関数

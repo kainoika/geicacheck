@@ -4,6 +4,7 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged,
   deleteUser,
+  reauthenticateWithPopup,
   type User as FirebaseUser,
 } from "firebase/auth";
 import {
@@ -185,6 +186,10 @@ export const useAuth = () => {
       // エラーメッセージの詳細化
       if (err.code === "auth/requires-recent-login") {
         error.value = "セキュリティのため、再ログインしてからアカウントを削除してください";
+        // 再認証が必要であることを示すために特別なエラーをthrow
+        const reauthError = new Error("REAUTHENTICATION_REQUIRED");
+        (reauthError as any).code = "auth/requires-recent-login";
+        throw reauthError;
       } else if (err.code === "auth/user-not-found") {
         error.value = "ユーザーが見つかりません";
       } else {
@@ -194,6 +199,60 @@ export const useAuth = () => {
       throw err;
     } finally {
       loading.value = false;
+    }
+  };
+
+  // Twitter再認証
+  const reauthenticateWithTwitter = async () => {
+    if (!$auth?.currentUser) {
+      throw new Error("ユーザーがログインしていません");
+    }
+
+    loading.value = true;
+    error.value = null;
+
+    try {
+      const provider = new TwitterAuthProvider();
+      provider.addScope("tweet.read");
+      provider.addScope("users.read");
+
+      logger.info("🔐 Reauthenticating with Twitter...");
+
+      // 再認証を実行
+      const result = await reauthenticateWithPopup($auth.currentUser, provider);
+
+      logger.info("✅ Reauthentication successful");
+      return result;
+
+    } catch (err: any) {
+      logger.error("❌ Reauthentication failed", err);
+      error.value = getAuthErrorMessage(err.code);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  // 再認証後にアカウント削除を実行
+  const deleteUserAccountWithReauth = async () => {
+    try {
+      // まず通常の削除を試行
+      await deleteUserAccount();
+    } catch (err: any) {
+      // 再認証が必要な場合
+      if (err.code === "auth/requires-recent-login") {
+        logger.info("🔐 Reauthentication required, starting Twitter reauth...");
+
+        // 再認証を実行
+        await reauthenticateWithTwitter();
+
+        // 再認証後に削除を再試行
+        logger.info("🗑️ Retrying account deletion after reauthentication...");
+        await deleteUserAccount();
+      } else {
+        // その他のエラーは再スロー
+        throw err;
+      }
     }
   };
 
@@ -364,5 +423,7 @@ export const useAuth = () => {
     signOut,
     updateUserProfile,
     deleteUserAccount,
+    deleteUserAccountWithReauth,
+    reauthenticateWithTwitter,
   };
 };
