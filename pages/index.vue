@@ -92,7 +92,7 @@
         <!-- ユーザー機能 -->
         <section style="margin-bottom: 3rem;">
             <h2 style="font-size: 1.8rem; margin-bottom: 2rem; color: #ff69b4; text-align: center;">
-                <UserIcon style="width: 1.5rem; height: 1.5rem; display: inline; margin-right: 0.5rem; vertical-align: -0.25rem;" /> ユーザー機能
+                ユーザー機能
             </h2>
             <div class="grid grid-cols-1 grid-cols-md-2 grid-cols-lg-3 mb-4">
                 <!-- ログイン -->
@@ -143,7 +143,7 @@
         <!-- その他の機能 -->
         <section style="margin-bottom: 3rem;">
             <h2 style="font-size: 1.8rem; margin-bottom: 2rem; color: #ff69b4; text-align: center;">
-                <WrenchScrewdriverIcon style="width: 1.5rem; height: 1.5rem; display: inline; margin-right: 0.5rem; vertical-align: -0.25rem;" /> その他の機能
+                その他の機能
             </h2>
             <div class="grid grid-cols-1 grid-cols-md-2 grid-cols-lg-3 mb-4">
                 <!-- CSVエクスポート -->

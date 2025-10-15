@@ -19,7 +19,7 @@
       <!-- アプリの特徴 -->
       <section style="margin-bottom: 4rem;">
         <h2 style="font-size: 2rem; font-weight: 700; color: #111827; text-align: center; margin: 0 0 3rem 0;">
-          <StarIcon style="width: 1.5rem; height: 1.5rem; display: inline; margin-right: 0.5rem; vertical-align: -0.25rem;" /> アプリの特徴
+          アプリの特徴
         </h2>
         
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
@@ -88,7 +88,7 @@
       <!-- 使い方 -->
       <section style="margin-bottom: 4rem;">
         <h2 style="font-size: 2rem; font-weight: 700; color: #111827; text-align: center; margin: 0 0 3rem 0;">
-          <BookOpenIcon style="width: 1.5rem; height: 1.5rem; display: inline; margin-right: 0.5rem; vertical-align: -0.25rem;" /> 使い方
+          使い方
         </h2>
         
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
@@ -153,17 +153,17 @@
       <!-- アイカツ！について -->
       <section style="margin-bottom: 4rem;">
         <h2 style="font-size: 2rem; font-weight: 700; color: #111827; text-align: center; margin: 0 0 3rem 0;">
-          <SparklesIcon style="width: 1.5rem; height: 1.5rem; display: inline; margin-right: 0.5rem; vertical-align: -0.25rem;" /> geica check!について
+          geica check!について
         </h2>
         
         <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb;">
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; align-items: center;">
             <div>
               <h3 style="font-size: 1.5rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
-                「fashion check!」からインスパイア
+                「geica check!」について
               </h3>
               <p style="color: #6b7280; line-height: 1.6; margin: 0 0 1rem 0;">
-                このアプリの名前「geica check!」は、アイカツ！の楽曲「fashion check!」をモチーフにしています。
+                アプリの名前「geica check!」は、アイカツ！の楽曲「fashion check!」が由来となっています。
                 アイドルたちがファッションをチェックするように、私たちもサークルをチェックしましょう！
               </p>
 
@@ -188,7 +188,7 @@
       <!-- 技術情報 -->
       <section style="margin-bottom: 4rem;">
         <h2 style="font-size: 2rem; font-weight: 700; color: #111827; text-align: center; margin: 0 0 3rem 0;">
-          <WrenchScrewdriverIcon style="width: 1.5rem; height: 1.5rem; display: inline; margin-right: 0.5rem; vertical-align: -0.25rem;" /> 技術情報
+          技術情報
         </h2>
         
         <div style="background: white; border-radius: 1rem; padding: 2rem; border: 1px solid #e5e7eb;">
@@ -213,6 +213,7 @@
                 <li>Firebase Firestore</li>
                 <li>Firebase Authentication</li>
                 <li>Firebase Storage</li>
+                <li>Firebase Functions</li>
                 <li>Firebase Hosting</li>
               </ul>
             </div>
@@ -235,7 +236,7 @@
       <!-- お問い合わせ・サポート -->
       <section style="margin-bottom: 4rem;">
         <h2 style="font-size: 2rem; font-weight: 700; color: #111827; text-align: center; margin: 0 0 3rem 0;">
-          <PhoneIcon style="width: 1.5rem; height: 1.5rem; display: inline; margin-right: 0.5rem; vertical-align: -0.25rem;" /> お問い合わせ・サポート
+          お問い合わせ・サポート
         </h2>
         
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
