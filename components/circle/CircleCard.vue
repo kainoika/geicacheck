@@ -1,34 +1,25 @@
 <template>
-    <div class="card card-hover overflow-hidden">
+    <div class="card card-hover overflow-hidden" oncontextmenu="return false;">
         <!-- サークルカット画像 -->
         <div class="relative h-48 bg-gray-100 group">
-            <img 
-                v-if="circle.circleCutImageUrl" 
-                :src="circle.circleCutImageUrl"
-                :alt="`${circle.circleName}のサークルカット`"
+            <img v-if="circle.circleCutImageUrl" :src="circle.circleCutImageUrl" :alt="`${circle.circleName}のサークルカット`"
                 class="w-full h-full object-cover cursor-pointer transition-opacity hover:opacity-90"
-                @error="handleImageError"
-                @click="openImageModal"
-            />
-            <div 
-                v-else 
-                class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100"
-            >
+                @error="handleImageError" @click="openImageModal" />
+            <div v-else
+                class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
                 <div class="text-center">
                     <PhotoIcon class="w-12 h-12 text-gray-300 mx-auto mb-2" />
                     <p class="text-xs text-gray-400 font-medium">{{ circle.circleName }}</p>
                 </div>
             </div>
-            
+
             <!-- 拡大アイコン（ホバー時に表示） -->
-            <div 
-                v-if="circle.circleCutImageUrl"
+            <div v-if="circle.circleCutImageUrl"
                 class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black bg-opacity-20 cursor-pointer"
-                @click="openImageModal"
-            >
+                @click="openImageModal">
                 <MagnifyingGlassPlusIcon class="h-8 w-8 text-white drop-shadow-lg" />
             </div>
-            
+
             <!-- 成人向けマーク（画像上に重ねて表示） -->
             <div v-if="circle.isAdult" class="absolute top-2 left-2">
                 <span class="badge badge-warning text-xs shadow-md">
@@ -36,15 +27,11 @@
                     成人向け
                 </span>
             </div>
-            
+
             <!-- ブックマークボタン（画像上に重ねて表示） -->
             <div class="absolute top-2 right-2">
-                <BookmarkButton 
-                    :circle-id="circle.id" 
-                    :initial-category="bookmarkCategory" 
-                    @bookmark="handleBookmark"
-                    class="shadow-md"
-                />
+                <BookmarkButton :circle-id="circle.id" :initial-category="bookmarkCategory" @bookmark="handleBookmark"
+                    class="shadow-md" />
             </div>
         </div>
 
@@ -91,8 +78,11 @@
                         rel="noopener noreferrer"
                         class="p-1.5 text-gray-400 hover:text-blue-500 transition-colors rounded-md hover:bg-gray-100"
                         :title="`@${getTwitterUsername(circle.contact.twitter)}`">
-                        <svg class="w-4 h-4" viewBox="0 0 1200 1227" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" fill="gray"/>
+                        <svg class="w-4 h-4" viewBox="0 0 1200 1227" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z"
+                                fill="gray" />
                         </svg>
                     </a>
 
@@ -125,28 +115,20 @@
         </div>
 
         <!-- 画像拡大モーダル -->
-        <Teleport to="body">
-            <div
-                v-if="isImageModalOpen"
+        <Teleport to="body" oncontextmenu="return false;">
+            <div v-if="isImageModalOpen"
                 class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 p-4"
-                @click="closeImageModal"
-            >
-                <div class="relative max-w-4xl max-h-full">
+                @click="closeImageModal">
+                <div class="relative max-w-4xl max-h-full" oncontextmenu="return false;">
                     <!-- 閉じるボタン -->
-                    <button
-                        @click="closeImageModal"
-                        class="absolute top-4 right-4 p-2 bg-white bg-opacity-20 text-white rounded-full hover:bg-opacity-30 transition-colors z-10"
-                    >
+                    <button @click="closeImageModal"
+                        class="absolute top-4 right-4 p-2 bg-white bg-opacity-20 text-white rounded-full hover:bg-opacity-30 transition-colors z-10">
                         <XMarkIcon class="h-6 w-6" />
                     </button>
 
                     <!-- 拡大画像 -->
-                    <img
-                        :src="circle.circleCutImageUrl"
-                        :alt="`${circle.circleName}のサークルカット`"
-                        class="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-                        @click.stop
-                    />
+                    <img :src="circle.circleCutImageUrl" :alt="`${circle.circleName}のサークルカット`"
+                        class="max-w-full max-h-full object-contain rounded-lg shadow-2xl" @click.stop />
 
                 </div>
             </div>
@@ -224,9 +206,9 @@ onMounted(() => {
             closeImageModal()
         }
     }
-    
+
     document.addEventListener('keydown', handleEscape)
-    
+
     onUnmounted(() => {
         document.removeEventListener('keydown', handleEscape)
         // ボディのスクロールを復元

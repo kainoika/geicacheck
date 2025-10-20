@@ -1,9 +1,11 @@
 <template>
-  <div style="min-height: 100vh; background: #f9fafb;">
+  <div style="min-height: 100vh; background: #f9fafb;" oncontextmenu="return false;">
     <!-- ローディング状態 -->
     <div v-if="loading" style="display: flex; justify-content: center; align-items: center; min-height: 50vh;">
       <div style="display: flex; align-items: center; gap: 0.5rem; color: #6b7280;">
-        <div style="width: 1rem; height: 1rem; border: 2px solid #ff69b4; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <div
+          style="width: 1rem; height: 1rem; border: 2px solid #ff69b4; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;">
+        </div>
         読み込み中...
       </div>
     </div>
@@ -15,10 +17,8 @@
         サークルが見つかりません
       </h2>
       <p style="color: #6b7280; margin: 0 0 2rem 0;">{{ error }}</p>
-      <NuxtLink 
-        to="/circles"
-        style="padding: 0.75rem 1.5rem; background: #ff69b4; color: white; border-radius: 0.5rem; text-decoration: none; font-weight: 500;"
-      >
+      <NuxtLink to="/circles"
+        style="padding: 0.75rem 1.5rem; background: #ff69b4; color: white; border-radius: 0.5rem; text-decoration: none; font-weight: 500;">
         サークル一覧に戻る
       </NuxtLink>
     </div>
@@ -29,10 +29,7 @@
       <div class="header-section">
         <div class="header-container">
           <div class="header-top">
-            <button 
-              @click="$router.back()"
-              class="back-button"
-            >
+            <button @click="$router.back()" class="back-button">
               ← 戻る
             </button>
             <div class="title-section">
@@ -43,13 +40,10 @@
                 {{ circle.penName }}
               </p>
             </div>
-            
+
             <!-- ブックマークボタン -->
             <div class="bookmark-section">
-              <BookmarkButton 
-                :circle-id="circle.id"
-                @bookmark="handleBookmark"
-              />
+              <BookmarkButton :circle-id="circle.id" @bookmark="handleBookmark" />
             </div>
           </div>
 
@@ -83,49 +77,39 @@
           <div class="main-content">
             <!-- サークルカット画像 -->
             <div class="content-card">
-              <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+              <h2
+                style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
                 <PhotoIcon class="h-5 w-5" />
                 サークルカット
               </h2>
-              <ImageUpload
-                v-model="circle.circleCutImageUrl"
-                label="サークルカット画像"
+              <ImageUpload v-model="circle.circleCutImageUrl" label="サークルカット画像"
                 :path="`circle-images/${currentEvent?.id}/${circle.id}/circle-cut`"
-                :can-edit="permissions.canUploadImages"
-                @update:modelValue="updateCircleCut"
-                @error="uploadError = $event"
-              />
+                :can-edit="permissions.canUploadImages" @update:modelValue="updateCircleCut"
+                @error="uploadError = $event" />
             </div>
 
             <!-- お品書き画像 -->
             <div class="content-card">
-              <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+              <h2
+                style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
                 <DocumentTextIcon class="h-5 w-5" />
                 お品書き
               </h2>
-              <ImageUpload
-                v-model="circle.menuImageUrl"
-                label="お品書き画像"
-                :path="`circle-images/${currentEvent?.id}/${circle.id}/menu`"
-                :can-edit="permissions.canUploadImages"
-                @update:modelValue="updateMenuImage"
-                @error="uploadError = $event"
-              />
+              <ImageUpload v-model="circle.menuImageUrl" label="お品書き画像"
+                :path="`circle-images/${currentEvent?.id}/${circle.id}/menu`" :can-edit="permissions.canUploadImages"
+                @update:modelValue="updateMenuImage" @error="uploadError = $event" />
             </div>
 
             <!-- ジャンル -->
             <div class="content-card">
-              <GenreManager
-                :genres="circle.genre"
-                :can-edit="permissions.canEditGenres"
-                :popular-genres="popularGenres"
-                @update:genres="updateGenres"
-              />
+              <GenreManager :genres="circle.genre" :can-edit="permissions.canEditGenres" :popular-genres="popularGenres"
+                @update:genres="updateGenres" />
             </div>
 
             <!-- 説明 -->
             <div v-if="circle.description" class="content-card">
-              <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+              <h2
+                style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
                 <DocumentTextIcon class="h-5 w-5" />
                 サークル説明
               </h2>
@@ -136,17 +120,9 @@
 
             <!-- 頒布物一覧 -->
             <div class="content-card">
-              <CircleItemManager
-                :items="circle.items || []"
-                :can-edit="permissions.canManageItems"
-                :circle-id="circle.id"
-                :event-id="circle.eventId"
-                :circle-name="circle.circleName"
-                @add-item="addItem"
-                @update-item="updateItem"
-                @delete-item="deleteItem"
-                @purchase-plan-updated="handlePurchasePlanUpdate"
-              />
+              <CircleItemManager :items="circle.items || []" :can-edit="permissions.canManageItems"
+                :circle-id="circle.id" :event-id="circle.eventId" :circle-name="circle.circleName" @add-item="addItem"
+                @update-item="updateItem" @delete-item="deleteItem" @purchase-plan-updated="handlePurchasePlanUpdate" />
             </div>
 
           </div>
@@ -155,41 +131,34 @@
           <div class="sidebar-content">
             <!-- SNS -->
             <div class="content-card">
-              <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+              <h2
+                style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
                 <PhoneIcon class="h-5 w-5" />
                 SNS
               </h2>
               <div style="display: flex; flex-direction: column; gap: 1rem;">
                 <!-- X(Twitter) -->
-                <a 
-                  v-if="circle.contact.twitter"
-                  :href="circle.contact.twitter"
-                  target="_blank"
+                <a v-if="circle.contact.twitter" :href="circle.contact.twitter" target="_blank"
                   rel="noopener noreferrer"
                   style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #f0f9ff; border-radius: 0.5rem; text-decoration: none; color: #1da1f2; transition: all 0.2s;"
-                  onmouseover="this.style.backgroundColor='#e0f2fe'"
-                  onmouseout="this.style.backgroundColor='#f0f9ff'"
-                >
+                  onmouseover="this.style.backgroundColor='#e0f2fe'" onmouseout="this.style.backgroundColor='#f0f9ff'">
                   <svg class="h-5 w-5" viewBox="0 0 1200 1227" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" fill="blue"/>
+                    <path
+                      d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z"
+                      fill="blue" />
                   </svg>
                   <div>
                     <div style="font-weight: 600;">X(Twitter)</div>
                     <!-- TwitterのURLからユーザーネームだけを表示 -->
-                    <div style="font-size: 0.875rem; opacity: 0.8;">@{{ getTwitterUsername(circle.contact.twitter) }}</div>
+                    <div style="font-size: 0.875rem; opacity: 0.8;">@{{ getTwitterUsername(circle.contact.twitter) }}
+                    </div>
                   </div>
                 </a>
 
                 <!-- Pixiv -->
-                <a 
-                  v-if="circle.contact.pixiv"
-                  :href="circle.contact.pixiv"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <a v-if="circle.contact.pixiv" :href="circle.contact.pixiv" target="_blank" rel="noopener noreferrer"
                   style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #f0f9ff; border-radius: 0.5rem; text-decoration: none; color: #0284c7; transition: all 0.2s;"
-                  onmouseover="this.style.backgroundColor='#e0f2fe'"
-                  onmouseout="this.style.backgroundColor='#f0f9ff'"
-                >
+                  onmouseover="this.style.backgroundColor='#e0f2fe'" onmouseout="this.style.backgroundColor='#f0f9ff'">
                   <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path
                       d="M4.935 0A4.924 4.924 0 0 0 0 4.935v14.13A4.924 4.924 0 0 0 4.935 24h14.13A4.924 4.924 0 0 0 24 19.065V4.935A4.924 4.924 0 0 0 19.065 0H4.935zm7.81 4.547c2.181 0 4.058.676 5.399 1.847a6.118 6.118 0 0 1 2.116 4.66c.005 1.854-.88 3.476-2.257 4.563-1.375 1.092-3.225 1.697-5.258 1.697-2.314 0-4.46-.87-5.64-2.287v6.326H5.021V5.995h2.084v1.107c1.18-1.418 3.326-2.555 5.64-2.555zm-.168 2.084c-1.434 0-2.717.603-3.604 1.565-.887.962-1.419 2.282-1.419 3.716 0 1.434.532 2.754 1.419 3.716.887.962 2.17 1.565 3.604 1.565 1.434 0 2.717-.603 3.604-1.565.887-.962 1.419-2.282 1.419-3.716 0-1.434-.532-2.754-1.419-3.716-.887-.962-2.17-1.565-3.604-1.565z" />
@@ -202,17 +171,13 @@
 
 
                 <!-- お品書き -->
-                <a 
-                  v-if="circle.contact.oshinaUrl"
-                  :href="circle.contact.oshinaUrl"
-                  target="_blank"
+                <a v-if="circle.contact.oshinaUrl" :href="circle.contact.oshinaUrl" target="_blank"
                   rel="noopener noreferrer"
                   style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #fff7ed; border-radius: 0.5rem; text-decoration: none; color: #ea580c; transition: all 0.2s;"
-                  onmouseover="this.style.backgroundColor='#fed7aa'"
-                  onmouseout="this.style.backgroundColor='#fff7ed'"
-                >
+                  onmouseover="this.style.backgroundColor='#fed7aa'" onmouseout="this.style.backgroundColor='#fff7ed'">
                   <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                    <path
+                      d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
                   </svg>
                   <div>
                     <div style="font-weight: 600;">お品書き</div>
@@ -224,7 +189,8 @@
 
             <!-- 配置詳細 -->
             <div class="content-card">
-              <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+              <h2
+                style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
                 <MapPinIcon class="h-5 w-5" />
                 配置詳細
               </h2>
@@ -235,48 +201,44 @@
                 </div>
                 <div style="display: flex; justify-content: space-between;">
                   <span style="color: #6b7280;">番号</span>
-                  <span style="font-weight: 600; color: #111827;">{{ circle.placement.number1 }}{{ circle.placement.number2 ? '-' + circle.placement.number2 : '' }}</span>
+                  <span style="font-weight: 600; color: #111827;">{{ circle.placement.number1 }}{{
+                    circle.placement.number2 ? '-' + circle.placement.number2 : '' }}</span>
                 </div>
               </div>
             </div>
 
             <!-- アクション -->
             <div class="content-card">
-              <h2 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
+              <h2
+                style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.5rem;">
                 <BoltIcon class="h-5 w-5" />
                 アクション
               </h2>
               <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                 <!-- 編集権限申請ボタン -->
-                <button
-                  v-if="isAuthenticated && !permissions.canEdit && !hasEditPermissionRequest"
+                <button v-if="isAuthenticated && !permissions.canEdit && !hasEditPermissionRequest"
                   @click="showEditPermissionModal = true"
                   style="padding: 0.75rem; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; border-radius: 0.5rem; cursor: pointer; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;"
-                  onmouseover="this.style.backgroundColor='#dcfce7'"
-                  onmouseout="this.style.backgroundColor='#f0fdf4'"
-                >
+                  onmouseover="this.style.backgroundColor='#dcfce7'" onmouseout="this.style.backgroundColor='#f0fdf4'">
                   <PencilIcon class="h-4 w-4" />
                   編集権限を申請
                 </button>
 
                 <!-- 申請中表示 -->
-                <div
-                  v-if="isAuthenticated && hasEditPermissionRequest"
-                  style="padding: 0.75rem; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; border-radius: 0.5rem; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 0.5rem;"
-                >
+                <div v-if="isAuthenticated && hasEditPermissionRequest"
+                  style="padding: 0.75rem; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; border-radius: 0.5rem; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                   <ClockIcon class="h-4 w-4" />
                   編集権限申請中
                 </div>
 
                 <!-- X(Twitter)でシェア -->
-                <button
-                  @click="shareToTwitter"
+                <button @click="shareToTwitter"
                   style="padding: 0.75rem; background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; border-radius: 0.5rem; cursor: pointer; font-weight: 500; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;"
-                  onmouseover="this.style.backgroundColor='#bfdbfe'"
-                  onmouseout="this.style.backgroundColor='#dbeafe'"
-                >
+                  onmouseover="this.style.backgroundColor='#bfdbfe'" onmouseout="this.style.backgroundColor='#dbeafe'">
                   <svg class="h-4 w-4" viewBox="0 0 1200 1227" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" fill="blue"/>
+                    <path
+                      d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z"
+                      fill="blue" />
                   </svg>
                   X(Twitter)でシェア
                 </button>
@@ -287,12 +249,8 @@
       </div>
 
       <!-- 編集権限申請モーダル -->
-      <EditPermissionModal
-        v-if="showEditPermissionModal"
-        :circle="circle"
-        @close="showEditPermissionModal = false"
-        @success="handlePermissionRequestSuccess"
-      />
+      <EditPermissionModal v-if="showEditPermissionModal" :circle="circle" @close="showEditPermissionModal = false"
+        @success="handlePermissionRequestSuccess" />
     </div>
   </div>
 </template>
@@ -378,13 +336,13 @@ const handleBookmark = async (category) => {
 
 const shareToTwitter = () => {
   if (!circle.value) return
-  
+
   const text = `${circle.value.circleName}`
   const url = window.location.href
   const hashtags = `geica_check`
 
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}&hashtags=${encodeURIComponent(hashtags)}`
-  
+
   window.open(twitterUrl, '_blank', 'width=550,height=420')
 }
 
@@ -396,7 +354,7 @@ const handlePermissionRequestSuccess = () => {
 // 編集権限申請状態をチェック
 const checkPermissionRequestStatus = async () => {
   if (!user.value || !circle.value) return
-  
+
   try {
     const hasRequest = await hasExistingRequest(user.value.uid, circle.value.id)
     hasEditPermissionRequest.value = hasRequest
@@ -441,16 +399,16 @@ const updateMenuImage = async (imageUrl: string | undefined) => {
 // 頒布物管理
 const addItem = async (itemData: CircleItemFormData) => {
   if (!circle.value) return
-  
+
   const newItem: CircleItem = {
     id: `item_${Date.now()}`,
     ...itemData,
     createdAt: new Date(),
     updatedAt: new Date()
   }
-  
+
   const updatedItems = [...(circle.value.items || []), newItem]
-  
+
   try {
     await updateCircle(circle.value.id, currentEvent.value!.id, {
       items: updatedItems
@@ -464,13 +422,13 @@ const addItem = async (itemData: CircleItemFormData) => {
 
 const updateItem = async (itemId: string, itemData: CircleItemFormData) => {
   if (!circle.value || !circle.value.items) return
-  
-  const updatedItems = circle.value.items.map(item => 
-    item.id === itemId 
+
+  const updatedItems = circle.value.items.map(item =>
+    item.id === itemId
       ? { ...item, ...itemData, updatedAt: new Date() }
       : item
   )
-  
+
   try {
     await updateCircle(circle.value.id, currentEvent.value!.id, {
       items: updatedItems
@@ -484,9 +442,9 @@ const updateItem = async (itemId: string, itemData: CircleItemFormData) => {
 
 const deleteItem = async (itemId: string) => {
   if (!circle.value || !circle.value.items) return
-  
+
   const updatedItems = circle.value.items.filter(item => item.id !== itemId)
-  
+
   try {
     await updateCircle(circle.value.id, currentEvent.value!.id, {
       items: updatedItems
@@ -501,7 +459,7 @@ const deleteItem = async (itemId: string) => {
 // ジャンル管理
 const updateGenres = async (genres: string[]) => {
   if (!circle.value) return
-  
+
   try {
     await updateCircle(circle.value.id, currentEvent.value!.id, {
       genre: genres
@@ -523,7 +481,7 @@ const handlePurchasePlanUpdate = () => {
 const fetchCircle = async () => {
   loading.value = true
   error.value = null
-  
+
   try {
     if (!currentEvent.value) {
       throw new Error('イベント情報が見つかりません')
@@ -531,11 +489,11 @@ const fetchCircle = async () => {
 
     // fetchCircleById を使用してサークル詳細を取得
     const circleData = await fetchCircleById(circleId, currentEvent.value.id)
-    
+
     if (!circleData) {
       throw new Error('指定されたサークルが見つかりません')
     }
-    
+
     circle.value = circleData
   } catch (err) {
     console.error('Fetch circle error:', err)
@@ -551,16 +509,16 @@ onMounted(async () => {
   if (!currentEvent.value) {
     let attempts = 0
     const maxAttempts = 50 // 5秒間
-    
+
     while (!currentEvent.value && attempts < maxAttempts) {
       await new Promise(resolve => setTimeout(resolve, 100))
       attempts++
     }
   }
-  
+
   await fetchCircle()
   await loadPopularGenres()
-  
+
   // 認証済みユーザーの場合、権限を更新してから申請状態をチェック
   if (user.value) {
     await refreshPermissions()
@@ -587,9 +545,9 @@ watch(user, async () => {
 useHead(() => ({
   title: circle.value ? `${circle.value.circleName} - geica check!` : 'サークル詳細 - geica check!',
   meta: [
-    { 
-      name: 'description', 
-      content: circle.value ? circle.value.description : 'サークル詳細ページ' 
+    {
+      name: 'description',
+      content: circle.value ? circle.value.description : 'サークル詳細ページ'
     }
   ]
 }))
@@ -600,6 +558,7 @@ useHead(() => ({
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -736,34 +695,34 @@ useHead(() => ({
   .header-section {
     padding: 2rem 0;
   }
-  
+
   .circle-title {
     font-size: 2rem;
     margin-bottom: 0.5rem;
   }
-  
+
   .circle-pen-name {
     font-size: 1.125rem;
   }
-  
+
   .info-tag {
     font-size: 0.9rem;
     padding: 0.5rem 1rem;
   }
-  
+
   .circle-detail-grid {
     grid-template-columns: 2fr 1fr;
     gap: 2rem;
   }
-  
+
   .main-content {
     gap: 2rem;
   }
-  
+
   .sidebar-content {
     gap: 2rem;
   }
-  
+
   .content-card {
     padding: 1.5rem;
   }
@@ -775,20 +734,20 @@ useHead(() => ({
     align-items: flex-start;
     gap: 0.75rem;
   }
-  
+
   .back-button {
     margin-top: 0.125rem;
   }
-  
+
   .info-tags {
     gap: 0.5rem;
   }
-  
+
   .info-tag {
     font-size: 0.8rem;
     padding: 0.375rem 0.625rem;
   }
-  
+
   .tag-text {
     font-size: 0.8rem;
   }
