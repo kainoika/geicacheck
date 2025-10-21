@@ -29,8 +29,7 @@
             <ul class="info-list">
               <li>申請が承認されると、このサークルの情報を編集できるようになります</li>
               <li>承認条件：申請者のTwitterスクリーンネームとサークルのTwitter情報が一致していること</li>
-              <li>管理者による手動審査が行われます</li>
-              <li>承認・却下の結果は後日お知らせします</li>
+              <li>※承認・却下まで最大で1日程度お時間を頂く可能性がございます</li>
             </ul>
           </div>
         </div>
@@ -45,7 +44,6 @@
               <h4 class="match-title">Twitter情報確認</h4>
               <p v-if="twitterMatches" class="match-message success">
                 あなたのTwitterスクリーンネーム（@{{ userTwitterScreenName }}）とサークルのTwitter情報が一致しています。
-                自動承認の対象となります。
               </p>
               <p v-else class="match-message warning">
                 {{ twitterMatchErrorMessage }}
@@ -60,13 +58,9 @@
             <span v-if="!twitterMatches" class="required-badge">必須</span>
             <span v-else class="optional-badge">任意</span>
           </label>
-          <textarea
-            v-model="reason"
-            class="form-textarea"
-            :class="{ 'error': !twitterMatches && showReasonError }"
+          <textarea v-model="reason" class="form-textarea" :class="{ 'error': !twitterMatches && showReasonError }"
             rows="3"
-            :placeholder="twitterMatches ? '編集を希望する理由があれば記入してください（例：サークル主、関係者など）' : '編集を希望する理由を記入してください（例：サークル主、関係者など）'"
-          />
+            :placeholder="twitterMatches ? '編集を希望する理由があれば記入してください（例：サークル主、関係者など）' : '編集を希望する理由を記入してください（例：サークル主、関係者など）'" />
           <p v-if="!twitterMatches && showReasonError" class="error-message">
             Twitter情報が一致しない場合は申請理由の入力が必須です
           </p>
@@ -148,13 +142,13 @@ const getTwitterUsername = (twitterUrl: string) => {
 
 const submitRequest = async () => {
   if (!user.value) return
-  
+
   // Twitter情報が一致しない場合は申請理由が必須
   if (!twitterMatches.value && !reason.value.trim()) {
     showReasonError.value = true
     return
   }
-  
+
   submitting.value = true
   try {
     await submitEditPermissionRequest({
@@ -163,7 +157,7 @@ const submitRequest = async () => {
       registeredTwitterId: circleTwitterUsername.value,
       reason: reason.value.trim() || undefined
     })
-    
+
     emit('success')
   } catch (error) {
     console.error('編集権限申請エラー:', error)
@@ -494,6 +488,7 @@ watch(reason, () => {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -503,27 +498,27 @@ watch(reason, () => {
   .modal-overlay {
     padding: 0.5rem;
   }
-  
+
   .modal-header,
   .modal-body,
   .modal-footer {
     padding: 1rem;
   }
-  
+
   .modal-body {
     gap: 1rem;
   }
-  
+
   .info-section,
   .match-check {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .modal-footer {
     flex-direction: column;
   }
-  
+
   .cancel-button,
   .submit-button {
     width: 100%;
