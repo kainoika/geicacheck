@@ -58,6 +58,7 @@ export interface CircleItem {
   name: string; // 頒布物名
   price: number; // 価格
   description?: string; // 頒布物の説明
+  category?: string; // カテゴリ（漫画、イラスト本、グッズなど）
   isAvailable: boolean; // 在庫有無
   onlineShopLinks?: OnlineShopLinks; // オンライン通販リンク
   createdAt: Date;
@@ -262,6 +263,7 @@ export interface CircleItemFormData {
   name: string;
   price: number;
   description?: string;
+  category?: string;
   isAvailable: boolean;
   onlineShopLinks?: OnlineShopLinks;
 }
