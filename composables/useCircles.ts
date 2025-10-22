@@ -517,3 +517,48 @@ export const useCircles = () => {
     cleanup,
   };
 };
+/**
+ * 検索状態を永続化するためのヘルパータイプ
+ */
+interface SearchState {
+  query: string;
+  currentPage: number;
+  itemsPerPage: number;
+}
+
+/**
+ * 検索状態管理用のcomposable
+ * サークル一覧画面の検索状態をページ遷移をまたいで保持する
+ */
+export const useCircleSearch = () => {
+  // 検索状態の永続化
+  const searchState = useState<SearchState>("circles.searchState", () => ({
+    query: '',
+    currentPage: 1,
+    itemsPerPage: 12
+  }));
+
+  /**
+   * 検索状態を更新
+   */
+  const updateSearchState = (updates: Partial<SearchState>) => {
+    searchState.value = { ...searchState.value, ...updates };
+  };
+
+  /**
+   * 検索状態をリセット
+   */
+  const resetSearchState = () => {
+    searchState.value = {
+      query: '',
+      currentPage: 1,
+      itemsPerPage: 12
+    };
+  };
+
+  return {
+    searchState: readonly(searchState),
+    updateSearchState,
+    resetSearchState,
+  };
+};

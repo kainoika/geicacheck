@@ -134,14 +134,28 @@ import {
 
 // Composables
 const { circles, loading, error, fetchCircles, searchCircles, performSearch, getPopularGenres } = useCircles()
+const { searchState, updateSearchState, resetSearchState } = useCircleSearch()
 const { addBookmark, removeBookmark } = useBookmarks()
 const { currentEvent, fetchEvents } = useEvents()
 const logger = useLogger('CirclesPage')
 
-// State
-const searchQuery = ref('')
-const currentPage = ref(1)
-const itemsPerPage = ref(12)
+// 永続化された検索状態を使用
+const searchQuery = computed({
+  get: () => searchState.value.query,
+  set: (value: string) => updateSearchState({ query: value })
+});
+
+const currentPage = computed({
+  get: () => searchState.value.currentPage,
+  set: (value: number) => updateSearchState({ currentPage: value })
+});
+
+const itemsPerPage = computed({
+  get: () => searchState.value.itemsPerPage,
+  set: (value: number) => updateSearchState({ itemsPerPage: value })
+});
+
+// ローカル状態
 const searchTimeoutId = ref<NodeJS.Timeout | null>(null)
 const isMobile = ref(false)
 
@@ -192,8 +206,7 @@ const handleRealtimeSearch = () => {
 }
 
 const clearSearch = async () => {
-  searchQuery.value = ''
-  currentPage.value = 1
+  resetSearchState()
   await fetchData()
 }
 
@@ -219,19 +232,19 @@ const addGenreToSearch = (genre: string) => {
 const fetchData = async () => {
   logger.info('fetchData called')
   logger.info('currentEvent.value:', currentEvent.value)
-  
+
   if (!currentEvent.value) {
     logger.info('No current event, skipping fetch')
     return
   }
-  
+
   try {
     logger.info('Fetching circles for event:', currentEvent.value.id)
     const result = await fetchCircles({
       page: currentPage.value,
       limit: itemsPerPage.value
     }, currentEvent.value.id)
-    
+
     logger.info('Circles fetched successfully')
     logger.info('Result:', result)
     logger.info('circles.value.length:', circles.value.length)
@@ -240,6 +253,27 @@ const fetchData = async () => {
     console.error('Fetch data error:', err)
   }
 }
+
+// ページ復帰時の検索状態復元
+const restoreSearchState = async () => {
+  if (!currentEvent.value) {
+    logger.info('No current event, skipping restore')
+    return
+  }
+
+  if (searchState.value.query) {
+    logger.info('Restoring search state:', searchState.value)
+    // 前回の検索クエリがある場合、検索を実行
+    await performSearch(searchState.value.query, {
+      page: searchState.value.currentPage,
+      limit: searchState.value.itemsPerPage
+    }, currentEvent.value.id);
+  } else {
+    // 検索クエリがない場合、全件取得
+    logger.info('No previous search query, fetching all data')
+    await fetchData();
+  }
+};
 
 // 人気ジャンルを取得
 const fetchPopularGenres = async () => {
@@ -318,8 +352,8 @@ onMounted(async () => {
     
     logger.info('✅ currentEvent確認完了:', currentEvent.value?.id)
     
-    // データを読み込み
-    await fetchData()
+    // 検索状態を復元
+    await restoreSearchState()
     await fetchPopularGenres()
     
     logger.info('✅ Circlesページ初期化完了')
