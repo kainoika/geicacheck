@@ -273,6 +273,89 @@ export const useEditPermissions = (deps?: EditPermissionsDependencies) => {
     return results
   }
 
+  // 編集権限を削除（取り消し）
+  const revokeCirclePermission = async (requestId: string, reason: string) => {
+    if (!user.value || !$firestore) {
+      throw new Error('ユーザーまたはFirestoreが初期化されていません')
+    }
+
+    // 管理者権限チェック
+    const userDoc = await getDoc(doc($firestore, 'users', user.value.uid))
+    if (!userDoc.exists() || userDoc.data().userType !== 'admin') {
+      throw new Error('管理者権限が必要です')
+    }
+
+    // 申請情報を取得
+    const requestRef = doc($firestore, 'edit_permission_requests', requestId)
+    const requestDoc = await getDoc(requestRef)
+
+    if (!requestDoc.exists()) {
+      throw new Error('申請が見つかりません')
+    }
+
+    const requestData = requestDoc.data()
+
+    // 承認済みでない場合はエラー
+    if (requestData.status !== 'approved') {
+      throw new Error('承認済みの申請のみ削除できます')
+    }
+
+    // 該当する権限を論理削除（isActive: false）
+    const permissionsRef = collection($firestore, 'circle_permissions')
+    const q = query(
+      permissionsRef,
+      where('userId', '==', requestData.userId),
+      where('circleId', '==', requestData.circleId),
+      where('isActive', '==', true)
+    )
+
+    const permissionSnapshot = await getDocs(q)
+
+    // 権限を無効化
+    for (const permissionDoc of permissionSnapshot.docs) {
+      await updateDoc(permissionDoc.ref, {
+        isActive: false,
+        revokedAt: serverTimestamp(),
+        revokedBy: user.value.uid,
+        revocationReason: reason
+      })
+    }
+
+    // サークルのownerIdをクリア（権限付与時に設定されていた場合）
+    const eventIdMatch = requestData.circleId.match(/^geica(\d+)-/)
+    if (eventIdMatch) {
+      const eventId = `geica-${eventIdMatch[1]}`
+      const circleRef = doc($firestore, 'events', eventId, 'circles', requestData.circleId)
+
+      try {
+        // 現在のサークル情報を確認
+        const circleDoc = await getDoc(circleRef)
+        if (circleDoc.exists()) {
+          const circleData = circleDoc.data()
+          // ownerIdがこのユーザーと一致する場合のみクリア
+          if (circleData.ownerId === requestData.userId) {
+            await updateDoc(circleRef, {
+              ownerId: null,
+              updatedAt: serverTimestamp()
+            })
+          }
+        }
+      } catch (error) {
+        console.error('サークルのownerId削除エラー:', error)
+        // 権限削除は成功させるため、エラーは記録のみ
+      }
+    }
+
+    // 申請ステータスを削除済みに変更
+    await updateDoc(requestRef, {
+      status: 'revoked',
+      revocationReason: reason,
+      revokedAt: serverTimestamp(),
+      revokedBy: user.value.uid,
+      updatedAt: serverTimestamp()
+    })
+  }
+
   // ユーザーがサークルの編集権限を持っているかチェック
   const hasCircleEditPermission = async (userId: string, circleId: string) => {
     if (!$firestore) return false
@@ -361,6 +444,7 @@ export const useEditPermissions = (deps?: EditPermissionsDependencies) => {
     approveEditPermissionRequest,
     rejectEditPermissionRequest,
     processAutoApprovedRequests,
+    revokeCirclePermission,
     hasCircleEditPermission,
     getUserCirclePermissions,
     hasExistingRequest

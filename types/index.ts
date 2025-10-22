@@ -120,18 +120,22 @@ export interface EditPermissionRequest {
   evidenceUrls?: string[];
   adminNote?: string;
   rejectionReason?: string;
+  revocationReason?: string; // 権限削除理由
   user?: User; // ユーザー情報（管理者画面用）
   createdAt: Date;
   updatedAt: Date;
   approvedAt?: Date;
   approvedBy?: string;
+  revokedAt?: Date; // 権限削除日時
+  revokedBy?: string; // 権限削除者
 }
 
 export type PermissionStatus =
   | "pending"
   | "approved"
   | "rejected"
-  | "auto_approved";
+  | "auto_approved"
+  | "revoked";
 
 export interface CirclePermission {
   id: string;

@@ -61,6 +61,10 @@
                 <div style="font-size: 1.25rem; font-weight: 700; color: #ef4444;">{{ rejectedCount }}</div>
                 <div style="font-size: 0.75rem; color: #6b7280;">却下</div>
               </div>
+              <div style="text-align: center;">
+                <div style="font-size: 1.25rem; font-weight: 700; color: #9ca3af;">{{ revokedCount }}</div>
+                <div style="font-size: 0.75rem; color: #6b7280;">削除済み</div>
+              </div>
             </div>
           </div>
         </div>
@@ -219,39 +223,78 @@
             </button>
           </div>
 
-          <!-- 処理済み情報 -->
-          <div v-else-if="request.processedAt || request.approvedAt" 
+          <!-- 承認済み（削除ボタン付き） -->
+          <div v-else-if="request.status === 'approved'" style="display: flex; flex-direction: column; gap: 1rem;">
+            <!-- 承認情報 -->
+            <div style="padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #10b981; background: #f0fdf4;">
+              <div style="font-size: 0.875rem; color: #166534;">
+                {{ formatDate(request.processedAt || request.approvedAt) }} に{{ getStatusLabel(request.status) }}
+              </div>
+              <div v-if="request.processedBy || request.approvedBy"
+                   style="font-size: 0.875rem; margin-top: 0.25rem; color: #15803d;">
+                処理者: {{ (request.processedBy?.displayName || request.processedBy || request.approvedBy) }}
+              </div>
+              <div v-if="request.note"
+                   style="font-size: 0.875rem; margin-top: 0.5rem; padding: 0.5rem; border-radius: 0.25rem; color: #15803d; background: #bbf7d0;">
+                備考: {{ request.note }}
+              </div>
+            </div>
+            <!-- 削除アクション -->
+            <div style="display: flex; justify-content: end;">
+              <button
+                @click="revokePermission(request.id)"
+                style="padding: 0.5rem 1rem; background: #f59e0b; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-weight: 500; font-size: 0.875rem; transition: all 0.2s;"
+                onmouseover="this.style.backgroundColor='#d97706'"
+                onmouseout="this.style.backgroundColor='#f59e0b'"
+              >
+                権限を削除
+              </button>
+            </div>
+          </div>
+
+          <!-- その他の処理済み情報（却下・削除済み） -->
+          <div v-else-if="request.processedAt || request.approvedAt || request.revokedAt"
                style="padding: 1rem; border-radius: 0.5rem; border-left: 4px solid;"
-               :style="{ 
-                 backgroundColor: request.status === 'rejected' ? '#fef2f2' : '#f0fdf4',
+               :style="{
+                 backgroundColor: request.status === 'rejected' ? '#fef2f2' : request.status === 'revoked' ? '#f9fafb' : '#f0fdf4',
                  borderLeftColor: getStatusColor(request.status)
                }">
-            <div style="font-size: 0.875rem;" 
-                 :style="{ color: request.status === 'rejected' ? '#991b1b' : '#166534' }">
-              {{ formatDate(request.processedAt || request.approvedAt) }} に{{ getStatusLabel(request.status) }}
+            <div style="font-size: 0.875rem;"
+                 :style="{ color: request.status === 'rejected' ? '#991b1b' : request.status === 'revoked' ? '#6b7280' : '#166534' }">
+              {{ formatDate(request.processedAt || request.approvedAt || request.revokedAt) }} に{{ getStatusLabel(request.status) }}
             </div>
-            <div v-if="request.processedBy || request.approvedBy" 
+            <div v-if="request.processedBy || request.approvedBy || request.revokedBy"
                  style="font-size: 0.875rem; margin-top: 0.25rem;"
-                 :style="{ color: request.status === 'rejected' ? '#7f1d1d' : '#15803d' }">
-              処理者: {{ (request.processedBy?.displayName || request.processedBy || request.approvedBy) }}
+                 :style="{ color: request.status === 'rejected' ? '#7f1d1d' : request.status === 'revoked' ? '#4b5563' : '#15803d' }">
+              処理者: {{ (request.processedBy?.displayName || request.processedBy || request.approvedBy || request.revokedBy) }}
             </div>
-            <div v-if="request.note" 
+            <div v-if="request.note"
                  style="font-size: 0.875rem; margin-top: 0.5rem; padding: 0.5rem; border-radius: 0.25rem;"
-                 :style="{ 
-                   color: request.status === 'rejected' ? '#7f1d1d' : '#15803d',
-                   backgroundColor: request.status === 'rejected' ? '#fecaca' : '#bbf7d0'
+                 :style="{
+                   color: request.status === 'rejected' ? '#7f1d1d' : request.status === 'revoked' ? '#4b5563' : '#15803d',
+                   backgroundColor: request.status === 'rejected' ? '#fecaca' : request.status === 'revoked' ? '#e5e7eb' : '#bbf7d0'
                  }">
               備考: {{ request.note }}
             </div>
-            
+
             <!-- 却下理由を強調表示 -->
-            <div v-if="request.rejectionReason && request.status === 'rejected'" 
+            <div v-if="request.rejectionReason && request.status === 'rejected'"
                  style="margin-top: 0.75rem; padding: 0.75rem; background: #dc2626; color: white; border-radius: 0.375rem;">
               <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                 <XCircleIcon class="h-4 w-4" />
                 <span style="font-size: 0.875rem; font-weight: 600;">却下理由</span>
               </div>
               <p style="font-size: 0.875rem; margin: 0; line-height: 1.4;">{{ request.rejectionReason }}</p>
+            </div>
+
+            <!-- 削除理由を表示 -->
+            <div v-if="request.revocationReason && request.status === 'revoked'"
+                 style="margin-top: 0.75rem; padding: 0.75rem; background: #6b7280; color: white; border-radius: 0.375rem;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <XCircleIcon class="h-4 w-4" />
+                <span style="font-size: 0.875rem; font-weight: 600;">削除理由</span>
+              </div>
+              <p style="font-size: 0.875rem; margin: 0; line-height: 1.4;">{{ request.revocationReason }}</p>
             </div>
           </div>
         </div>
@@ -363,6 +406,54 @@
         </div>
       </div>
     </div>
+
+    <!-- 権限削除確認モーダル -->
+    <div
+      v-if="showRevokeModal"
+      style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 1rem;"
+      @click="showRevokeModal = false"
+    >
+      <div
+        style="background: white; border-radius: 0.5rem; padding: 2rem; max-width: 400px; width: 100%;"
+        @click.stop
+      >
+        <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 1rem 0;">
+          編集権限を削除しますか？
+        </h3>
+        <p style="color: #6b7280; margin: 0 0 1rem 0; line-height: 1.5;">
+          このユーザーの編集権限を削除します。この操作により、サークル情報の編集ができなくなります。
+        </p>
+        <div style="margin-bottom: 1rem; padding: 0.75rem; background: #fef3c7; border-radius: 0.375rem; border-left: 4px solid #f59e0b;">
+          <p style="color: #92400e; font-size: 0.875rem; margin: 0;">
+            <strong>注意:</strong> 削除された権限は復元できません。必要に応じて再度申請が必要です。
+          </p>
+        </div>
+
+        <textarea
+          v-model="revokeNote"
+          placeholder="削除理由を入力してください（必須）"
+          style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; resize: vertical; min-height: 100px; margin-bottom: 1.5rem;"
+          required
+        ></textarea>
+        <p v-if="revokeValidationError" style="color: #dc2626; font-size: 0.875rem; margin: -1rem 0 1rem 0;">
+          削除理由を入力してください
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: end;">
+          <button
+            @click="showRevokeModal = false"
+            style="padding: 0.5rem 1rem; background: white; color: #6b7280; border: 1px solid #d1d5db; border-radius: 0.375rem; cursor: pointer;"
+          >
+            キャンセル
+          </button>
+          <button
+            @click="confirmRevoke"
+            style="padding: 0.5rem 1rem; background: #f59e0b; color: white; border: none; border-radius: 0.375rem; cursor: pointer; font-weight: 500;"
+          >
+            削除する
+          </button>
+        </div>
+      </div>
+    </div>
     </div>
   </div>
 </template>
@@ -392,9 +483,12 @@ const { user, isAdmin } = useAuth()
 const activeStatus = ref('pending')
 const showApproveModal = ref(false)
 const showRejectModal = ref(false)
+const showRevokeModal = ref(false)
 const selectedRequestId = ref(null)
 const rejectNote = ref('')
+const revokeNote = ref('')
 const rejectValidationError = ref(false)
+const revokeValidationError = ref(false)
 
 // 却下理由のテンプレート
 const rejectReasonTemplates = ref([
@@ -446,7 +540,7 @@ const isAuthenticated = computed(() => {
 })
 
 // Composables
-const { getAllEditPermissionRequests, approveEditPermissionRequest, rejectEditPermissionRequest, processAutoApprovedRequests } = useEditPermissions()
+const { getAllEditPermissionRequests, approveEditPermissionRequest, rejectEditPermissionRequest, processAutoApprovedRequests, revokeCirclePermission } = useEditPermissions()
 
 // データ
 const editRequests = ref([])
@@ -459,7 +553,8 @@ const statusFilters = ref([
   { key: 'pending', label: '申請中', color: '#f59e0b' },
   { key: 'auto_approved', label: '自動承認待ち', color: '#8b5cf6' },
   { key: 'approved', label: '承認済み', color: '#10b981' },
-  { key: 'rejected', label: '却下', color: '#ef4444' }
+  { key: 'rejected', label: '却下', color: '#ef4444' },
+  { key: 'revoked', label: '削除済み', color: '#9ca3af' }
 ])
 
 // Computed
@@ -482,8 +577,12 @@ const approvedCount = computed(() =>
   editRequests.value.filter(r => r.status === 'approved').length
 )
 
-const rejectedCount = computed(() => 
+const rejectedCount = computed(() =>
   editRequests.value.filter(r => r.status === 'rejected').length
+)
+
+const revokedCount = computed(() =>
+  editRequests.value.filter(r => r.status === 'revoked').length
 )
 
 // Methods
@@ -494,6 +593,7 @@ const getStatusIcon = (status) => {
     case 'auto_approved': return SparklesIcon
     case 'approved': return CheckCircleIcon
     case 'rejected': return XCircleIcon
+    case 'revoked': return XCircleIcon
     default: return ClipboardDocumentListIcon
   }
 }
@@ -509,6 +609,7 @@ const getStatusColor = (status) => {
     case 'auto_approved': return '#8b5cf6'
     case 'approved': return '#10b981'
     case 'rejected': return '#ef4444'
+    case 'revoked': return '#9ca3af'
     default: return '#6b7280'
   }
 }
@@ -519,6 +620,7 @@ const getStatusLabel = (status) => {
     case 'auto_approved': return '自動承認待ち'
     case 'approved': return '承認済み'
     case 'rejected': return '却下'
+    case 'revoked': return '削除済み'
     default: return '不明'
   }
 }
@@ -539,6 +641,7 @@ const getEmptyStateTitle = () => {
     case 'auto_approved': return '自動承認待ちの項目はありません'
     case 'approved': return '承認済みの項目はありません'
     case 'rejected': return '却下された項目はありません'
+    case 'revoked': return '削除済みの項目はありません'
     default: return '申請はありません'
   }
 }
@@ -549,6 +652,7 @@ const getEmptyStateDescription = () => {
     case 'auto_approved': return 'X(Twitter)情報が一致して自動承認された申請があると、ここに表示されます'
     case 'approved': return '承認された申請があると、ここに表示されます'
     case 'rejected': return '却下された申請があると、ここに表示されます'
+    case 'revoked': return '削除された権限があると、ここに表示されます'
     default: return '編集権限の申請があると、ここに表示されます'
   }
 }
@@ -563,6 +667,13 @@ const rejectRequest = (requestId) => {
   rejectNote.value = ''
   rejectValidationError.value = false
   showRejectModal.value = true
+}
+
+const revokePermission = (requestId) => {
+  selectedRequestId.value = requestId
+  revokeNote.value = ''
+  revokeValidationError.value = false
+  showRevokeModal.value = true
 }
 
 const selectRejectTemplate = (message) => {
@@ -588,7 +699,7 @@ const confirmReject = async () => {
     rejectValidationError.value = true
     return
   }
-  
+
   try {
     await rejectEditPermissionRequest(selectedRequestId.value, rejectNote.value.trim())
     await loadEditRequests() // データを再読み込み
@@ -599,6 +710,27 @@ const confirmReject = async () => {
   } catch (error) {
     logger.error('却下エラー', error)
     alert('却下処理に失敗しました')
+  }
+}
+
+const confirmRevoke = async () => {
+  // バリデーション
+  if (!revokeNote.value || revokeNote.value.trim() === '') {
+    revokeValidationError.value = true
+    return
+  }
+
+  try {
+    await revokeCirclePermission(selectedRequestId.value, revokeNote.value.trim())
+    await loadEditRequests() // データを再読み込み
+    showRevokeModal.value = false
+    selectedRequestId.value = null
+    revokeNote.value = ''
+    revokeValidationError.value = false
+    alert('権限を削除しました')
+  } catch (error) {
+    logger.error('権限削除エラー', error)
+    alert('権限削除に失敗しました: ' + (error.message || '不明なエラー'))
   }
 }
 
