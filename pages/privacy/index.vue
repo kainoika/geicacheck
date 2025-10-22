@@ -112,38 +112,6 @@
 
           <section>
             <h2 class="text-2xl font-bold text-pink-600 mb-4 flex items-center gap-2">
-              <ShieldCheckIcon class="h-6 w-6" />
-              セキュリティ対策
-            </h2>
-            <p class="text-gray-700 mb-4">
-              個人情報の保護のため、以下のセキュリティ対策を実施しています：
-            </p>
-            <ul class="space-y-2 text-gray-700">
-              <li class="flex items-center gap-2"><LockClosedIcon class="h-4 w-4 text-blue-600" /> 通信の暗号化（HTTPS）</li>
-              <li class="flex items-center gap-2"><LockClosedIcon class="h-4 w-4 text-blue-600" /> Firebase Authenticationによる安全な認証</li>
-              <li class="flex items-center gap-2"><LockClosedIcon class="h-4 w-4 text-blue-600" /> 適切なアクセス権限の設定</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 class="text-2xl font-bold text-pink-600 mb-4 flex items-center gap-2">
-              <TrashIcon class="h-6 w-6" />
-              データの削除
-            </h2>
-            <div class="bg-purple-50 rounded-lg p-6">
-              <p class="text-gray-700 mb-3">
-                アカウント削除をご希望の場合：
-              </p>
-              <ul class="space-y-2 text-sm text-gray-700">
-                <li>• お問い合わせフォームからアカウント削除をリクエストできます</li>
-                <li>• 削除時に  は、登録された個人情報も削除いたします</li>
-                <li>• 公開済みの情報の一部は、サービス運営上残存する場合があります</li>
-              </ul>
-            </div>
-          </section>
-
-          <section>
-            <h2 class="text-2xl font-bold text-pink-600 mb-4 flex items-center gap-2">
               <ArrowPathIcon class="h-6 w-6" />
               ポリシーの変更
             </h2>

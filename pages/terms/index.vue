@@ -37,6 +37,8 @@
                 <div>
                   <h3 class="font-bold mb-1">画像の権利</h3>
                   <p class="text-sm text-gray-700">サークルカットやお品書きは、権利を有する画像のみアップロードしてください。</p>
+                  <p class="text-sm text-gray-700 mt-1">アップロードされた画像の権利はアップロードしたユーザーに帰属します。</p>
+                  <p class="text-sm text-gray-700 mt-1">アップロードされた画像について、アップロードしたユーザー以外の2次利用・転載は禁止します。</p>
                 </div>
               </div>
               
