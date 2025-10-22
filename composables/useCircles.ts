@@ -12,6 +12,7 @@ import {
 import type { Circle, SearchParams, SearchResult, PlacementInfo } from "~/types";
 import { normalizePlacement, formatPlacementDisplay } from "~/utils/placementUtils";
 import { createLogger } from "~/utils/logger";
+import { monitorFirestoreRead } from "~/utils/firestoreMonitor";
 
 export const useCircles = () => {
   const logger = createLogger('useCircles');
@@ -61,6 +62,10 @@ export const useCircles = () => {
     const q = query(circlesRef, where("isPublic", "==", true));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
+      monitorFirestoreRead('onSnapshot', `events/${eventId}/circles`, eventId, {
+        operation: 'realtimeSync',
+        resultCount: snapshot.size
+      });
       logger.debug('Realtime update received', { eventId, size: snapshot.size });
       
       const updatedCircles: Circle[] = [];
@@ -205,6 +210,11 @@ export const useCircles = () => {
       
       logger.debug('Fetching from Firestore', { path: `events/${targetEventId}/circles` });
       const snapshot = await getDocs(q);
+      monitorFirestoreRead('getDocs', `events/${targetEventId}/circles`, targetEventId, {
+        operation: 'fetchCircles',
+        forceRefresh,
+        resultCount: snapshot.size
+      });
       
       let circleList: Circle[] = [];
       snapshot.forEach((doc) => {
@@ -258,20 +268,26 @@ export const useCircles = () => {
       }
     }
 
-    // キャッシュにない場合のみFirestoreから取得
-    logger.debug('Fetching circle from Firestore', { circleId });
+    // 🚀 最適化: キャッシュがない場合、個別取得ではなく全件取得を実行
+    logger.debug('Cache miss detected, fetching all circles for efficient reading', { circleId });
     try {
-      const circleRef = doc($firestore, "events", targetEventId, "circles", circleId);
-      const circleDoc = await getDoc(circleRef);
+      await fetchCircles({}, targetEventId); // 全件取得（1 read）
 
-      if (circleDoc.exists()) {
-        const data = circleDoc.data();
-        return mapDocumentToCircle(circleDoc.id, data, targetEventId);
+      // 全件取得後にキャッシュから再取得
+      const cached = circlesCache.value[targetEventId];
+      if (cached) {
+        const cachedCircle = cached.data.find(c => c.id === circleId);
+        if (cachedCircle) {
+          logger.debug('Found circle in cache after full fetch', { circleId });
+          return cachedCircle;
+        }
       }
 
+      // ここまで来ることは通常ない（全件取得でキャッシュされているはず）
+      logger.warn('Circle not found in cache after full fetch', { circleId, targetEventId });
       return null;
     } catch (err) {
-      logger.error('Fetch circle by ID error', err);
+      logger.error('Fetch circle by ID error (optimized)', err);
       throw new Error("サークル詳細の取得に失敗しました");
     }
   };
@@ -312,22 +328,30 @@ export const useCircles = () => {
       missingIds.push(...circleIds);
     }
 
-    // キャッシュにないものだけFirestoreから取得
+    // 🚀 最適化: キャッシュにないものがある場合、個別取得ではなく全件取得を実行
     if (missingIds.length > 0) {
-      logger.debug('Fetching missing circles from Firestore', { count: missingIds.length });
-      
-      for (const circleId of missingIds) {
-        try {
-          const circleRef = doc($firestore, "events", targetEventId, "circles", circleId);
-          const circleDoc = await getDoc(circleRef);
-          
-          if (circleDoc.exists()) {
-            const data = circleDoc.data();
-            results.push(mapDocumentToCircle(circleDoc.id, data, targetEventId));
-          }
-        } catch (err) {
-          logger.error('Fetch circle by ID error', { circleId, error: err });
+      logger.debug('Cache miss detected for batch, fetching all circles for efficient reading', {
+        requested: circleIds.length,
+        missing: missingIds.length
+      });
+
+      try {
+        await fetchCircles({}, targetEventId); // 全件取得（1 read）
+
+        // 全件取得後にキャッシュから再取得
+        const refreshedCache = circlesCache.value[targetEventId];
+        if (refreshedCache) {
+          const allRequestedCircles = refreshedCache.data.filter(c => circleIds.includes(c.id));
+          logger.debug('Found circles in cache after full fetch', {
+            requested: circleIds.length,
+            found: allRequestedCircles.length
+          });
+          return allRequestedCircles;
         }
+
+        logger.warn('No cache available after full fetch attempt');
+      } catch (err) {
+        logger.error('Fetch circles by IDs error (optimized)', err);
       }
     }
 
@@ -347,6 +371,7 @@ export const useCircles = () => {
 
     // データがキャッシュされていない場合は先に取得
     if (!isCacheValid(targetEventId)) {
+      logger.debug('Cache invalid for search, fetching all circles first');
       await fetchCircles({}, targetEventId);
     }
 

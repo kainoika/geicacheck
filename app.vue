@@ -30,8 +30,27 @@ import { useLogger } from '~/composables/useLogger'
 const logger = useLogger('App')
 
 // アプリ起動時の設定
-onMounted(() => {
+onMounted(async () => {
   logger.info('App mounted')
+
+  // 🚀 予防的読み込み: 現在イベントのサークル一覧を先読み
+  try {
+    const { currentEvent, fetchEvents } = useEvents()
+    const { fetchCircles } = useCircles()
+
+    // イベント情報を取得
+    await fetchEvents()
+
+    // 現在イベントがあれば、サークル一覧を予防的に読み込み
+    if (currentEvent.value?.id) {
+      logger.debug('Preloading circles for current event', { eventId: currentEvent.value.id })
+      await fetchCircles({}, currentEvent.value.id)
+      logger.debug('Successfully preloaded circles')
+    }
+  } catch (error) {
+    // 予防的読み込みの失敗はアプリ動作に影響しないため、警告レベル
+    logger.warn('Failed to preload circles', error)
+  }
 })
 
 // メタ情報の設定
