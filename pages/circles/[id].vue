@@ -85,7 +85,7 @@
               <ImageUpload v-model="circle.circleCutImageUrl" label="サークルカット画像"
                 :path="`circle-images/${currentEvent?.id}/${circle.id}/circle-cut`"
                 :can-edit="permissions.canUploadImages" @update:modelValue="updateCircleCut"
-                @error="uploadError = $event" />
+                @deleted:image="onImageDeletedCircleCut" @error="uploadError = $event" />
             </div>
 
             <!-- お品書き画像 -->
@@ -97,7 +97,8 @@
               </h2>
               <ImageUpload v-model="circle.menuImageUrl" label="お品書き画像"
                 :path="`circle-images/${currentEvent?.id}/${circle.id}/menu`" :can-edit="permissions.canUploadImages"
-                @update:modelValue="updateMenuImage" @error="uploadError = $event" />
+                @update:modelValue="updateMenuImage" @error="uploadError = $event"
+                @deleted:image="onImageDeletedMenuImage" />
             </div>
 
             <!-- ジャンル -->
@@ -394,6 +395,14 @@ const updateMenuImage = async (imageUrl: string | undefined) => {
   } finally {
     saving.value = false
   }
+}
+
+const onImageDeletedCircleCut = async () => {
+  await updateCircleCut("")
+}
+
+const onImageDeletedMenuImage = async () => {
+  await updateMenuImage("")
 }
 
 // 頒布物管理

@@ -83,6 +83,7 @@ interface Props {
 
 interface Emits {
   (e: 'update:modelValue', value: string | undefined): void
+  (e: 'deleted:image'): void
   (e: 'error', message: string): void
 }
 
@@ -109,6 +110,7 @@ const removeImage = async () => {
     await deleteObject(imageRef)
     
     emit('update:modelValue', undefined)
+    emit('deleted:image')
   } catch (err) {
     console.error('画像削除エラー:', err)
     emit('error', '画像の削除に失敗しました')
