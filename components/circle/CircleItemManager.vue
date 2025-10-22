@@ -30,13 +30,13 @@
             <!-- 説明文表示（展開可能） -->
             <div v-if="item.description" class="mt-2">
               <p class="text-sm text-gray-500 whitespace-pre-wrap" :class="{
-                'line-clamp-3': !expandedDescriptions.has(item.id),
+                'line-clamp-4': !expandedDescriptions.has(item.id),
                 '': expandedDescriptions.has(item.id)
               }">
                 {{ item.description }}
               </p>
               <!-- 100文字以上の場合のみ展開ボタンを表示 -->
-              <button v-if="item.description.length > 100" @click="toggleDescriptionExpansion(item.id)"
+              <button v-if="item.description.length > 60" @click="toggleDescriptionExpansion(item.id)"
                 class="text-blue-600 hover:text-blue-800 text-xs mt-1 transition-colors">
                 {{ expandedDescriptions.has(item.id) ? '閉じる' : 'もっと見る' }}
               </button>
