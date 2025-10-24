@@ -276,12 +276,25 @@ export const useBookmarks = () => {
         updatedAt: new Date(),
       };
 
-      // 既存のブックマークを更新または追加
+      // ローカル状態を更新 - bookmarks配列
       const existingIndex = bookmarks.value.findIndex(b => b.circleId === circleId);
       if (existingIndex !== -1) {
         bookmarks.value[existingIndex] = newBookmark;
       } else {
         bookmarks.value.unshift(newBookmark);
+      }
+
+      // bookmarksWithCirclesには追加しない（fetchBookmarksWithCirclesで再構築されるため）
+      // 代わりに、既に存在する場合はブックマーク情報のみ更新
+      const bookmarksWithCirclesIndex = bookmarksWithCircles.value.findIndex(b => b.circleId === circleId);
+      if (bookmarksWithCirclesIndex !== -1) {
+        bookmarksWithCircles.value[bookmarksWithCirclesIndex] = {
+          ...bookmarksWithCircles.value[bookmarksWithCirclesIndex],
+          category,
+          visited: false,
+          memo: memo || "",
+          updatedAt: new Date(),
+        };
       }
 
       return newBookmark;
@@ -309,11 +322,21 @@ export const useBookmarks = () => {
 
       await updateDoc(bookmarkRef, updateData);
 
-      // ローカル状態を更新
-      const index = bookmarks.value.findIndex((b) => b.circleId === circleId);
-      if (index !== -1) {
-        bookmarks.value[index] = {
-          ...bookmarks.value[index],
+      // ローカル状態を更新 - bookmarks配列
+      const bookmarkIndex = bookmarks.value.findIndex((b) => b.circleId === circleId);
+      if (bookmarkIndex !== -1) {
+        bookmarks.value[bookmarkIndex] = {
+          ...bookmarks.value[bookmarkIndex],
+          ...updates,
+          updatedAt: new Date(),
+        };
+      }
+
+      // ローカル状態を更新 - bookmarksWithCircles配列も同時に更新
+      const bookmarksWithCirclesIndex = bookmarksWithCircles.value.findIndex((b) => b.circleId === circleId);
+      if (bookmarksWithCirclesIndex !== -1) {
+        bookmarksWithCircles.value[bookmarksWithCirclesIndex] = {
+          ...bookmarksWithCircles.value[bookmarksWithCirclesIndex],
           ...updates,
           updatedAt: new Date(),
         };
@@ -334,8 +357,9 @@ export const useBookmarks = () => {
       const bookmarkRef = doc($firestore, "users", user.value.uid, "bookmarks", circleId);
       await deleteDoc(bookmarkRef);
 
-      // ローカル状態を更新
+      // ローカル状態を更新 - 両方の配列から削除
       bookmarks.value = bookmarks.value.filter((b) => b.circleId !== circleId);
+      bookmarksWithCircles.value = bookmarksWithCircles.value.filter((b) => b.circleId !== circleId);
     } catch (err) {
       logger.error("Remove bookmark error", err);
       throw new Error("ブックマークの削除に失敗しました");
@@ -450,11 +474,22 @@ export const useBookmarks = () => {
       const bookmarkRef = doc($firestore, "users", user.value.uid, "bookmarks", circleId);
       await updateDoc(bookmarkRef, updateData);
 
-      // ローカル状態を更新
-      const index = bookmarks.value.findIndex((b) => b.circleId === circleId);
-      if (index !== -1) {
-        bookmarks.value[index] = {
-          ...bookmarks.value[index],
+      // ローカル状態を更新 - bookmarks配列
+      const bookmarkIndex = bookmarks.value.findIndex((b) => b.circleId === circleId);
+      if (bookmarkIndex !== -1) {
+        bookmarks.value[bookmarkIndex] = {
+          ...bookmarks.value[bookmarkIndex],
+          visited: newVisited,
+          visitedAt: newVisited ? new Date() : undefined,
+          updatedAt: new Date(),
+        };
+      }
+
+      // ローカル状態を更新 - bookmarksWithCircles配列も同時に更新
+      const bookmarksWithCirclesIndex = bookmarksWithCircles.value.findIndex((b) => b.circleId === circleId);
+      if (bookmarksWithCirclesIndex !== -1) {
+        bookmarksWithCircles.value[bookmarksWithCirclesIndex] = {
+          ...bookmarksWithCircles.value[bookmarksWithCirclesIndex],
           visited: newVisited,
           visitedAt: newVisited ? new Date() : undefined,
           updatedAt: new Date(),
