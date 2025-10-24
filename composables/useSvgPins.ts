@@ -196,6 +196,7 @@ export const useSvgPins = (
     group.setAttribute('class', 'bookmark-pin')
     group.setAttribute('data-bookmark-id', bookmark.id)
     group.setAttribute('data-category', bookmark.category)
+    group.setAttribute('data-visited', bookmark.visited.toString())
     
     // アニメーション用の遅延
     if (config.animated) {
@@ -205,15 +206,29 @@ export const useSvgPins = (
       group.style.transition = `opacity 0.3s ease ${index * 0.05}s, transform 0.3s ease ${index * 0.05}s`
     }
     
+    // 巡回済みの場合のスタイル調整
+    const isVisited = bookmark.visited
+    const adjustedStyle = {
+      ...style,
+      fill: isVisited ? '#10b981' : style.fill,  // 巡回済みは緑色
+      stroke: isVisited ? '#ffffff' : style.stroke,
+      opacity: isVisited ? 0.8 : 1  // 巡回済みは少し透明に
+    }
+    
     // ピンサークル
     const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
     circle.setAttribute('cx', position.x.toString())
     circle.setAttribute('cy', position.y.toString())
     circle.setAttribute('r', config.radius.toString())
-    circle.setAttribute('fill', style.fill)
-    circle.setAttribute('stroke', style.stroke)
-    circle.setAttribute('stroke-width', style.strokeWidth.toString())
+    circle.setAttribute('fill', adjustedStyle.fill)
+    circle.setAttribute('stroke', adjustedStyle.stroke)
+    circle.setAttribute('stroke-width', adjustedStyle.strokeWidth.toString())
     circle.setAttribute('class', 'pin-background')
+    
+    // 巡回済みの場合は透明度を適用
+    if (isVisited) {
+      circle.style.opacity = adjustedStyle.opacity.toString()
+    }
     
     // タッチ領域を拡大するための透明な円
     const touchArea = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
@@ -270,11 +285,15 @@ export const useSvgPins = (
       })
     }
     
-    // アイコン
+    // アイコン（巡回済みの場合はチェックマーク、そうでなければ通常のアイコン）
     const icon = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-    icon.setAttribute('d', style.iconPath)
-    icon.setAttribute('fill', 'none')
-    icon.setAttribute('stroke', style.iconStroke)
+    const iconPath = isVisited 
+      ? 'M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z'  // チェックマークアイコン
+      : style.iconPath
+    
+    icon.setAttribute('d', iconPath)
+    icon.setAttribute('fill', isVisited ? '#ffffff' : 'none')
+    icon.setAttribute('stroke', isVisited ? '#ffffff' : style.iconStroke)
     icon.setAttribute('stroke-width', '2')
     icon.setAttribute('stroke-linecap', 'round')
     icon.setAttribute('stroke-linejoin', 'round')
@@ -284,9 +303,25 @@ export const useSvgPins = (
     // アイコンのスケールと位置調整
     const iconSize = config.radius * 1.2
     const iconOffset = iconSize / 2
+    const iconScale = isVisited ? iconSize / 28 : iconSize / 24  // チェックマークは少し小さく
     icon.setAttribute('transform', 
-      `translate(${position.x - iconOffset}, ${position.y - iconOffset}) scale(${iconSize / 24})`
+      `translate(${position.x - iconOffset}, ${position.y - iconOffset}) scale(${iconScale})`
     )
+    
+    // 巡回済みの場合は追加の視覚効果を追加
+    let visitedIndicator: SVGCircleElement | null = null
+    if (isVisited) {
+      // 小さな緑色の点を右上に追加
+      visitedIndicator = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+      visitedIndicator.setAttribute('cx', (position.x + config.radius * 0.6).toString())
+      visitedIndicator.setAttribute('cy', (position.y - config.radius * 0.6).toString())
+      visitedIndicator.setAttribute('r', (config.radius * 0.3).toString())
+      visitedIndicator.setAttribute('fill', '#10b981')
+      visitedIndicator.setAttribute('stroke', '#ffffff')
+      visitedIndicator.setAttribute('stroke-width', '2')
+      visitedIndicator.setAttribute('class', 'visited-indicator')
+      visitedIndicator.style.pointerEvents = 'none'
+    }
     
     // グループにもイベントを設定（ピン全体をクリック可能に）
     group.style.cursor = 'pointer'
@@ -300,6 +335,9 @@ export const useSvgPins = (
     // 要素を追加（順序重要：タッチ領域を最前面に）
     group.appendChild(circle)
     group.appendChild(icon)
+    if (visitedIndicator) {
+      group.appendChild(visitedIndicator)
+    }
     group.appendChild(touchArea) // タッチ領域を最後に追加して最前面に
     
     // アニメーション開始

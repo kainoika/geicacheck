@@ -116,11 +116,12 @@
 
           <!-- グリッド表示 -->
           <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
-            <CircleCard
+            <BookmarkCard
               v-for="bookmark in filteredBookmarks"
               :key="bookmark.id"
-              :circle="bookmark.circle"
+              :bookmark="bookmark"
               @bookmark="handleBookmark"
+              @toggle-visited="handleToggleVisited"
             />
           </div>
         </div>
@@ -186,6 +187,15 @@
                 優先
               </div>
             </div>
+
+            <div style="text-align: center; padding: 1rem; background: #f0fdf4; border-radius: 0.5rem;">
+              <div style="font-size: 1.5rem; font-weight: 700; color: #16a34a; margin-bottom: 0.25rem;">
+                {{ getVisitedCount() }}
+              </div>
+              <div style="font-size: 0.875rem; color: #6b7280;">
+                巡回済み
+              </div>
+            </div>
           </div>
         </div>
         </div>
@@ -202,12 +212,13 @@ import {
   BookmarkIcon,
   StarIcon,
   FireIcon,
-  RectangleStackIcon
+  RectangleStackIcon,
+  CheckCircleIcon
 } from '@heroicons/vue/24/outline'
 
 // Composables
 const { user, isAuthenticated } = useAuth()
-const { bookmarks, bookmarksWithCircles, loading, fetchBookmarksWithCircles, toggleBookmark, generateExportData } = useBookmarks()
+const { bookmarks, bookmarksWithCircles, loading, fetchBookmarksWithCircles, toggleBookmark, toggleVisited, generateExportData } = useBookmarks()
 const { currentEvent } = useEvents()
 const logger = useLogger('BookmarksPage')
 
@@ -220,13 +231,17 @@ const categories = ref([
   { key: 'all', label: 'すべて' },
   { key: 'check', label: 'チェック予定' },
   { key: 'interested', label: '気になる' },
-  { key: 'priority', label: '優先' }
+  { key: 'priority', label: '優先' },
+  { key: 'visited', label: '巡回済み' }
 ])
 
 // Computed
 const filteredBookmarks = computed(() => {
   if (activeCategory.value === 'all') {
     return bookmarksWithCircles.value
+  }
+  if (activeCategory.value === 'visited') {
+    return bookmarksWithCircles.value.filter(bookmark => bookmark.visited)
   }
   return bookmarksWithCircles.value.filter(bookmark => bookmark.category === activeCategory.value)
 })
@@ -238,6 +253,7 @@ const getCategoryIcon = (category) => {
     case 'check': return BookmarkIcon
     case 'interested': return StarIcon
     case 'priority': return FireIcon
+    case 'visited': return CheckCircleIcon
     default: return BookmarkIcon
   }
 }
@@ -250,7 +266,14 @@ const getBookmarkCount = (category) => {
   if (category === 'all') {
     return bookmarksWithCircles.value.length
   }
+  if (category === 'visited') {
+    return bookmarksWithCircles.value.filter(bookmark => bookmark.visited).length
+  }
   return bookmarksWithCircles.value.filter(bookmark => bookmark.category === category).length
+}
+
+const getVisitedCount = () => {
+  return bookmarksWithCircles.value.filter(bookmark => bookmark.visited).length
 }
 
 const getCurrentCategoryLabel = () => {
@@ -264,6 +287,14 @@ const handleBookmark = async (circleId, category) => {
     await toggleBookmark(circleId, category)
   } catch (error) {
     console.error('Bookmark error:', error)
+  }
+}
+
+const handleToggleVisited = async (circleId) => {
+  try {
+    await toggleVisited(circleId)
+  } catch (error) {
+    console.error('Toggle visited error:', error)
   }
 }
 
