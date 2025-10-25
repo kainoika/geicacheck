@@ -74,7 +74,7 @@ export const BOT_USER_AGENTS = [
 export const DEFAULT_OGP: Partial<OGPData> = {
   siteName: 'ゲイカチェック',
   type: 'website',
-  image: 'https://geicacheck.web.app/default-ogp-image.png', // デフォルト画像
+  image: 'https://geicacheck.com/default-ogp-image.png', // デフォルト画像
   description: 'アイカツ同人誌イベントのサークル情報をチェック'
 };
 

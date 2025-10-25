@@ -35,7 +35,7 @@ cat .firebaserc
 #### functions/src/utils/ogpGenerator.ts の確認
 ```typescript
 // 本番用のベースURLが正しく設定されているか確認
-const baseUrl = 'https://geicacheck.web.app'; // 実際のドメインに変更
+const baseUrl = 'https://geicacheck.com'; // 本番ドメイン
 ```
 
 ### 3. デプロイ実行
@@ -81,7 +81,7 @@ https://cards-dev.twitter.com/validator
 
 ### 2. 検証用URL例
 ```
-https://geicacheck.web.app/circles/実際のサークルID
+https://geicacheck.com/circles/実際のサークルID
 ```
 
 ### 3. 期待される表示内容
