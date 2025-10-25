@@ -4,6 +4,9 @@ import * as admin from "firebase-admin";
 // Firebase Admin SDK初期化
 admin.initializeApp();
 
+// OGP関数のインポート
+export { ogp, ogpHealthCheck } from "./ogp";
+
 /**
  * ユーザーアカウント削除時に実行されるCloud Function
  * Firebase Authentication でユーザーが削除された時に自動実行
