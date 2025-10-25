@@ -92,7 +92,7 @@
                     :title="currentBookmark.visited ? '巡回済み解除' : '巡回完了'"
                 >
                     <CheckCircleIcon :class="['h-4 w-4', currentBookmark.visited ? 'text-green-600' : 'text-gray-400']" />
-                    {{ currentBookmark.visited ? '巡回済み' : '巡回する' }}
+                    {{ currentBookmark.visited ? '巡回済み' : '巡回した？' }}
                 </button>
             </div>
 
