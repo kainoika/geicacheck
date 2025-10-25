@@ -338,12 +338,14 @@ const handleBookmark = async (category) => {
 const shareToTwitter = () => {
   if (!circle.value) return
 
-  const text = `${circle.value.circleName}`
+  // firstLine: サークル名 | 配置
+  const firstLine = `${circle.value.circleName}` + (circle.value.placement ? ` | ${formatPlacement(circle.value.placement)}` : '')
   const url = window.location.href
-  const hashtags = `geica_check`
+  const hashtags = `#geica_check`
+  const text = `${firstLine}\n${url}\n${hashtags}`
 
-  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}&hashtags=${encodeURIComponent(hashtags)}`
-
+  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`
+ 
   window.open(twitterUrl, '_blank', 'width=550,height=420')
 }
 
