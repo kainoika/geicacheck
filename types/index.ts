@@ -80,6 +80,8 @@ export interface Bookmark {
   circleId: string;
   eventId: string;               // イベント別ブックマーク（新規追加）
   category: BookmarkCategory;
+  visited: boolean;              // 巡回済みフラグ
+  visitedAt?: Date;              // 巡回日時（オプション）
   memo?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -270,6 +272,7 @@ export interface CircleItemFormData {
 
 export interface BookmarkFormData {
   category: BookmarkCategory;
+  visited?: boolean;
   memo?: string;
 }
 
