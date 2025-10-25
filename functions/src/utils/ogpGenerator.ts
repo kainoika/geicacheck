@@ -12,7 +12,7 @@ export function generateOGPData(
   event: EventData,
   circleId: string
 ): OGPData {
-  const baseUrl = 'https://geicacheck.web.app';
+  const baseUrl = 'https://geicacheck.com';
 
   // タイトル生成
   const title = circle.penName
@@ -238,8 +238,8 @@ export function generateErrorHTML(error: string, circleId?: string): string {
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="${title}">
     <meta property="og:description" content="指定されたサークル情報は見つかりませんでした。">
-    <meta property="og:image" content="https://geicacheck.web.app/default-ogp-image.png">
-    <meta property="og:url" content="https://geicacheck.web.app/">
+    <meta property="og:image" content="https://geicacheck.com/default-ogp-image.png">
+    <meta property="og:url" content="https://geicacheck.com/">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="${siteName}">
 
@@ -247,7 +247,7 @@ export function generateErrorHTML(error: string, circleId?: string): string {
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="${title}">
     <meta name="twitter:description" content="指定されたサークル情報は見つかりませんでした。">
-    <meta name="twitter:image" content="https://geicacheck.web.app/default-ogp-image.png">
+    <meta name="twitter:image" content="https://geicacheck.com/default-ogp-image.png">
 
     <style>
         body {
@@ -317,7 +317,7 @@ export function generateErrorHTML(error: string, circleId?: string): string {
         <p>申し訳ございませんが、指定されたサークル情報は見つかりませんでした。</p>
         ${circleId ? `<p><strong>サークルID:</strong> ${escapeHtml(circleId)}</p>` : ''}
         <p><strong>エラー:</strong> ${escapedError}</p>
-        <a href="https://geicacheck.web.app/" class="home-btn">
+        <a href="https://geicacheck.com/" class="home-btn">
             トップページに戻る
         </a>
     </div>

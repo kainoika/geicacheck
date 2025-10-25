@@ -62,7 +62,7 @@ exports.ogp = functions
         // 通常のユーザーの場合はSPAにリダイレクト
         if (!(0, botDetector_1.isBotRequest)(request)) {
             console.log('👤 Regular user detected, redirecting to SPA');
-            const redirectUrl = `https://geicacheck.web.app${request.url}`;
+            const redirectUrl = `https://geicacheck.com${request.url}`;
             response.redirect(302, redirectUrl);
             return;
         }
