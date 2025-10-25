@@ -317,6 +317,22 @@
         </div>
 
         <div class="flex gap-3">
+          <!-- 巡回ボタン -->
+          <button
+            @click="handleQuickToggleVisited(selectedCircle.id)"
+            :class="[
+              'px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2',
+              getBookmarkByCircleId(selectedCircle.id)?.visited
+                ? 'bg-green-500 text-white hover:bg-green-600'
+                : 'bg-gray-500 text-white hover:bg-gray-600'
+            ]"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            {{ getBookmarkByCircleId(selectedCircle.id)?.visited ? '巡回済み' : '巡回完了' }}
+          </button>
+
           <NuxtLink :to="`/circles/${selectedCircle.id}`"
             class="flex-1 px-4 py-2 bg-pink-500 text-white rounded-lg text-center font-medium hover:bg-pink-600 transition-colors"
             @click="selectedCircle = null">
@@ -370,7 +386,7 @@ const selectedEventId = computed(() => {
 })
 
 // Composables
-const { bookmarksWithCircles, fetchBookmarksWithCircles } = useBookmarks()
+const { bookmarksWithCircles, fetchBookmarksWithCircles, toggleVisited, getBookmarkByCircleId } = useBookmarks()
 const logger = useLogger('MapPage')
 const { currentEvent, fetchEvents } = useEvents()
 const { formatPlacement } = useCircles()
@@ -768,6 +784,17 @@ watch(() => validBookmarks.value, async () => {
 watch(() => visibleCategories.value, async () => {
   await renderBookmarkPins()
 }, { deep: true })
+
+// クイック巡回機能
+const handleQuickToggleVisited = async (circleId: string) => {
+  try {
+    logger.info('🔄 クイック巡回トグル:', circleId)
+    await toggleVisited(circleId)
+    logger.info('✅ クイック巡回トグル完了')
+  } catch (error) {
+    console.error('❌ クイック巡回トグルエラー:', error)
+  }
+}
 
 // 現在のイベントが利用可能になるまで待機
 const waitForCurrentEvent = async (): Promise<boolean> => {
