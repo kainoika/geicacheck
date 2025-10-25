@@ -33,11 +33,15 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUserData = void 0;
+exports.deleteUserData = exports.ogpHealthCheck = exports.ogp = void 0;
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
 // Firebase Admin SDK初期化
 admin.initializeApp();
+// OGP関数のインポート
+var ogp_1 = require("./ogp");
+Object.defineProperty(exports, "ogp", { enumerable: true, get: function () { return ogp_1.ogp; } });
+Object.defineProperty(exports, "ogpHealthCheck", { enumerable: true, get: function () { return ogp_1.ogpHealthCheck; } });
 /**
  * ユーザーアカウント削除時に実行されるCloud Function
  * Firebase Authentication でユーザーが削除された時に自動実行

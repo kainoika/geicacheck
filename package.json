@@ -23,7 +23,9 @@
     "migrate:owner-ids": "tsx scripts/migrateOwnerIds.ts",
     "emulators:start": "firebase emulators:start",
     "emulators:export": "firebase emulators:export ./emulator-data",
-    "emulators:import": "firebase emulators:start --import=./emulator-data"
+    "emulators:import": "firebase emulators:start --import=./emulator-data",
+    "test:ogp": "node scripts/testOGP.js",
+    "test:ogp-emulator": "firebase emulators:exec --only functions,firestore \"npm run test:ogp\""
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.23",
