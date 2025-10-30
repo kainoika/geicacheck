@@ -499,7 +499,7 @@ const getRequestStatusLabel = (status) => {
   switch (status) {
     case 'pending': return '審査中'
     case 'approved': return '承認済み'
-    case 'auto_approved': return '自動承認'
+    case 'auto_approved': return '審査中' // 自動承認も審査中として表示
     case 'rejected': return '却下'
     case 'revoked': return '権限削除済み'
     default: return '不明'
