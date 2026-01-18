@@ -386,7 +386,7 @@ export const useSvgPins = (
    */
   const resetPinHighlight = () => {
     if (!pinsGroup.value) return
-    
+
     const allPins = pinsGroup.value.querySelectorAll('.bookmark-pin')
     allPins.forEach(pin => {
       (pin as SVGElement).style.opacity = '1'
@@ -396,7 +396,96 @@ export const useSvgPins = (
       }
     })
   }
-  
+
+  /**
+   * 特定のピンのvisited状態を更新（DOM再作成なし）
+   *
+   * @param bookmarkId - ブックマークID
+   * @param visited - 巡回済みかどうか
+   * @param category - ブックマークカテゴリ
+   */
+  const updatePinVisitedState = (bookmarkId: string, visited: boolean, category: BookmarkCategory) => {
+    if (!pinsGroup.value) {
+      logger.warn('SVG pins not initialized')
+      return
+    }
+
+    const pinElement = pinsGroup.value.querySelector(`[data-bookmark-id="${bookmarkId}"]`) as SVGGElement
+    if (!pinElement) {
+      logger.warn(`Pin not found for bookmark: ${bookmarkId}`)
+      return
+    }
+
+    // データ属性を更新
+    pinElement.setAttribute('data-visited', visited.toString())
+
+    const circle = pinElement.querySelector('.pin-background') as SVGCircleElement
+    const icon = pinElement.querySelector('.pin-icon') as SVGPathElement
+    const existingIndicator = pinElement.querySelector('.visited-indicator') as SVGCircleElement
+
+    if (!circle || !icon) {
+      logger.warn('Pin elements not found')
+      return
+    }
+
+    const style = pinStyles.value[category]
+    const position = {
+      x: parseFloat(circle.getAttribute('cx') || '0'),
+      y: parseFloat(circle.getAttribute('cy') || '0')
+    }
+
+    // スタイルを更新
+    if (visited) {
+      // 巡回済みスタイル
+      circle.setAttribute('fill', '#10b981')
+      circle.setAttribute('stroke', '#ffffff')
+      circle.style.opacity = '0.8'
+
+      // アイコンをチェックマークに変更
+      icon.setAttribute('d', 'M20.285 2l-11.285 11.567-5.286-5.011-3.714 3.716 9 8.728 15-15.285z')
+      icon.setAttribute('fill', '#ffffff')
+      icon.setAttribute('stroke', '#ffffff')
+
+      // visited indicatorを追加（まだ存在しない場合）
+      if (!existingIndicator) {
+        const visitedIndicator = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+        visitedIndicator.setAttribute('cx', (position.x + config.radius * 0.6).toString())
+        visitedIndicator.setAttribute('cy', (position.y - config.radius * 0.6).toString())
+        visitedIndicator.setAttribute('r', (config.radius * 0.3).toString())
+        visitedIndicator.setAttribute('fill', '#10b981')
+        visitedIndicator.setAttribute('stroke', '#ffffff')
+        visitedIndicator.setAttribute('stroke-width', '2')
+        visitedIndicator.setAttribute('class', 'visited-indicator')
+        visitedIndicator.style.pointerEvents = 'none'
+
+        // タッチ領域の前に挿入
+        const touchArea = pinElement.querySelector('.pin-touch-area')
+        if (touchArea) {
+          pinElement.insertBefore(visitedIndicator, touchArea)
+        } else {
+          pinElement.appendChild(visitedIndicator)
+        }
+      }
+    } else {
+      // 未巡回スタイル
+      circle.setAttribute('fill', style.fill)
+      circle.setAttribute('stroke', style.stroke)
+      circle.style.opacity = '1'
+
+      // アイコンを元に戻す
+      icon.setAttribute('d', style.iconPath)
+      icon.setAttribute('fill', 'none')
+      icon.setAttribute('stroke', style.iconStroke)
+
+      // visited indicatorを削除
+      if (existingIndicator) {
+        existingIndicator.remove()
+      }
+    }
+
+    logger.debug(`✅ Pin updated: ${bookmarkId}, visited: ${visited}`)
+  }
+
   /**
    * 全てのピンを削除
    */
@@ -421,6 +510,7 @@ export const useSvgPins = (
     pinStyles: readonly(pinStyles),
     initializePins,
     renderPins,
+    updatePinVisitedState,
     highlightPin,
     resetPinHighlight,
     clearPins,

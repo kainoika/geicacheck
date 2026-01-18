@@ -391,7 +391,7 @@ const logger = useLogger('MapPage')
 const { currentEvent, fetchEvents } = useEvents()
 const { formatPlacement } = useCircles()
 const { getCirclePosition } = useCircleMapping()
-const { initializePins, renderPins, highlightPin, resetPinHighlight, clearPins, pinStyles } = useSvgPins({
+const { initializePins, renderPins, updatePinVisitedState, highlightPin, resetPinHighlight, clearPins, pinStyles } = useSvgPins({
   radius: 12,
   strokeWidth: 3,
   dropShadow: true,
@@ -775,13 +775,15 @@ watch(() => currentEvent.value, async (newEvent, oldEvent) => {
   }
 }, { immediate: true })
 
-// ブックマーク変更時の自動再描画
-watch(() => validBookmarks.value, async () => {
+// ブックマーク追加/削除時の自動再描画（visited変更では再描画しない）
+watch(() => validBookmarks.value.length, async () => {
+  logger.info('📊 ブックマーク数変更、全体再描画')
   await renderBookmarkPins()
-}, { deep: true })
+})
 
 // フィルター変更時の再描画
 watch(() => visibleCategories.value, async () => {
+  logger.info('🔧 フィルター変更、全体再描画')
   await renderBookmarkPins()
 }, { deep: true })
 
@@ -789,8 +791,26 @@ watch(() => visibleCategories.value, async () => {
 const handleQuickToggleVisited = async (circleId: string) => {
   try {
     logger.info('🔄 クイック巡回トグル:', circleId)
+
+    // 現在のブックマーク情報を取得
+    const bookmark = getBookmarkByCircleId(circleId)
+    if (!bookmark) {
+      logger.warn('ブックマークが見つかりません:', circleId)
+      return
+    }
+
+    // Firestoreとローカル状態を更新
     await toggleVisited(circleId)
-    logger.info('✅ クイック巡回トグル完了')
+
+    // 更新後の状態を取得
+    const updatedBookmark = getBookmarkByCircleId(circleId)
+    if (updatedBookmark) {
+      // 差分更新でピンの見た目だけを変更（DOM再作成なし）
+      updatePinVisitedState(updatedBookmark.id, updatedBookmark.visited, updatedBookmark.category)
+      logger.info('✅ クイック巡回トグル完了（差分更新）')
+    } else {
+      logger.warn('更新後のブックマークが見つかりません')
+    }
   } catch (error) {
     console.error('❌ クイック巡回トグルエラー:', error)
   }
