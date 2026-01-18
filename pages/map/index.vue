@@ -726,7 +726,7 @@ const loadMapForCurrentEvent = async () => {
   // map-geica31.svg, map-geica32.svg, map-geica33.svg
   const mapFileName = (() => {
     const eventId = selectedEventId.value
-    if (['geica-31', 'geica-32', 'geica-33'].includes(eventId)) {
+    if (['geica-31', 'geica-32', 'geica-33', 'geica-34'].includes(eventId)) {
       //eventIdはgeica-31なのでgeica31に変換
       return `map-${eventId.replace('geica-', 'geica')}.svg`
     }

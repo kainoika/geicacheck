@@ -81,6 +81,8 @@ export const useEventMap = () => {
         return "map-geica32.svg";
       case "geica-33":
         return "map-geica33.svg";
+      case "geica-34":
+        return "map-geica34.svg";
       default:
         // デフォルトは最新のイベント
         return "map-geica32.svg";
