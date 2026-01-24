@@ -28,6 +28,10 @@ npm run convert:circles              # Convert circle data format
 npm run import:converted-circles     # Import converted circles to Firestore
 npm run seed:events                  # Seed events data
 npm run migrate:multi-event          # Run multi-event migration
+npm run migrate:menu-images:dry-run  # Migrate menu images (dry-run mode)
+npm run migrate:menu-images          # Migrate menu images (production)
+npm run rollback:menu-images:dry-run # Rollback menu images (dry-run mode)
+npm run rollback:menu-images         # Rollback menu images (production)
 ```
 
 ## Architecture Overview
@@ -96,10 +100,11 @@ This is a **Nuxt 3 SPA** application for managing circle information at Aikatsu 
 ### Data Layer
 
 **Type Definitions:** All types are centralized in `types/index.ts`:
-- Core entities: `User`, `Circle`, `Bookmark`, `Event`
+- Core entities: `User`, `Circle`, `Bookmark`, `Event`, `MenuImage`
 - Search and filtering: `SearchFilters`, `SearchParams`, `SearchResult`
 - Permissions: `EditPermissionRequest`, `CirclePermission`
 - API responses: `ApiResponse<T>`, `ApiError`
+- Image management: `MenuImage` (id, url, order, uploadedAt, fileSize, fileName)
 
 **Firestore Collections:**
 ```
@@ -157,6 +162,16 @@ circle_permissions/        # Granted permissions
 - Permission requests use collection name `edit_permission_requests` (with underscores)
 - Circle permissions use collection name `circle_permissions` (with underscores)
 
+**Image Management:**
+- Use `useCircleImages()` for all image upload/delete/reorder operations
+- Maximum 4 images per circle (aligned with Twitter's limit)
+- Image files limited to 10MB, stored in Firebase Storage at `circle-images/{eventId}/{circleId}/menu/`
+- Images stored as `MenuImage[]` array in Firestore with order field (0-3)
+- Failed uploads trigger automatic rollback to maintain data consistency
+- Use `imageUtils.ts` for validation (file type, size, URL format)
+- Migration from `menuImageUrl` (string) to `menuImages[]` (array) via migration scripts
+- Always validate images with `validateMenuImages()` before saving to Firestore
+
 **State Management:**
 - Use `useState()` with descriptive keys for persistent state
 - Computed properties for derived data
@@ -189,6 +204,13 @@ circle_permissions/        # Granted permissions
 - Performance tests for large datasets (1000+ items)
 - Error handling and edge case coverage
 
+**Image Management Testing:**
+- `imageUtils.test.ts` - File validation, URL checking, image ID generation, size formatting
+- `useCircleImages.test.ts` - Upload/delete/reorder operations, Firebase integration, rollback handling
+- `useImageCarousel.test.ts` - Navigation (next/prev/goTo), state management, edge cases
+- `ImageCarousel.test.ts` - Component integration, touch gestures, keyboard controls
+- `MultipleImageUpload.test.ts` - Upload UI, drag&drop, image reordering, deletion
+
 ### Important Files
 - `nuxt.config.ts` - Main configuration (SPA mode, Firebase env vars, component settings, logger config, PWA config)
 - `types/index.ts` - Complete type definitions including EditPermissionRequest and CirclePermission
@@ -201,19 +223,26 @@ circle_permissions/        # Granted permissions
   - `composables/useSvgPins.ts` - SVG pin rendering and animation system (mobile-optimized touch events)
   - `composables/useTouch.ts` - Touch gesture recognition and processing
   - `composables/useLogger.ts` - Logger composable for components and other composables
+  - `composables/useCircleImages.ts` - Multiple image upload, delete, and reorder management
+  - `composables/useImageCarousel.ts` - Image carousel navigation and state management
 - `data/mapConfigs.ts` - Event-specific map configurations and coordinate mappings
 - `utils/placementUtils.ts` - Placement normalization and coordinate calculation utilities
+- `utils/imageUtils.ts` - Image validation, ID generation, and file size formatting
 - `plugins/firebase.client.ts` - Firebase service initialization
 - `plugins/logger.client.ts` - Logger plugin for global access
 - `plugins/pwa.client.ts` - PWA functionality management (install prompts, network monitoring)
 - `plugins/pwa-head.client.ts` - PWA meta tags management
 - `firestore.rules` - Database security rules including edit permission rules
 - `scripts/` - Data migration and management utilities
+  - `scripts/migrateMenuImages.ts` - Migration script for menuImageUrl → menuImages[]
+  - `scripts/rollbackMenuImages.ts` - Rollback script for menuImages[] → menuImageUrl
 - `components/ui/PWAInstallButton.vue` - PWA install button with floating UI
 - `components/ui/PWAInstallMenuItem.vue` - Desktop menu install option
 - `components/ui/PWAInstallMobileItem.vue` - Mobile menu install option
 - `components/ui/PWAUpdateNotification.vue` - App update notification component
 - `components/ui/OfflineIndicator.vue` - Offline status indicator
+- `components/ui/MultipleImageUpload.vue` - Multiple image upload component with drag&drop and reordering
+- `components/ui/ImageCarousel.vue` - Image carousel with swipe gestures and keyboard navigation
 - `public/pwa-192x192.png` - PWA icon (192x192)
 - `public/pwa-512x512.png` - PWA icon (512x512)
 - `components/map/EventMap.vue` - Interactive map component for event layouts

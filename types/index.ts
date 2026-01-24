@@ -18,6 +18,26 @@ export interface UserSettings {
   adultContent: boolean;
 }
 
+// お品書き画像の型定義
+/**
+ * サークルのお品書き画像情報
+ * 1サークルあたり最大4枚まで登録可能
+ */
+export interface MenuImage {
+  /** 一意識別子（例: "menu_1706000000000"） */
+  id: string;
+  /** Firebase Storage URL */
+  url: string;
+  /** 表示順序（0-3） */
+  order: number;
+  /** アップロード日時 */
+  uploadedAt: Date;
+  /** ファイルサイズ（バイト単位）- オプション */
+  fileSize?: number;
+  /** 元のファイル名 - オプション */
+  fileName?: string;
+}
+
 // サークル関連の型定義
 export interface Circle {
   id: string;
@@ -26,7 +46,8 @@ export interface Circle {
   penName?: string;
   penNameKana?: string;
   circleCutImageUrl?: string; // サークルカット画像URL
-  menuImageUrl?: string; // お品書き画像URL
+  menuImageUrl?: string; // お品書き画像URL（非推奨: menuImagesを使用）
+  menuImages?: MenuImage[]; // お品書き画像一覧（最大4枚）
   genre: string[]; // ジャンルの配列
   placement: PlacementInfo;
   description?: string;

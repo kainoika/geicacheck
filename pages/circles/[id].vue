@@ -95,10 +95,30 @@
                 <DocumentTextIcon class="h-5 w-5" />
                 お品書き
               </h2>
-              <ImageUpload v-model="circle.menuImageUrl" label="お品書き画像"
-                :path="`circle-images/${currentEvent?.id}/${circle.id}/menu`" :can-edit="permissions.canUploadImages"
-                @update:modelValue="updateMenuImage" @error="uploadError = $event"
-                @deleted:image="onImageDeletedMenuImage" />
+
+              <!-- 編集可能な場合: 複数画像アップロード -->
+              <MultipleImageUpload
+                v-if="permissions.canUploadImages"
+                v-model="circle.menuImages"
+                :circle-id="circle.id"
+                :event-id="currentEvent?.id || ''"
+                :can-edit="permissions.canUploadImages"
+                :max-images="4"
+                @update:modelValue="updateMenuImages"
+                @error="uploadError = $event"
+              />
+
+              <!-- 閲覧専用の場合: カルーセル表示 -->
+              <ImageCarousel
+                v-else-if="circle.menuImages && circle.menuImages.length > 0"
+                :images="circle.menuImages"
+              />
+
+              <!-- 画像がない場合 -->
+              <div v-else class="text-center py-8 text-gray-500">
+                <PhotoIcon class="h-12 w-12 text-gray-300 mx-auto" />
+                <p class="mt-2 text-sm">お品書き画像は登録されていません</p>
+              </div>
             </div>
 
             <!-- ジャンル -->
@@ -268,7 +288,7 @@ import {
   PencilIcon,
   ClockIcon
 } from '@heroicons/vue/24/outline'
-import type { Circle, BookmarkCategory, CircleItem, CircleItemFormData } from '~/types'
+import type { Circle, BookmarkCategory, CircleItem, CircleItemFormData, MenuImage } from '~/types'
 
 // Route params
 const route = useRoute()
@@ -290,6 +310,7 @@ const { currentEvent } = useEvents()
 const { addBookmark, toggleBookmark, getBookmarkByCircleId } = useBookmarks()
 const { canEditCircle, canUploadImages, canManageItems, canEditGenres, refreshPermissions } = useCirclePermissions()
 const { hasExistingRequest } = useEditPermissions()
+const logger = useLogger('CircleDetail')
 
 // 権限チェック
 const permissions = computed(() => {
@@ -369,30 +390,52 @@ const checkPermissionRequestStatus = async () => {
 // 画像アップロード処理
 const updateCircleCut = async (imageUrl: string | undefined) => {
   if (!circle.value) return
+
+  logger.info('サークルカット画像の更新を開始', {
+    circleId: circle.value.id,
+    hasImage: !!imageUrl
+  })
+
   saving.value = true
   try {
     await updateCircle(circle.value.id, currentEvent.value!.id, {
       circleCutImageUrl: imageUrl
     })
     circle.value.circleCutImageUrl = imageUrl
+
+    logger.info('サークルカット画像の更新に成功', {
+      circleId: circle.value.id,
+      imageUrl
+    })
   } catch (err) {
-    console.error('サークルカット更新エラー:', err)
+    logger.error('サークルカット更新エラー', err)
     uploadError.value = 'サークルカットの更新に失敗しました'
   } finally {
     saving.value = false
   }
 }
 
-const updateMenuImage = async (imageUrl: string | undefined) => {
+const updateMenuImages = async (menuImages: MenuImage[]) => {
   if (!circle.value) return
+
+  logger.info('お品書き画像の更新を開始', {
+    circleId: circle.value.id,
+    imageCount: menuImages.length
+  })
+
   saving.value = true
   try {
     await updateCircle(circle.value.id, currentEvent.value!.id, {
-      menuImageUrl: imageUrl
+      menuImages: menuImages
     })
-    circle.value.menuImageUrl = imageUrl
+    circle.value.menuImages = menuImages
+
+    logger.info('お品書き画像の更新に成功', {
+      circleId: circle.value.id,
+      imageCount: menuImages.length
+    })
   } catch (err) {
-    console.error('お品書き更新エラー:', err)
+    logger.error('お品書き更新エラー', err)
     uploadError.value = 'お品書きの更新に失敗しました'
   } finally {
     saving.value = false
@@ -400,11 +443,8 @@ const updateMenuImage = async (imageUrl: string | undefined) => {
 }
 
 const onImageDeletedCircleCut = async () => {
+  logger.info('サークルカット画像を削除')
   await updateCircleCut("")
-}
-
-const onImageDeletedMenuImage = async () => {
-  await updateMenuImage("")
 }
 
 // 頒布物管理
@@ -699,6 +739,15 @@ useHead(() => ({
   border-radius: 0.5rem;
   padding: 1.25rem;
   border: 1px solid #e5e7eb;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* 画像がカードからはみ出さないようにする */
+.content-card :deep(img) {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
 /* タブレット以上 */
@@ -739,7 +788,7 @@ useHead(() => ({
   }
 }
 
-/* モバイル調整 */
+/* モバイル調整 (320px-768px) */
 @media (max-width: 767px) {
   .header-top {
     align-items: flex-start;
@@ -761,6 +810,28 @@ useHead(() => ({
 
   .tag-text {
     font-size: 0.8rem;
+  }
+
+  /* 画像の横スクロール防止（モバイル） */
+  .content-card {
+    padding: 1rem;
+  }
+
+  .content-card :deep(img) {
+    max-width: 100% !important;
+    width: 100%;
+    height: auto;
+  }
+}
+
+/* 超小型デバイス対応 (320px) */
+@media (max-width: 375px) {
+  .content-card {
+    padding: 0.75rem;
+  }
+
+  .header-container {
+    padding: 0 0.75rem;
   }
 }
 </style>

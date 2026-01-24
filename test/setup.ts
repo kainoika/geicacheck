@@ -42,6 +42,14 @@ global.useNuxtApp = vi.fn(() => ({
   $storage: {}
 }))
 
+// Logger関連のモック
+global.useLogger = vi.fn(() => ({
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+  debug: vi.fn()
+}))
+
 // DOM操作関連のモック
 Object.defineProperty(window, 'alert', {
   value: vi.fn()

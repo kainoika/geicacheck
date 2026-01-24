@@ -23,6 +23,10 @@ logs
 .env.*
 !.env.example
 
+# Firebase service account (Admin SDK credentials)
+serviceAccountKey.json
+*-firebase-adminsdk-*.json
+
 # Firebase emulator
 emulator-data/
 firebase-debug.log
