@@ -16,7 +16,17 @@
         :src="currentImage.url"
         :alt="`お品書き${currentIndex + 1}`"
         class="carousel-image"
+        @click="openModal"
       />
+
+      <!-- 拡大アイコン（ホバー時に表示） -->
+      <div
+        v-if="currentImage"
+        class="expand-icon"
+        @click="openModal"
+      >
+        <MagnifyingGlassPlusIcon class="h-8 w-8 text-white drop-shadow-lg" />
+      </div>
     </div>
 
     <!-- ナビゲーションボタン（複数枚の場合のみ） -->
@@ -62,12 +72,66 @@
         ></button>
       </div>
     </div>
+
+    <!-- 拡大モーダル -->
+    <Teleport to="body">
+      <div
+        v-if="isModalOpen && currentImage"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 p-4"
+        @click="closeModal"
+      >
+        <div class="relative max-w-4xl max-h-full">
+          <!-- 閉じるボタン -->
+          <button
+            @click="closeModal"
+            class="absolute top-4 right-4 p-2 bg-white bg-opacity-20 text-white rounded-full hover:bg-opacity-30 transition-colors z-10"
+          >
+            <XMarkIcon class="h-6 w-6" />
+          </button>
+
+          <!-- 拡大画像 -->
+          <img
+            :src="currentImage.url"
+            :alt="`お品書き${currentIndex + 1}`"
+            class="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+            @click.stop
+            oncontextmenu="return false;"
+          />
+
+          <!-- ナビゲーション（モーダル内、複数枚の場合） -->
+          <template v-if="hasMultiple">
+            <button
+              type="button"
+              class="modal-nav-button modal-nav-prev"
+              @click.stop="prev"
+              aria-label="前の画像へ"
+            >
+              <ChevronLeftIcon class="h-8 w-8" />
+            </button>
+
+            <button
+              type="button"
+              class="modal-nav-button modal-nav-next"
+              @click.stop="next"
+              aria-label="次の画像へ"
+            >
+              <ChevronRightIcon class="h-8 w-8" />
+            </button>
+          </template>
+
+          <!-- インジケーター（モーダル内） -->
+          <div v-if="hasMultiple" class="modal-indicator">
+            {{ currentIndex + 1 }} / {{ totalCount }}
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/outline';
+import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { ChevronLeftIcon, ChevronRightIcon, XMarkIcon, MagnifyingGlassPlusIcon } from '@heroicons/vue/24/outline';
 import type { MenuImage } from '~/types';
 import { useImageCarousel } from '~/composables/useImageCarousel';
 
@@ -82,8 +146,54 @@ interface Props {
 const props = defineProps<Props>();
 
 const imagesRef = ref(props.images);
+
+// propsの変更を監視してimagesRefを更新
+watch(() => props.images, (newImages) => {
+  imagesRef.value = newImages;
+}, { deep: true });
+
 const { currentIndex, currentImage, hasMultiple, totalCount, next, prev, goTo } =
   useImageCarousel(imagesRef);
+
+// モーダル状態
+const isModalOpen = ref(false);
+
+/**
+ * モーダルを開く
+ */
+const openModal = () => {
+  if (currentImage.value) {
+    isModalOpen.value = true;
+    // ボディのスクロールを無効化
+    document.body.style.overflow = 'hidden';
+  }
+};
+
+/**
+ * モーダルを閉じる
+ */
+const closeModal = () => {
+  isModalOpen.value = false;
+  // ボディのスクロールを復元
+  document.body.style.overflow = '';
+};
+
+// ESCキーでモーダルを閉じる
+onMounted(() => {
+  const handleEscape = (event: KeyboardEvent) => {
+    if (event.key === 'Escape' && isModalOpen.value) {
+      closeModal();
+    }
+  };
+
+  document.addEventListener('keydown', handleEscape);
+
+  onUnmounted(() => {
+    document.removeEventListener('keydown', handleEscape);
+    // コンポーネントがアンマウントされる時にスクロールを復元
+    document.body.style.overflow = '';
+  });
+});
 
 // タッチジェスチャー用の状態
 const touchStartX = ref(0);
@@ -138,8 +248,6 @@ const handleKeydown = (event: KeyboardEvent) => {
     next();
   }
 };
-
-// クリーンアップは不要（イベントリスナーはテンプレート内で定義）
 </script>
 
 <style scoped>
@@ -169,6 +277,30 @@ const handleKeydown = (event: KeyboardEvent) => {
   width: 100%;
   height: auto;
   object-fit: contain;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.carousel-image:hover {
+  opacity: 0.9;
+}
+
+/* 拡大アイコン */
+.expand-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  background: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  border-radius: 0.5rem;
+}
+
+.carousel-main:hover .expand-icon {
+  opacity: 1;
 }
 
 /* ナビゲーションボタン */
@@ -200,6 +332,50 @@ const handleKeydown = (event: KeyboardEvent) => {
 
 .nav-next {
   right: 0.5rem;
+}
+
+/* モーダル内ナビゲーションボタン */
+.modal-nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: white;
+}
+
+.modal-nav-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.modal-nav-prev {
+  left: 1rem;
+}
+
+.modal-nav-next {
+  right: 1rem;
+}
+
+/* モーダル内インジケーター */
+.modal-indicator {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
 }
 
 /* インジケーター */
