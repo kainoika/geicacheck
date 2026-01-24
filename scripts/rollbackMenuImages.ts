@@ -14,9 +14,10 @@
  *   npm run rollback:menu-images --dry-run # ドライラン（実際の更新なし）
  */
 
-import * as admin from 'firebase-admin';
+import admin from 'firebase-admin';
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
+import type { ServiceAccount } from 'firebase-admin';
 
 interface MenuImage {
   id: string;
@@ -42,10 +43,10 @@ if (!existsSync(serviceAccountPath)) {
   process.exit(1);
 }
 
-const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf8'));
+const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf8')) as ServiceAccount;
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
 });
 
 const db = admin.firestore();
