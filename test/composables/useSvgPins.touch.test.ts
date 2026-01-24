@@ -17,6 +17,7 @@ describe('useSvgPins - タッチイベント', () => {
     mockBookmark = {
       id: 'bookmark1',
       category: 'check',
+      visited: false,
       circle: {
         id: 'circle1',
         circleName: 'テストサークル'
@@ -152,9 +153,9 @@ describe('useSvgPins - タッチイベント', () => {
     await initializePins(svgElement)
     
     const bookmarks: BookmarkWithCircle[] = [
-      { id: '1', category: 'check', circle: { id: 'c1', circleName: 'サークル1' } } as BookmarkWithCircle,
-      { id: '2', category: 'interested', circle: { id: 'c2', circleName: 'サークル2' } } as BookmarkWithCircle,
-      { id: '3', category: 'priority', circle: { id: 'c3', circleName: 'サークル3' } } as BookmarkWithCircle
+      { id: '1', category: 'check', visited: false, circle: { id: 'c1', circleName: 'サークル1' } } as BookmarkWithCircle,
+      { id: '2', category: 'interested', visited: false, circle: { id: 'c2', circleName: 'サークル2' } } as BookmarkWithCircle,
+      { id: '3', category: 'priority', visited: true, circle: { id: 'c3', circleName: 'サークル3' } } as BookmarkWithCircle
     ]
     
     renderPins(

@@ -1,12 +1,12 @@
 <template>
   <div class="space-y-4">
     <!-- 現在の画像表示 -->
-    <div v-if="modelValue">
+    <div v-if="modelValue" class="w-full">
       <ImageViewer
         :src="modelValue"
         :alt="label"
         :can-edit="canEdit"
-        image-class="w-full max-w-md h-auto"
+        image-class="w-full max-w-full h-auto object-contain"
         @remove="removeImage"
       />
     </div>

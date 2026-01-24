@@ -23,6 +23,11 @@
 - **📱 PWA対応**: プログレッシブウェブアプリ対応でネイティブアプリのように利用可能
 - **✏️ 編集権限システム**: サークル参加者が自身のサークル情報を編集可能
   - **👥 コミュニティ管理**: Twitter連携による自動承認と管理者による申請審査
+- **🖼️ お品書き画像管理**: サークル詳細ページでお品書き画像を複数枚（最大4枚）アップロード可能
+  - **📱 モバイル対応**: レスポンシブなカルーセル表示でスマホでも快適に閲覧
+  - **🎯 ドラッグ&ドロップ**: 直感的な操作で簡単にアップロード
+  - **🔄 順序変更**: アップロード後も自由に画像の順序を変更可能
+  - **👆 タッチ対応**: スワイプジェスチャーとキーボード操作に対応
 
 ## 🚀 技術スタック
 
@@ -178,6 +183,14 @@ npm run import:converted-circles
 
 # イベントデータのインポート
 npm run import:event
+
+# お品書き画像データの移行（menuImageUrl → menuImages[]）
+npm run migrate:menu-images:dry-run  # ドライラン（確認のみ）
+npm run migrate:menu-images          # 本番実行
+
+# お品書き画像データのロールバック（menuImages[] → menuImageUrl）
+npm run rollback:menu-images:dry-run # ドライラン（確認のみ）
+npm run rollback:menu-images         # 本番実行
 ```
 
 ## 🏗️ アーキテクチャ
@@ -193,15 +206,19 @@ geica-check/
 │   ├── layout/          # レイアウト要素
 │   ├── map/             # インタラクティブマップ機能
 │   └── ui/              # 再利用可能UIコンポーネント
-│       ├── PWAInstallButton.vue      # PWAインストールボタン
-│       ├── PWAInstallMenuItem.vue    # メニュー用インストール項目
-│       ├── PWAInstallMobileItem.vue  # モバイル用インストール項目
-│       ├── PWAUpdateNotification.vue # アップデート通知
-│       └── OfflineIndicator.vue      # オフライン状態表示
+│       ├── PWAInstallButton.vue         # PWAインストールボタン
+│       ├── PWAInstallMenuItem.vue       # メニュー用インストール項目
+│       ├── PWAInstallMobileItem.vue     # モバイル用インストール項目
+│       ├── PWAUpdateNotification.vue    # アップデート通知
+│       ├── OfflineIndicator.vue         # オフライン状態表示
+│       ├── MultipleImageUpload.vue      # 複数画像アップロードコンポーネント
+│       └── ImageCarousel.vue            # 画像カルーセルコンポーネント
 ├── composables/         # Vue 3 Composition API
 │   ├── useEventMap.ts   # マップ読み込み・キャッシュ管理
 │   ├── useSvgPins.ts    # SVGピン描画システム
 │   ├── useTouch.ts      # タッチジェスチャー処理
+│   ├── useCircleImages.ts # お品書き画像管理（複数アップロード・削除・順序変更）
+│   ├── useImageCarousel.ts # 画像カルーセル操作
 │   └── (その他...)      # 各機能のコンポーザブル
 ├── data/                # 静的データファイル
 │   └── mapConfigs.ts    # イベント別マップ設定
@@ -214,13 +231,17 @@ geica-check/
 │   ├── pwa-512x512.png  # PWAアイコン（512x512）
 │   └── favicon.ico      # ファビコン
 ├── scripts/             # データ管理スクリプト
+│   ├── migrateMenuImages.ts    # お品書き画像移行スクリプト
+│   ├── rollbackMenuImages.ts   # お品書き画像ロールバックスクリプト
+│   └── (その他...)              # 各種データ管理スクリプト
 ├── tests/               # テストファイル
 │   ├── composables/     # コンポーザブルテスト
 │   ├── pages/           # ページテスト
 │   └── utils/           # ユーティリティテスト
 ├── types/               # TypeScript型定義
 └── utils/               # ユーティリティ関数
-    └── placementUtils.ts # 配置番号正規化
+    ├── placementUtils.ts # 配置番号正規化
+    └── imageUtils.ts     # 画像バリデーション・ID生成・サイズフォーマット
 ```
 
 ### 状態管理
@@ -235,6 +256,8 @@ Vue 3の Composition API と `useState()` を活用したコンポーザブル�
 - `useEditPermissions()` - 編集権限申請管理（ownerId自動更新対応）
 - `useCirclePermissions()` - サークル編集権限チェック
 - `usePWA()` - PWA機能管理（@vite-pwa/nuxt提供）
+- `useCircleImages()` - お品書き画像管理（複数アップロード・削除・順序変更）
+- `useImageCarousel()` - 画像カルーセル操作（次へ・前へ・インデックス移動）
 
 #### 🗺️ インタラクティブマップ
 - `useEventMap()` - マップファイル読み込み・キャッシュ・イベント切り替え
@@ -285,6 +308,8 @@ npm run test:coverage
 - **ページ統合**: イベント切り替え・ブックマーク表示・ユーザー操作
 - **ユーティリティ**: 権限チェック・データ変換・パフォーマンス
 - **イベント切り替え**: ref-based store・データ分離・キャッシュクリア
+- **画像管理**: アップロード・削除・順序変更・バリデーション・ロールバック処理
+- **カルーセル**: ナビゲーション・タッチジェスチャー・キーボード操作
 
 #### 🚀 パフォーマンステスト
 - 大量ブックマーク処理（1000件）
