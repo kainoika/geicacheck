@@ -3,40 +3,19 @@
  *
  * 既存のmenuImageUrl（単一画像URL）を新しいmenuImages[]（複数画像配列）形式に移行します。
  *
+ * セットアップ:
+ *   1. Firebase Console → プロジェクト設定 → サービスアカウント
+ *   2. 「新しい秘密鍵の生成」をクリックしてJSONをダウンロード
+ *   3. プロジェクトルートに serviceAccountKey.json として保存
+ *
  * 使用方法:
  *   npm run migrate:menu-images          # 本番実行
  *   npm run migrate:menu-images --dry-run # ドライラン（実際の更新なし）
  */
 
-import { initializeApp } from 'firebase/app';
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  doc,
-  updateDoc,
-  serverTimestamp,
-  FieldValue,
-  deleteField,
-} from 'firebase/firestore';
-import { config } from 'dotenv';
-
-// 環境変数を読み込む
-config();
-
-// Firebase設定
-const firebaseConfig = {
-  apiKey: process.env.NUXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NUXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NUXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NUXT_PUBLIC_FIREBASE_APP_ID,
-};
-
-// Firebase初期化
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+import * as admin from 'firebase-admin';
+import { readFileSync, existsSync } from 'fs';
+import { resolve } from 'path';
 
 interface MenuImage {
   id: string;
@@ -46,6 +25,29 @@ interface MenuImage {
   fileSize?: number;
   fileName?: string;
 }
+
+// サービスアカウントキーのパス
+const serviceAccountPath = resolve(process.cwd(), 'serviceAccountKey.json');
+
+// Firebase Admin SDK初期化
+if (!existsSync(serviceAccountPath)) {
+  console.error('❌ エラー: serviceAccountKey.json が見つかりません');
+  console.error('');
+  console.error('セットアップ手順:');
+  console.error('1. Firebase Console → プロジェクト設定 → サービスアカウント');
+  console.error('2. 「新しい秘密鍵の生成」をクリック');
+  console.error('3. ダウンロードしたJSONファイルを serviceAccountKey.json としてプロジェクトルートに保存');
+  console.error('');
+  process.exit(1);
+}
+
+const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf8'));
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
+const db = admin.firestore();
 
 /**
  * menuImageUrlをmenuImages配列に移行
@@ -58,7 +60,7 @@ async function migrateMenuImages(dryRun = false) {
 
   try {
     // 全イベントを取得
-    const eventsSnapshot = await getDocs(collection(db, 'events'));
+    const eventsSnapshot = await db.collection('events').get();
     console.log(`📊 ${eventsSnapshot.size}件のイベントが見つかりました\n`);
 
     let totalMigrated = 0;
@@ -71,8 +73,8 @@ async function migrateMenuImages(dryRun = false) {
       console.log(`\n📅 イベント: ${eventData.name || eventId}`);
 
       // このイベントのサークルを取得
-      const circlesRef = collection(db, `events/${eventId}/circles`);
-      const circlesSnapshot = await getDocs(circlesRef);
+      const circlesRef = db.collection(`events/${eventId}/circles`);
+      const circlesSnapshot = await circlesRef.get();
 
       console.log(`   サークル数: ${circlesSnapshot.size}件`);
 
@@ -95,17 +97,17 @@ async function migrateMenuImages(dryRun = false) {
                 id: `menu_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
                 url: menuImageUrl,
                 order: 0,
-                uploadedAt: serverTimestamp(),
+                uploadedAt: admin.firestore.FieldValue.serverTimestamp(),
                 // 既存画像はサイズとファイル名が不明
               },
             ];
 
             if (!dryRun) {
               // Firestoreを更新
-              await updateDoc(doc(db, `events/${eventId}/circles/${circleId}`), {
+              await circleDoc.ref.update({
                 menuImages: menuImages,
-                menuImageUrl: deleteField(), // 古いフィールドを削除
-                updatedAt: serverTimestamp(),
+                menuImageUrl: admin.firestore.FieldValue.delete(), // 古いフィールドを削除
+                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
               });
             }
 
